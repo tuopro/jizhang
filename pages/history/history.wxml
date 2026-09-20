@@ -1,0 +1,16 @@
+<view class="page">
+  <view class="page-title">历史账单</view>
+  <picker mode="selector" range="{{monthOptions}}" value="{{monthIndex}}" bindchange="onMonthChange">
+    <view class="month-filter">筛选：{{monthOptions[monthIndex]}} ›</view>
+  </picker>
+  <view class="scope-tabs">
+    <view class="scope-tab {{scope === 'all' ? 'active' : ''}}" data-scope="all" bindtap="setScope">全部</view>
+    <view class="scope-tab {{scope === 'mine' ? 'active' : ''}}" data-scope="mine" bindtap="setScope">我负责的</view>
+  </view>
+  <view wx:if="{{histories.length === 0}}" class="card empty-state">用户确认“结清本期”后，账期会作为只读历史账单保存在这里。</view>
+  <view wx:for="{{histories}}" wx:key="id" class="card history-card" data-id="{{item.id}}" bindtap="openHistory">
+    <view class="history-top"><view><view class="row-title">{{item.clientName}} · {{item.sequenceText}}</view><view class="period">{{item.periodText}}</view></view><view class="amount">{{item.total}}</view></view>
+    <view class="history-owner">负责人：{{item.ownerText}}</view>
+    <view class="history-bottom"><text>{{item.shipmentCount}}次发货 · 含运费 {{item.freight}}</text><text class="settled">已结清 ›</text></view>
+  </view>
+</view>

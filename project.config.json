@@ -1,0 +1,73 @@
+{
+  "description": "月结客户发货记账、对账与收款小程序",
+  "appid": "wx5093ae94c1ece97b",
+  "projectname": "monthly-credit-ledger",
+  "compileType": "miniprogram",
+  "miniprogramRoot": "./",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "libVersion": "3.15.2",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "newFeature": true,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "enhance": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "ignoreDevUnusedFiles": true,
+    "ignoreUploadUnusedFiles": true,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "packOptions": {
+    "ignore": [
+      {
+        "value": "tests",
+        "type": "folder"
+      },
+      {
+        "value": "docs",
+        "type": "folder"
+      },
+      {
+        "value": "scripts",
+        "type": "folder"
+      },
+      {
+        "value": "PREFERENCES.md",
+        "type": "file"
+      },
+      {
+        "value": "README.md",
+        "type": "file"
+      },
+      {
+        "value": "AGENTS.md",
+        "type": "file"
+      }
+    ],
+    "include": [
+      {
+        "value": "pages",
+        "type": "folder"
+      }
+    ]
+  },
+  "simulatorPluginLibVersion": {},
+  "editorSetting": {}
+}

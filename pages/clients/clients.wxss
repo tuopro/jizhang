@@ -1,0 +1,2 @@
+.client-list { padding-top: 4rpx; padding-bottom: 4rpx; }
+.scope-tabs{display:flex;gap:12rpx;margin-top:18rpx}.scope-tab{padding:13rpx 26rpx;border:1rpx solid #dce3e9;border-radius:28rpx;background:#fff;color:#647485;font-size:25rpx}.scope-tab.active{border-color:#123b67;background:#123b67;color:#fff}.owner-note{margin-top:4rpx;color:#8995a0}

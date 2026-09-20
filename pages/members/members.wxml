@@ -1,0 +1,35 @@
+<view class="page">
+  <view class="page-title">企业成员</view>
+  <view class="card identity-note">企业内正常成员共享全部客户和账目。负责人表示业务归属，操作人表示具体由谁录入，两者互不替代。</view>
+
+  <view wx:if="{{isAdmin}}" class="invite-actions">
+    <view wx:if="{{inviteLoading}}" class="invite-tip">正在读取当前邀请…</view>
+    <button wx:elif="{{!invite}}" class="primary-button" bindtap="createInvite">生成同事邀请</button>
+    <view wx:if="{{invite}}" class="invite-card">
+      <view class="invite-title">员工邀请</view>
+      <view class="invite-row"><text>有效期至</text><text>{{invite.expiresAtText}}</text></view>
+      <view class="invite-row"><text>状态</text><text class="invite-active">有效</text></view>
+      <view class="invite-tip">该邀请7天内有效，可供多位同事加入本企业。</view>
+      <button class="secondary-button" open-type="share">分享邀请卡片</button>
+      <button class="revoke-invite-button" bindtap="revokeInvite">作废邀请</button>
+    </view>
+  </view>
+
+  <button wx:if="{{isAdmin && unownedClientCount > 0}}" class="legacy-button" bindtap="assignLegacyClients">
+    为 {{unownedClientCount}} 个旧客户补负责人
+  </button>
+
+  <view class="section-head"><text class="section-title">成员列表（{{members.length}}）</text></view>
+  <view class="card member-list">
+    <view wx:for="{{members}}" wx:key="id" class="member-row disabled-{{item.status === 'disabled'}}">
+      <view class="member-main">
+        <view class="row-title">{{item.displayName}}<text wx:if="{{item.isCurrent}}" class="self-mark">我</text></view>
+        <view class="row-note">{{item.roleText}} · {{item.statusText}} · 负责{{item.clientCount}}个客户</view>
+      </view>
+      <view wx:if="{{isAdmin}}" class="member-actions">
+        <text class="text-action" data-id="{{item.id}}" bindtap="renameMember">改名</text>
+        <text wx:if="{{!item.isCurrent}}" class="text-action {{item.status === 'active' ? 'danger-text' : 'success-text'}}" data-id="{{item.id}}" bindtap="changeStatus">{{item.status === 'active' ? '停用' : '恢复'}}</text>
+      </view>
+    </view>
+  </view>
+</view>

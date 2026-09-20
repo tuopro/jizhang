@@ -1,0 +1,10 @@
+{
+  "name": "monthly-credit-ledger-miniprogram",
+  "version": "0.1.0",
+  "private": true,
+  "description": "面向批发和工业品销售场景的客户往来记账微信小程序",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "node scripts/check-project.js"
+  }
+}

@@ -1,0 +1,12 @@
+<view class="page">
+  <view class="page-title">{{id ? '修改客户' : '新增客户'}}</view>
+  <view class="card">
+    <text class="form-label">客户名称 *</text><input class="form-input" value="{{name}}" data-field="name" bindinput="onInput" placeholder="例如：杭州XX电气" />
+    <text class="form-label">联系人</text><input class="form-input" value="{{contact}}" data-field="contact" bindinput="onInput" placeholder="可不填" />
+    <text class="form-label">电话</text><input class="form-input" type="number" value="{{phone}}" data-field="phone" bindinput="onInput" placeholder="可不填" />
+    <text class="form-label">参考提醒日（可选）</text><input class="form-input" type="number" value="{{settlementDay}}" data-field="settlementDay" bindinput="onInput" placeholder="1—31；不定期结账可留空" />
+    <view class="form-hint">仅作为联系客户的参考提醒，不会自动拆分或结清账期。</view>
+    <text class="form-label">备注</text><textarea class="form-textarea" value="{{note}}" data-field="note" bindinput="onInput" placeholder="客户简称、送货注意事项等" />
+  </view>
+  <button class="primary-button" bindtap="save">保存客户</button>
+</view>

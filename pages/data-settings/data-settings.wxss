@@ -1,0 +1,1 @@
+.status-row{display:flex;align-items:center;justify-content:space-between;font-size:29rpx}.status-note{margin-top:18rpx;color:#6f7e8b;font-size:24rpx;line-height:1.7}

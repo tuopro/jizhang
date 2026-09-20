@@ -1,0 +1,51 @@
+const test = require('node:test')
+const assert = require('node:assert/strict')
+const fs = require('node:fs')
+const path = require('node:path')
+
+const root = path.resolve(__dirname, '..')
+
+test('云端从微信身份解析企业并在事务内写入，不接受前端 tenantId', () => {
+  const source = fs.readFileSync(path.join(root, 'cloudfunctions/ledger/index.js'), 'utf8')
+  assert.match(source, /cloud\.getWXContext\(\)/)
+  assert.match(source, /mutate\(context\.OPENID/)
+  assert.match(source, /getMembership\(context\.OPENID\)/)
+  assert.match(source, /requireActiveMembership\(await getMembership\(context\.OPENID\)\)/)
+  assert.match(source, /membership\.tenantId/)
+  assert.match(source, /db\.runTransaction/)
+  assert.doesNotMatch(source, /event\s*\.\s*tenantId/)
+  assert.doesNotMatch(source, /payload\s*\.\s*tenantId/)
+})
+
+test('小程序前端不直接访问云数据库，正式模式默认启用云仓储', () => {
+  const appSource = fs.readFileSync(path.join(root, 'app.js'), 'utf8')
+  assert.match(appSource, /dataAccessMode:\s*'cloud'/)
+  const serviceSources = fs.readdirSync(path.join(root, 'services'))
+    .filter(name => name.endsWith('.js'))
+    .map(name => fs.readFileSync(path.join(root, 'services', name), 'utf8'))
+    .join('\n')
+  assert.doesNotMatch(serviceSources, /wx\.cloud\.database\s*\(/)
+  assert.match(serviceSources, /wx\.cloud\.callFunction/)
+})
+
+test('云端领域服务重新计算商品合计与含运费总额，不采信前端total', () => {
+  const source = fs.readFileSync(path.join(root, 'cloudfunctions/ledger/services/ledger-repository.js'), 'utf8')
+  assert.match(source, /const itemsSubtotalCents = lines\.reduce/)
+  assert.match(source, /const freightCents = resolveFreightCents\(payload\)/)
+  assert.match(source, /const totalAmountCents = itemsSubtotalCents \+ freightCents/)
+  assert.doesNotMatch(source, /const totalAmountCents = payload\.totalAmountCents/)
+})
+
+test('确认结清是独立云端事务操作，不由前端或收款动作直接改状态', () => {
+  const cloudIndex = fs.readFileSync(path.join(root, 'cloudfunctions/ledger/index.js'), 'utf8')
+  const memberSecurity = fs.readFileSync(path.join(root, 'cloudfunctions/ledger/services/member-security.js'), 'utf8')
+  const cloudRepository = fs.readFileSync(path.join(root, 'services/cloud-repository.js'), 'utf8')
+  const domain = fs.readFileSync(path.join(root, 'cloudfunctions/ledger/services/ledger-repository.js'), 'utf8')
+  assert.match(cloudIndex, /db\.runTransaction/)
+  assert.match(memberSecurity, /'closeBillingPeriod'/)
+  assert.match(cloudRepository, /'closeBillingPeriod'/)
+  assert.match(domain, /function closeBillingPeriod/)
+  assert.match(domain, /canCloseBillingPeriod\(actor, resolvedPeriod\)/)
+  assert.match(domain, /CLOSE_BILLING_PERIOD/)
+  assert.doesNotMatch(domain, /if \(afterTotals\.outstandingCents === 0\) Object\.assign\(period, \{ status: 'settled'/)
+})

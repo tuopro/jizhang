@@ -1,0 +1,25 @@
+.ledger-head { padding: 34rpx; border-radius: 24rpx; background: #123b67; color: #fff; }
+.ledger-name-row,.shipment-line { display: flex; align-items: center; justify-content: space-between; }
+.ledger-name { font-size: 38rpx; font-weight: 700; }
+.edit-link { opacity: .8; font-size: 24rpx; }
+.period-status { margin-top: 12rpx; opacity: .82; font-size: 23rpx; }
+.owner-line{margin-top:12rpx;opacity:.78;font-size:23rpx}.owner-edit{margin-left:16rpx;color:#b9ddff;font-weight:650}.period-owner{margin-top:6rpx}.operator-note{margin-top:5rpx;color:#8995a0}
+.metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; margin-top: 34rpx; }
+.metric-label { opacity: .7; font-size: 22rpx; }
+.metric-value { margin-top: 8rpx; font-size: 31rpx; font-weight: 700; }
+.metric-value.received { color: #94e2bd; }.metric-value.outstanding { color: #ffd5d5; }
+.shipment-count { margin-top: 28rpx; opacity: .8; font-size: 24rpx; }
+.period-breakdown { margin-top: 8rpx; opacity: .72; font-size: 22rpx; }
+.action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18rpx; margin-top: 24rpx; }
+.action-grid button { margin: 0; }
+.action-button { display:flex;align-items:center;justify-content:center;min-height:86rpx;border:1rpx solid #d8e0e7;border-radius:16rpx;background:#fff;color:#123b67;font-size:28rpx;font-weight:600; }
+.settle-button{grid-column:1/-1;display:flex;align-items:center;justify-content:center;min-height:86rpx;margin:0;border:1rpx solid #21865a;border-radius:16rpx;background:#eaf7f0;color:#176b47;font-size:28rpx;font-weight:700}
+.compact-card { padding-top: 4rpx; padding-bottom: 4rpx; }
+.shipment-item { padding: 24rpx 0; border-bottom: 1rpx solid #edf0f3; }.shipment-item:last-child{border-bottom:0}
+.shipment-summary { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.shipment-amount-breakdown { margin-top: 8rpx; color:#536b80; }
+.settlement-mask{position:fixed;z-index:1000;inset:0;display:flex;align-items:center;justify-content:center;padding:40rpx;background:rgba(12,28,44,.5)}
+.settlement-dialog{width:100%;max-width:640rpx;padding:38rpx;border-radius:24rpx;background:#fff;box-sizing:border-box}
+.settlement-title{color:#20364c;font-size:34rpx;font-weight:700;text-align:center}.settlement-content{margin-top:24rpx;color:#5f6f7e;font-size:27rpx;line-height:1.7}
+.settlement-actions{display:grid;grid-template-columns:1fr 1fr;gap:18rpx;margin-top:34rpx}.settlement-actions button{margin:0;font-size:26rpx}.dialog-secondary{background:#f2f4f6;color:#526271}.dialog-primary{background:#21865a;color:#fff}
+.danger-zone{margin-top:48rpx}.danger-divider{height:1rpx;background:#dfe5ea}.delete-client-button{margin-top:24rpx;border:1rpx solid #e4b3b3;border-radius:14rpx;background:#fff;color:#b43a3a;font-size:27rpx}.delete-mask{position:fixed;z-index:1100;inset:0;display:flex;align-items:center;justify-content:center;padding:32rpx;background:rgba(12,28,44,.58)}.delete-dialog{box-sizing:border-box;width:100%;max-width:650rpx;max-height:90vh;padding:36rpx;border-radius:24rpx;background:#fff;overflow-y:auto}.delete-title{color:#b52f2f;font-size:36rpx;font-weight:750;text-align:center}.delete-client-name{margin-top:12rpx;color:#203247;font-size:32rpx;font-weight:700;text-align:center}.delete-warning{margin-top:26rpx;color:#5b6875;font-size:25rpx;line-height:1.6}.delete-stats{margin-top:18rpx;padding:10rpx 22rpx;border-radius:14rpx;background:#f6f7f8}.delete-stats view{display:flex;justify-content:space-between;padding:13rpx 0;color:#445565;font-size:25rpx}.delete-alert{margin-top:18rpx;padding:18rpx;border-radius:12rpx;background:#fff4df;color:#985b00;font-size:24rpx;line-height:1.55}.delete-alert.strong{background:#fff0f0;color:#b52f2f;font-weight:650}.irreversible{margin-top:18rpx;color:#b52f2f;font-size:26rpx;font-weight:700;text-align:center}.delete-actions{display:grid;grid-template-columns:1fr 1fr;gap:16rpx;margin-top:28rpx}.delete-actions button{margin:0;font-size:26rpx}.delete-final-button{background:#c43d3d;color:#fff}.delete-final-button[disabled]{background:#d8c6c6;color:#f7eeee}

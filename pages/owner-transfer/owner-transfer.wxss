@@ -1,0 +1,1 @@
+.owner-title{color:#203247;font-size:32rpx;font-weight:700}.current-owner{margin:14rpx 0 20rpx;color:#536b80;font-size:27rpx}.owner-help{margin-top:16rpx;color:#7b8996;font-size:23rpx;line-height:1.6}.owner-actions{display:grid;grid-template-columns:1fr 1fr;gap:16rpx;margin-top:26rpx}.owner-actions button{margin:0;font-size:27rpx}.period-button{margin-top:26rpx}

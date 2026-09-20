@@ -1,0 +1,354 @@
+<view class="page quick-page">
+  <view wx:if="{{editing}}" class="editing-banner">正在修正已入账记录，保存后会保留修改前后快照和修正原因。</view>
+
+  <view class="card basic-card">
+    <view class="field-row">
+      <text class="field-label">客户</text>
+      <picker
+        class="field-picker"
+        mode="selector"
+        range="{{clientNames}}"
+        value="{{selectedClientIndex}}"
+        disabled="{{editing}}"
+        bindchange="onClientChange"
+      >
+        <view class="picker-value">{{clientNames[selectedClientIndex] || '请选择客户'}} ›</view>
+      </picker>
+    </view>
+    <view class="field-row date-row">
+      <text class="field-label">发货日期</text>
+      <picker mode="date" value="{{shipmentDate}}" bindchange="onDateChange">
+        <view class="picker-value">{{shipmentDate}} ›</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="card paste-card">
+    <view class="paste-heading">
+      <view>
+        <view class="card-title">粘贴发货内容</view>
+        <view class="card-subtitle">规则识别，不使用 AI</view>
+      </view>
+      <text wx:if="{{!editing}}" class="sample-link" bindtap="loadAcceptanceSample">填入验收示例</text>
+    </view>
+    <textarea
+      class="order-input"
+      value="{{orderText}}"
+      bindinput="onTextInput"
+      maxlength="-1"
+      placeholder="粘贴微信里的发货文字，例如：40×40开口 100米"
+    />
+    <button class="primary-button" bindtap="parseOrder">智能整理</button>
+  </view>
+
+  <view wx:if="{{hasParsed && rows.length === 0}}" class="card blocking-card">
+    没有识别到带有效数量的产品内容，请检查原文。
+  </view>
+
+  <view wx:if="{{rows.length > 0}}" class="result-summary">
+    <view class="result-title">请逐项确认（{{rows.length}}项）</view>
+    <view wx:if="{{missingCount > 0}}" class="missing-banner">
+      发现 {{missingCount}} 个商品缺少价格，请补充后再入账。
+    </view>
+    <view wx:if="{{attentionCount > missingCount}}" class="missing-banner">
+      还有商品需确认产品或单位换算，系统不会自动猜测。
+    </view>
+  </view>
+
+  <view wx:for="{{rows}}" wx:key="rowId" class="card item-card">
+    <view class="item-head">
+      <text class="item-number">第 {{index + 1}} 项</text>
+      <text class="remove-link" data-index="{{index}}" bindtap="removeRow">移除此项</text>
+    </view>
+
+    <view class="source-text">原文：{{item.sourceText}}</view>
+
+    <view class="edit-label">产品</view>
+    <view
+      class="product-picker {{item.needsProductConfirmation ? 'picker-warning' : ''}}"
+      data-index="{{index}}"
+      bindtap="openProductSelector"
+    >
+      <view class="product-picker-copy">
+        <view>{{item.productLabel}}</view>
+        <view wx:if="{{item.specialLengthText}}" class="special-length-badge">{{item.specialLengthText}}</view>
+      </view>
+      <text class="choose-product-text">选择产品 ›</text>
+    </view>
+
+    <button
+      wx:if="{{item.canCreateCustomProduct}}"
+      class="custom-product-button"
+      data-index="{{index}}"
+      bindtap="createCustomProduct"
+    >
+      + 新建自定义规格
+    </button>
+
+    <view wx:for="{{item.issues}}" wx:for-item="issue" wx:key="*this" class="parse-note">
+      · {{issue}}
+    </view>
+
+    <view class="quantity-price-grid">
+      <view class="grid-field quantity-field">
+        <view class="edit-label">订单数量</view>
+        <input
+          class="edit-input"
+          type="digit"
+          value="{{item.quantityText}}"
+          data-index="{{index}}"
+          bindinput="onQuantityInput"
+          placeholder="请输入"
+        />
+      </view>
+      <view class="grid-field unit-field">
+        <view class="edit-label">数量单位</view>
+        <picker
+          mode="selector"
+          range="{{unitOptions}}"
+          value="{{item.unitIndex}}"
+          data-index="{{index}}"
+          bindchange="onUnitChange"
+        >
+          <view class="edit-input picker-input">{{item.unit}} ›</view>
+        </picker>
+      </view>
+      <view class="grid-field price-value-field">
+        <view class="edit-label">单价</view>
+        <view class="price-input-wrap">
+          <text class="currency-prefix">¥</text>
+          <input
+            class="edit-input price-input"
+            type="digit"
+            value="{{item.unitPriceYuan}}"
+            data-index="{{index}}"
+            bindinput="onPriceInput"
+            placeholder="必填"
+          />
+        </view>
+      </view>
+      <view class="grid-field pricing-unit-field">
+        <view class="edit-label">计价单位</view>
+        <picker
+          mode="selector"
+          range="{{unitOptions}}"
+          value="{{item.pricingUnitIndex}}"
+          data-index="{{index}}"
+          bindchange="onPricingUnitChange"
+        >
+          <view class="edit-input picker-input">元 / {{item.pricingUnit}} ›</view>
+        </picker>
+      </view>
+    </view>
+
+    <view wx:if="{{item.unitMismatch}}" class="conversion-card">
+      <view class="conversion-warning">
+        本次数量是 {{item.quantityText}}{{item.unit}}，客户价格按 {{item.pricingUnit}} 计价，不能自动换算。
+      </view>
+      <view class="edit-label">1{{item.unit}} = 多少{{item.pricingUnit}}</view>
+      <input
+        class="edit-input"
+        type="digit"
+        value="{{item.conversionRateText}}"
+        data-index="{{index}}"
+        bindinput="onConversionInput"
+        placeholder="请人工填写换算数量"
+      />
+      <view wx:if="{{item.suggestedConversionRate}}" class="length-conversion-suggestion">
+        <view>产品已保存单根长度 {{item.suggestedConversionRate}} 米，可作为本次换算依据。</view>
+        <button class="use-length-button" data-index="{{index}}" bindtap="confirmSuggestedConversion">
+          确认按 {{item.suggestedConversionRate}} 米/根换算
+        </button>
+      </view>
+      <view class="conversion-tip">也可将上方“计价单位”改为 {{item.unit}}，再填本次的元/{{item.unit}} 单价。</view>
+    </view>
+
+    <view class="price-status {{item.priceStateClass}}">{{item.priceStateText}}</view>
+    <view wx:if="{{item.priceChanged}}" class="price-change-warning">
+      本次价格或计价单位与该客户保存价 {{item.savedPriceText}} 不同。
+    </view>
+
+    <view wx:if="{{item.calculationText}}" class="calculation-note">{{item.calculationText}}</view>
+
+    <view wx:if="{{item.unitPriceYuan}}" class="save-price-row">
+      <view>
+        <view class="save-title">
+          {{item.savedPriceCents === null ? '保存为该客户以后默认价格' : '更新该客户以后默认价格'}}
+        </view>
+        <view class="save-note">关闭时仅本次使用，不影响历史账目</view>
+      </view>
+      <switch
+        color="#123B67"
+        checked="{{item.saveAsDefault}}"
+        data-index="{{index}}"
+        bindchange="onSaveDefaultChange"
+      />
+    </view>
+
+    <view class="line-total">
+      <text>本项金额</text>
+      <text class="line-total-value">{{item.lineAmountText}}</text>
+    </view>
+  </view>
+
+  <view wx:if="{{hasParsed}}" class="card metadata-card">
+    <view class="metadata-row">
+      <text class="metadata-label">物流</text>
+      <text>{{logisticsText}}</text>
+    </view>
+    <view class="freight-field">
+      <view>
+        <view class="metadata-label">运费金额</view>
+        <view class="freight-hint">与物流信息分开保存，留空按0元处理</view>
+      </view>
+      <view class="freight-input-wrap">
+        <text class="currency-prefix freight-prefix">¥</text>
+        <input
+          class="edit-input freight-input"
+          type="digit"
+          value="{{freightYuan}}"
+          bindinput="onFreightInput"
+          placeholder="0.00"
+        />
+        <text class="freight-unit">元</text>
+      </view>
+    </view>
+    <view wx:if="{{freightError}}" class="freight-error">{{freightError}}</view>
+    <view wx:if="{{unmatchedLines.length > 0}}" class="unmatched-block">
+      <view class="metadata-label">以下文字未作为商品入账</view>
+      <view wx:for="{{unmatchedLines}}" wx:key="*this" class="unmatched-line">{{item}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{rows.length > 0}}" class="checkout-card">
+    <view wx:if="{{editing}}" class="edit-reason-block">
+      <view class="edit-label">修正原因（必填）</view>
+      <input class="edit-input" value="{{editReason}}" bindinput="onEditReasonInput" placeholder="例如：原数量录错" />
+    </view>
+    <view class="checkout-breakdown">
+      <view class="checkout-row"><text>商品合计</text><text>{{itemsSubtotalText}}</text></view>
+      <view class="checkout-row"><text>运费</text><text>{{freightText}}</text></view>
+      <view class="checkout-divider"></view>
+      <view class="checkout-total-row"><text>本次合计</text><text class="checkout-amount">{{totalText}}</text></view>
+    </view>
+    <view wx:if="{{!canPost}}" class="checkout-warning">请补齐并确认全部商品、数量、单价和运费</view>
+    <button
+      class="primary-button confirm-button"
+      disabled="{{!canPost}}"
+      loading="{{submitting}}"
+      bindtap="confirmPost"
+    >
+      {{editing ? '保存修正' : '确认入账'}}
+    </button>
+  </view>
+
+  <view wx:if="{{selectorOpen}}" class="selector-mask" bindtap="closeProductSelector">
+    <view class="selector-panel" catchtap="stopPropagation">
+      <view class="selector-header">
+        <view>
+          <view class="selector-title">选择产品</view>
+          <view class="selector-subtitle">自动识别只是建议，当前商品可人工覆盖</view>
+        </view>
+        <text class="selector-close" bindtap="closeProductSelector">关闭</text>
+      </view>
+
+      <block wx:if="{{!showCustomForm}}">
+        <view class="selector-tabs">
+          <view
+            class="selector-tab {{selectorTab === 'standard' ? 'active-tab' : ''}}"
+            data-tab="standard"
+            bindtap="onSelectorTabChange"
+          >标准规格</view>
+          <view
+            class="selector-tab {{selectorTab === 'custom' ? 'active-tab' : ''}}"
+            data-tab="custom"
+            bindtap="onSelectorTabChange"
+          >自定义规格</view>
+        </view>
+        <input
+          class="selector-search"
+          value="{{selectorSearch}}"
+          bindinput="onProductSearchInput"
+          placeholder="搜索规格、颜色或产品名称"
+        />
+        <scroll-view class="product-list" scroll-y="true">
+          <view
+            wx:for="{{filteredProductOptions}}"
+            wx:key="id"
+            class="product-option"
+            data-product-id="{{item.id}}"
+            bindtap="selectProduct"
+          >
+            <text>{{item.label}}</text>
+            <text class="product-option-arrow">使用 ›</text>
+          </view>
+          <view wx:if="{{filteredProductOptions.length === 0}}" class="empty-products">
+            没有找到产品，可修改搜索词或新建自定义规格。
+          </view>
+        </scroll-view>
+        <button class="custom-product-button selector-create-button" bindtap="openCustomProductForm">
+          + 新建自定义规格
+        </button>
+      </block>
+
+      <scroll-view wx:else class="custom-form" scroll-y="true">
+        <view class="form-heading">新建自定义规格</view>
+        <view class="form-tip">名称可完全自由修改，保存后加入当前企业产品库并用于本单。</view>
+
+        <view class="edit-label form-label">自定义产品名称</view>
+        <input
+          class="edit-input"
+          value="{{customForm.name}}"
+          data-field="name"
+          bindinput="onCustomFormInput"
+          placeholder="必填，可按你的习惯命名"
+        />
+
+        <view class="custom-form-grid">
+          <view>
+            <view class="edit-label form-label">基础规格</view>
+            <view class="readonly-field">{{customForm.baseSpecText}}</view>
+          </view>
+          <view>
+            <view class="edit-label form-label">单根长度（米）</view>
+            <input
+              class="edit-input"
+              type="digit"
+              value="{{customForm.unitLengthText}}"
+              data-field="unitLengthText"
+              bindinput="onCustomFormInput"
+              placeholder="可留空"
+            />
+          </view>
+          <view>
+            <view class="edit-label form-label">颜色</view>
+            <picker mode="selector" range="{{colorOptions}}" value="{{customForm.colorIndex}}" bindchange="onCustomColorChange">
+              <view class="readonly-field">{{colorOptions[customForm.colorIndex]}} ›</view>
+            </picker>
+          </view>
+          <view>
+            <view class="edit-label form-label">齿型</view>
+            <picker mode="selector" range="{{toothOptions}}" value="{{customForm.toothIndex}}" bindchange="onCustomToothChange">
+              <view class="readonly-field">{{toothOptions[customForm.toothIndex]}} ›</view>
+            </picker>
+          </view>
+        </view>
+
+        <view class="edit-label form-label">识别别名（可选）</view>
+        <input
+          class="edit-input"
+          value="{{customForm.aliasesText}}"
+          data-field="aliasesText"
+          bindinput="onCustomFormInput"
+          placeholder="多个别名用分号隔开"
+        />
+        <view class="form-tip">例如：白色4040 1.2米；4040白1.2。别名只用于识别，不改变产品名称。</view>
+
+        <view class="custom-form-actions">
+          <button class="secondary-form-button" bindtap="closeProductSelector">取消</button>
+          <button class="primary-button save-use-button" bindtap="saveCustomProduct">保存并使用</button>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>

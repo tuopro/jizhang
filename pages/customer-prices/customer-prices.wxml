@@ -1,0 +1,28 @@
+<view class="page" wx:if="{{client}}">
+  <view class="price-head"><view class="row-title">{{client.name}}</view><view class="row-note">价格始终属于“客户 + 产品”，没有通用价格。</view></view>
+  <input class="search-box" value="{{keyword}}" bindinput="onSearch" placeholder="搜索已设置价格的产品" />
+  <view class="section-head"><text class="section-title">该客户价格表（{{prices.length}}）</text></view>
+  <view wx:if="{{prices.length === 0}}" class="card empty-state">尚未设置客户专属价格。也可在首次记账时补价并保存。</view>
+  <view wx:else class="card compact-card">
+    <view wx:for="{{prices}}" wx:key="id" class="list-row" data-id="{{item.id}}" bindtap="openEdit">
+      <view class="price-copy"><view class="row-title">{{item.productLabel}}</view><view class="row-note">点击修改</view></view><view class="price-value">{{item.priceText}} ›</view>
+    </view>
+  </view>
+  <view class="fixed-action-space"></view><button class="primary-button fixed-action" bindtap="openAdd">+ 新增价格</button>
+
+  <view wx:if="{{formOpen}}" class="mask" bindtap="closeForm">
+    <view class="sheet" catchtap="stop">
+      <view class="sheet-head"><text class="section-title">设置客户价格</text><text bindtap="closeForm">关闭</text></view>
+      <view wx:if="{{selectedProductId}}" class="selected-product">{{selectedProductLabel}}</view>
+      <block wx:else>
+        <input class="search-box" value="{{productSearch}}" bindinput="onProductSearch" placeholder="搜索要定价的产品" />
+        <scroll-view class="product-results" scroll-y="true">
+          <view wx:for="{{filteredProducts}}" wx:key="id" class="product-option" data-id="{{item.id}}" bindtap="selectProduct">{{item.label}} ›</view>
+        </scroll-view>
+      </block>
+      <text class="form-label">单价 *</text><input class="form-input" type="digit" value="{{unitPriceYuan}}" bindinput="onPrice" placeholder="人民币元" />
+      <text class="form-label">计价单位 *</text><picker mode="selector" range="{{units}}" value="{{unitIndex}}" bindchange="onUnit"><view class="picker-box">元 / {{units[unitIndex]}} ›</view></picker>
+      <button class="primary-button save-price" bindtap="save">保存客户价格</button>
+    </view>
+  </view>
+</view>

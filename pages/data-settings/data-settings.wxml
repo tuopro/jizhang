@@ -1,0 +1,5 @@
+<view class="page"><view class="page-title">数据相关设置</view>
+  <view class="card"><view class="status-row"><text>当前数据模式</text><text class="{{cloud ? 'amount-success' : 'warning-text'}}">{{cloud ? '微信云数据库' : '本机演示数据'}}</text></view><view class="status-note">正式账本通过微信身份和企业成员关系隔离；所有财务写入由云函数校验，不接受前端指定 tenantId。</view></view>
+  <view class="card"><view class="row-title">备份与恢复</view><view class="status-note">上线前需在云开发控制台配置数据库定时备份，并完成一次恢复演练。小程序内不提供“删除全部数据”按钮。</view></view>
+  <view class="card"><view class="row-title">数据导出</view><view class="status-note">当前已支持对账单内预览；长图、PDF 和 Excel 导出尚未开放，不阻塞记账、收款和历史查询。</view></view>
+</view>

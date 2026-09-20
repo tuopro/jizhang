@@ -1,0 +1,16 @@
+<view class="page join-page">
+  <view wx:if="{{loading}}" class="card empty-state">正在校验企业邀请…</view>
+  <view wx:elif="{{error}}" class="card error-card">
+    <view class="error-title">无法使用此邀请</view>
+    <view class="error-text">{{error}}</view>
+  </view>
+  <view wx:else class="join-card">
+    <view class="join-kicker">加入企业</view>
+    <view class="enterprise-title">{{enterpriseName}}</view>
+    <view class="join-copy">邀请你加入企业账本。加入后可查看企业内全部客户、当前账期和历史记录。</view>
+    <text class="form-label">你的企业内显示姓名</text>
+    <input class="form-input" value="{{displayName}}" bindinput="onNameInput" maxlength="20" placeholder="例如：王小明" />
+    <view class="name-tip">业务记录优先显示这个姓名，不依赖微信昵称。</view>
+    <button class="primary-button join-button" bindtap="join" loading="{{joining}}" disabled="{{joining}}">加入企业</button>
+  </view>
+</view>

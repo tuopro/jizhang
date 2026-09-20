@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="profile-card"><view class="enterprise-avatar">账</view><view><view class="enterprise-name">{{enterpriseName}}</view><view class="profile-meta">{{displayName}} · {{roleText}} · {{modeText}}</view></view></view>
+  <view class="menu-card">
+    <view wx:if="{{isAdmin}}" class="menu-row" data-url="/pages/enterprise/enterprise" bindtap="go"><text>企业信息</text><text>›</text></view>
+    <view class="menu-row" data-url="/pages/members/members" bindtap="go"><text>企业成员</text><text>›</text></view>
+    <view wx:if="{{isAdmin}}" class="menu-row" data-url="/pages/audit-logs/audit-logs" bindtap="go"><text>操作记录</text><text>›</text></view>
+    <view wx:if="{{isAdmin}}" class="menu-row" data-url="/pages/products/products" bindtap="go"><text>产品管理</text><text>›</text></view>
+    <view class="menu-row" data-url="/pages/clients/clients" bindtap="go"><text>客户管理</text><text>›</text></view>
+    <view class="menu-row" data-url="/pages/help/help" bindtap="go"><text>使用说明</text><text>›</text></view>
+    <view wx:if="{{isAdmin}}" class="menu-row" data-url="/pages/data-settings/data-settings" bindtap="go"><text>数据相关设置</text><text>›</text></view>
+  </view>
+  <view wx:if="{{showDeveloperTools}}" class="menu-card dev-card"><view class="menu-row" data-url="/pages/parser-test/parser-test" bindtap="go"><text>开发测试：规则识别</text><text>›</text></view></view>
+  <button class="logout-button" bindtap="logout">退出登录</button>
+</view>

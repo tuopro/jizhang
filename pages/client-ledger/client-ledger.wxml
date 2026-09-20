@@ -1,0 +1,82 @@
+<view class="page" wx:if="{{client}}">
+  <view class="ledger-head">
+    <view class="ledger-name-row"><view class="ledger-name">{{client.name}}</view><text wx:if="{{isAdmin}}" class="edit-link" bindtap="editClient">修改资料</text></view>
+    <view class="owner-line">客户负责人：{{clientOwnerText}}<text wx:if="{{isAdmin}}" class="owner-edit" bindtap="manageOwners">调整</text></view>
+    <view class="period-status">{{periodTitle}}<text wx:if="{{periodRange}}"> · {{periodRange}}</text></view>
+    <view wx:if="{{periodId}}" class="owner-line period-owner">本期负责人：{{periodOwnerText}}</view>
+    <view class="metrics">
+      <view><view class="metric-label">本期货款</view><view class="metric-value">{{shipmentTotal}}</view></view>
+      <view><view class="metric-label">已收款</view><view class="metric-value received">{{received}}</view></view>
+      <view><view class="metric-label">剩余应收</view><view class="metric-value outstanding">{{outstanding}}</view></view>
+    </view>
+    <view class="shipment-count">本期发货 {{shipmentCount}} 次</view>
+    <view class="period-breakdown">商品合计 {{itemsSubtotal}} · 运费 {{freightTotal}}</view>
+  </view>
+
+  <view class="action-grid">
+    <button class="primary-button" bindtap="quickEntry">记一笔</button>
+    <button class="action-button" bindtap="payment" disabled="{{!canReceivePayment}}">收款</button>
+    <button class="action-button" bindtap="statement">生成对账单</button>
+    <button wx:if="{{isAdmin}}" class="action-button" bindtap="prices">该客户价格表</button>
+    <button wx:if="{{canSettle}}" class="settle-button" bindtap="openSettlementConfirm">结清本期</button>
+  </view>
+
+  <view class="section-head"><text class="section-title">本期发货</text></view>
+  <view wx:if="{{shipments.length === 0}}" class="card empty-state">本期还没有发货记录，点击“记一笔”开始。</view>
+  <view wx:else class="card compact-card">
+    <view wx:for="{{shipments}}" wx:key="id" class="shipment-item" data-id="{{item.id}}" bindtap="openShipment">
+      <view class="shipment-line"><text class="row-title">{{item.date}}</text><text class="amount-danger">{{item.amount}} ›</text></view>
+      <view class="row-note shipment-summary">{{item.summary}}</view>
+      <view class="row-note shipment-amount-breakdown">商品 {{item.itemsSubtotal}} · 运费 {{item.freight}}</view>
+      <view class="row-note operator-note">录入人：{{item.createdByText}}</view>
+    </view>
+  </view>
+
+  <view class="danger-zone">
+    <view class="danger-divider"></view>
+    <button class="delete-client-button" bindtap="openDelete">删除客户</button>
+  </view>
+
+  <view class="section-head"><text class="section-title">本期收款</text></view>
+  <view wx:if="{{payments.length === 0}}" class="card empty-state">还没有收款记录</view>
+  <view wx:else class="card compact-card">
+    <view wx:for="{{payments}}" wx:key="id" class="list-row">
+      <view><view class="row-title">{{item.date}} · {{item.method}}</view><view class="row-note">{{item.note || '无备注'}}</view><view class="row-note operator-note">登记人：{{item.createdByText}}</view></view>
+      <view class="amount-success">+ {{item.amount}}</view>
+    </view>
+  </view>
+
+  <view wx:if="{{showSettlementConfirm}}" class="settlement-mask">
+    <view class="settlement-dialog">
+      <view class="settlement-title">本期已全部收款</view>
+      <view class="settlement-content">是否结清本期并生成历史账单？暂不结清时，本期仍保持进行中，后续发货继续记在本期。</view>
+      <view class="settlement-actions">
+        <button class="dialog-secondary" bindtap="deferSettlement" disabled="{{closing}}">暂不结清</button>
+        <button class="dialog-primary" bindtap="confirmSettlement" loading="{{closing}}" disabled="{{closing}}">确认结清本期</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showDeleteConfirm}}" class="delete-mask">
+    <view class="delete-dialog">
+      <view class="delete-title">彻底删除客户</view>
+      <view class="delete-client-name">{{deletePreview.clientName}}</view>
+      <view class="delete-warning">该客户已有正式账务记录，以下数据将永久删除：</view>
+      <view class="delete-stats">
+        <view><text>发货记录</text><text>{{deletePreview.shipmentCount}} 笔</text></view>
+        <view><text>收款记录</text><text>{{deletePreview.paymentCount}} 笔</text></view>
+        <view><text>账期</text><text>{{deletePreview.billingPeriodCount}} 个</text></view>
+        <view><text>客户价格</text><text>{{deletePreview.customerPriceCount}} 条</text></view>
+      </view>
+      <view wx:if="{{deletePreview.openPeriodCount > 0}}" class="delete-alert">仍有 {{deletePreview.openPeriodCount}} 个进行中账期，这些未结账数据不会自动结清。</view>
+      <view wx:if="{{deletePreview.outstandingAmountCents > 0}}" class="delete-alert strong">仍有未收款 {{deletePreview.outstandingText}}，删除后欠款记录也会永久消失。</view>
+      <view class="delete irreversible">此操作无法恢复。</view>
+      <text class="form-label">请输入完整客户名称确认</text>
+      <input class="form-input" value="{{deleteConfirmName}}" bindinput="onDeleteNameInput" placeholder="{{deletePreview.clientName}}" />
+      <view class="delete-actions">
+        <button class="dialog-secondary" bindtap="closeDeleteConfirm" disabled="{{deleting}}">取消</button>
+        <button class="delete-final-button" bindtap="confirmStrongDelete" loading="{{deleting}}" disabled="{{!deleteNameMatches || deleting}}">彻底删除</button>
+      </view>
+    </view>
+  </view>
+</view>

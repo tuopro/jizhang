@@ -1,0 +1,2 @@
+/* 使用全局表单样式 */
+.form-hint{margin:-10rpx 0 24rpx;color:#7a8793;font-size:23rpx;line-height:1.6}

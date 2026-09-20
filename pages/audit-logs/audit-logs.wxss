@@ -1,0 +1,1 @@
+.log-list{padding-top:4rpx;padding-bottom:4rpx}.log-row{padding:24rpx 0;border-bottom:1rpx solid #edf0f3}.log-row:last-child{border-bottom:0}

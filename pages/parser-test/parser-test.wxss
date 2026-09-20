@@ -1,0 +1,96 @@
+.page-title {
+  margin-bottom: 10rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+}
+
+.page-tip {
+  margin-bottom: 22rpx;
+  color: #6f7d89;
+  font-size: 24rpx;
+  line-height: 1.65;
+}
+
+.order-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 300rpx;
+  margin-bottom: 24rpx;
+  padding: 22rpx;
+  border: 2rpx solid #cfd8e1;
+  border-radius: 14rpx;
+  background: #fbfcfd;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.result-heading {
+  margin: 32rpx 4rpx 18rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.result-topline {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.result-index {
+  color: #6f7d89;
+}
+
+.product-label {
+  color: #1c3450;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.quantity {
+  margin: 10rpx 0;
+  font-size: 32rpx;
+}
+
+.source {
+  margin-top: 14rpx;
+  padding-top: 14rpx;
+  border-top: 1rpx solid #edf0f3;
+  color: #778592;
+  font-size: 23rpx;
+}
+
+.issue {
+  margin-top: 10rpx;
+  color: #b5620a;
+  font-size: 23rpx;
+  line-height: 1.5;
+}
+
+.empty-result {
+  color: #c43d3d;
+  text-align: center;
+}
+
+.metadata-row {
+  display: flex;
+  gap: 24rpx;
+}
+
+.metadata-label {
+  color: #50606f;
+  font-weight: 700;
+}
+
+.unmatched-block {
+  margin-top: 22rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid #edf0f3;
+}
+
+.unmatched-line {
+  margin-top: 10rpx;
+  color: #75828e;
+  font-size: 24rpx;
+}

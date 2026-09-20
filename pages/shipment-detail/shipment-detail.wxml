@@ -1,0 +1,32 @@
+<view class="page" wx:if="{{shipment}}">
+  <view class="detail-head">
+    <view class="row-title">{{shipment.clientNameSnapshot}}</view>
+    <view class="detail-date">{{shipment.shipmentDate}}</view>
+    <view class="detail-date">录入人：{{shipment.createdByText}}</view>
+    <view class="detail-total">{{total}}</view>
+  </view>
+  <view class="section-head"><text class="section-title">商品明细</text></view>
+  <view class="card line-card" wx:for="{{lines}}" wx:key="id">
+    <view class="line-title">{{item.product}}</view>
+    <view class="line-row"><text>发货数量</text><text>{{item.quantity}}</text></view>
+    <view wx:if="{{item.conversion}}" class="line-row"><text>人工换算</text><text>{{item.conversion}}</text></view>
+    <view class="line-row"><text>成交单价</text><text>{{item.price}}</text></view>
+    <view class="line-row amount-row"><text>金额</text><text>{{item.amount}}</text></view>
+  </view>
+  <view class="card amount-summary-card">
+    <view class="summary-row"><text>商品合计</text><text>{{itemsSubtotal}}</text></view>
+    <view class="summary-row"><text>运费</text><text>{{freight}}</text></view>
+    <view class="summary-divider"></view>
+    <view class="summary-row summary-total"><text>本次合计</text><text>{{total}}</text></view>
+  </view>
+  <view class="card meta-card">
+    <view>物流：{{shipment.logistics.provider || shipment.logistics.raw || '无'}}</view>
+    <view>备注：{{shipment.note || '无'}}</view>
+  </view>
+  <button wx:if="{{canEdit}}" class="secondary-button" bindtap="edit">修正这笔账目</button>
+  <view wx:else class="settled-tip">该账期已结清，历史账单保持只读。</view>
+  <view class="section-head"><text class="section-title">修改记录</text></view>
+  <view class="card compact-card">
+    <view wx:for="{{audits}}" wx:key="id" class="list-row"><view><view class="row-title">{{item.name}}</view><view class="row-note">{{item.time}} · {{item.operator}} {{item.reason ? '· ' + item.reason : ''}}</view></view></view>
+  </view>
+</view>

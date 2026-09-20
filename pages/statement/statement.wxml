@@ -1,0 +1,40 @@
+<view class="page statement-page" wx:if="{{client}}">
+  <view class="statement-paper">
+    <view class="statement-title">客户对账单</view>
+    <view class="statement-client">{{client.name}}</view>
+    <view class="statement-period">账期：{{periodTitle}}</view>
+    <view class="statement-period">对账周期：{{periodLabel}}</view>
+    <view class="statement-period">负责人：{{periodOwnerText}}</view>
+    <view class="status-chip {{isClosed ? 'settled' : ''}}">{{isClosed ? '已结清' : '进行中'}}</view>
+
+    <view class="statement-section">发货明细</view>
+    <view wx:if="{{shipments.length === 0}}" class="empty-state">当前周期暂无发货</view>
+    <view wx:for="{{shipments}}" wx:key="id" class="shipment-block">
+      <view class="shipment-header"><text>{{item.date}} · 录入人 {{item.createdByText}}</text><text>本次合计 {{item.total}}</text></view>
+      <view wx:for="{{item.lines}}" wx:for-item="line" wx:key="id" class="statement-line">
+        <view class="line-product">{{line.product}}</view>
+        <view class="line-meta"><text>{{line.quantity}} × {{line.price}}</text><text>{{line.amount}}</text></view>
+      </view>
+      <view class="shipment-totals">
+        <view><text>商品小计</text><text>{{item.itemsSubtotal}}</text></view>
+        <view><text>运费</text><text>{{item.freight}}</text></view>
+        <view class="shipment-total-row"><text>本次合计</text><text>{{item.total}}</text></view>
+      </view>
+    </view>
+
+    <view class="statement-section">收款记录</view>
+    <view wx:if="{{payments.length === 0}}" class="empty-inline">暂无收款</view>
+    <view wx:for="{{payments}}" wx:key="id" class="payment-line">
+      <view><view>{{item.date}} · {{item.method}}</view><view class="row-note">登记人：{{item.createdByText}} · {{item.note || '无备注'}}</view></view><text class="amount-success">+ {{item.amount}}</text>
+    </view>
+
+    <view class="totals">
+      <view><text>商品合计</text><text>{{itemsSubtotal}}</text></view>
+      <view><text>运费合计</text><text>{{freightTotal}}</text></view>
+      <view><text>总货款</text><text>{{total}}</text></view>
+      <view><text>已收</text><text class="amount-success">{{received}}</text></view>
+      <view class="outstanding-total"><text>剩余应收</text><text class="amount-danger">{{outstanding}}</text></view>
+    </view>
+  </view>
+  <view class="export-note">第一版已完成小程序内预览。长图、PDF、Excel 将作为后续导出能力增加，不影响当前记账闭环。</view>
+</view>

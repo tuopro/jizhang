@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="tabs"><view class="tab {{tab === 'standard' ? 'active' : ''}}" data-tab="standard" bindtap="changeTab">标准规格</view><view class="tab {{tab === 'custom' ? 'active' : ''}}" data-tab="custom" bindtap="changeTab">自定义规格</view></view>
+  <input class="search-box" value="{{keyword}}" bindinput="onSearch" placeholder="搜索规格、颜色、齿型或名称" />
+  <view class="product-note">标准规格为只读事实库；自定义规格可新增、编辑或停用。修改不会回写历史账单。</view>
+  <view wx:if="{{products.length === 0}}" class="card empty-state">没有找到产品</view>
+  <view wx:else class="card compact-card">
+    <view wx:for="{{products}}" wx:key="id" class="list-row product-row" data-id="{{item.id}}" bindtap="edit">
+      <view><view class="row-title {{!item.active ? 'inactive' : ''}}">{{item.label}}</view><view class="row-note">{{item.isStandard ? '标准规格' : (item.active ? '自定义规格 · 使用中' : '自定义规格 · 已停用')}}</view></view>
+      <button class="mini-action" data-id="{{item.id}}" catchtap="toggle">{{item.active ? '停用' : '启用'}}</button>
+    </view>
+  </view>
+  <view wx:if="{{tab === 'custom'}}" class="fixed-action-space"></view>
+  <button wx:if="{{tab === 'custom'}}" class="primary-button fixed-action" bindtap="add">+ 新增自定义产品</button>
+</view>

@@ -1,0 +1,5 @@
+.summary-row{display:flex;justify-content:space-between;margin-top:20rpx;color:#657484}.summary-row.important{padding-top:20rpx;border-top:1rpx solid #e8edf1;color:#233649;font-size:30rpx}.label-action{display:flex;align-items:flex-end;justify-content:space-between}.fill-link{color:#2d6192;font-size:24rpx}
+.settlement-mask{position:fixed;z-index:1000;inset:0;display:flex;align-items:center;justify-content:center;padding:40rpx;background:rgba(12,28,44,.5)}
+.settlement-dialog{width:100%;max-width:640rpx;padding:38rpx;border-radius:24rpx;background:#fff;box-sizing:border-box}
+.settlement-title{color:#20364c;font-size:34rpx;font-weight:700;text-align:center}.settlement-content{margin-top:24rpx;color:#5f6f7e;font-size:27rpx;line-height:1.7}
+.settlement-actions{display:grid;grid-template-columns:1fr 1fr;gap:18rpx;margin-top:34rpx}.settlement-actions button{margin:0;font-size:26rpx}.dialog-secondary{background:#f2f4f6;color:#526271}.dialog-primary{background:#21865a;color:#fff}

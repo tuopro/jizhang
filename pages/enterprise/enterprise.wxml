@@ -1,0 +1,7 @@
+<view class="page"><view class="page-title">企业信息</view><view class="card">
+  <text class="form-label">企业名称 *</text><input class="form-input" value="{{name}}" data-field="name" bindinput="onInput" />
+  <text class="form-label">联系人</text><input class="form-input" value="{{contact}}" data-field="contact" bindinput="onInput" />
+  <text class="form-label">电话</text><input class="form-input" value="{{phone}}" data-field="phone" bindinput="onInput" />
+  <text class="form-label">地址</text><textarea class="form-textarea" value="{{address}}" data-field="address" bindinput="onInput" />
+  <text class="form-label">默认数量单位</text><picker mode="selector" range="{{units}}" value="{{unitIndex}}" bindchange="onUnit"><view class="picker-box">{{units[unitIndex]}} ›</view></picker>
+</view><button class="primary-button" bindtap="save">保存企业信息</button></view>

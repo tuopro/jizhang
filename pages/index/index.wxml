@@ -1,0 +1,40 @@
+<view class="page home-page">
+  <view class="home-brand">{{enterpriseName || '月结客户记账'}}</view>
+  <view class="hero-card">
+    <view class="hero-label">当前总应收</view>
+    <view class="hero-amount">{{totalOutstanding}}</view>
+    <view class="hero-meta">未结清客户 {{unsettledClientCount}} 个</view>
+  </view>
+
+  <button class="primary-button entry-button" bindtap="goToQuickEntry">+ 记一笔</button>
+
+  <view class="section-head">
+    <text class="section-title">未结客户</text>
+    <text class="section-link" bindtap="goToClients">查看全部 ›</text>
+  </view>
+  <view wx:if="{{owingClients.length === 0}}" class="card empty-state">当前没有未结账款</view>
+  <view wx:else class="card compact-card">
+    <view wx:for="{{owingClients}}" wx:key="id" class="list-row" data-id="{{item.id}}" bindtap="openClient">
+      <view><view class="row-title">{{item.name}}</view><view class="row-note">本期发货 {{item.shipmentCount}} 次</view></view>
+      <view class="amount-danger">{{item.outstanding}} ›</view>
+    </view>
+  </view>
+
+  <view class="section-head"><text class="section-title">最近记账</text></view>
+  <view wx:if="{{recentShipments.length === 0}}" class="card empty-state">还没有发货记录</view>
+  <view wx:else class="card compact-card">
+    <view wx:for="{{recentShipments}}" wx:key="id" class="list-row shipment-row" data-id="{{item.id}}" bindtap="openShipment">
+      <view class="shipment-copy"><view class="row-title">{{item.clientName}}</view><view class="row-note">{{item.shipmentDate}} · {{item.summary}}</view></view>
+      <view class="amount-danger">{{item.amount}} ›</view>
+    </view>
+  </view>
+
+  <view class="section-head"><text class="section-title">最近收款</text></view>
+  <view wx:if="{{recentPayments.length === 0}}" class="card empty-state">还没有收款记录</view>
+  <view wx:else class="card compact-card">
+    <view wx:for="{{recentPayments}}" wx:key="id" class="list-row">
+      <view><view class="row-title">{{item.clientName}}</view><view class="row-note">{{item.paymentDate}} · {{item.method}}</view></view>
+      <view class="amount-success">+ {{item.amount}}</view>
+    </view>
+  </view>
+</view>

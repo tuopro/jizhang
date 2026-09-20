@@ -1,0 +1,29 @@
+<view class="page" wx:if="{{client}}">
+  <view class="page-title">负责人管理</view>
+  <view wx:if="{{!isAdmin}}" class="card empty-state">只有管理员可以修改客户或账期负责人。</view>
+  <block wx:else>
+    <view class="card owner-card">
+      <view class="owner-title">客户负责人</view>
+      <view class="current-owner">当前：{{currentClientOwner}}</view>
+      <picker mode="selector" range="{{memberNames}}" value="{{clientOwnerIndex}}" bindchange="onClientOwnerChange">
+        <view class="picker-box">改为：{{memberNames[clientOwnerIndex] || '暂无有效成员'}} ›</view>
+      </picker>
+      <view class="owner-help">客户负责人用于长期业务归属，不影响企业成员查看全部账目。</view>
+      <view class="owner-actions">
+        <button class="secondary-button" bindtap="transferClientOnly" disabled="{{members.length === 0}}">只改客户</button>
+        <button class="primary-button" bindtap="transferClientAndPeriod" disabled="{{members.length === 0}}">一起转移</button>
+      </view>
+    </view>
+
+    <view wx:if="{{period}}" class="card owner-card">
+      <view class="owner-title">当前第{{period.sequenceNo}}期负责人</view>
+      <view class="current-owner">当前：{{currentPeriodOwner}}</view>
+      <picker mode="selector" range="{{memberNames}}" value="{{periodOwnerIndex}}" bindchange="onPeriodOwnerChange">
+        <view class="picker-box">改为：{{memberNames[periodOwnerIndex] || '暂无有效成员'}} ›</view>
+      </picker>
+      <view class="owner-help">可单独调整本期负责人。下一期仍会继承届时的客户负责人。</view>
+      <button class="secondary-button period-button" bindtap="transferPeriod" disabled="{{members.length === 0}}">只改本期负责人</button>
+    </view>
+    <view wx:else class="card empty-state">当前没有进行中账期。下次首次发货时，会自动继承客户负责人。</view>
+  </block>
+</view>

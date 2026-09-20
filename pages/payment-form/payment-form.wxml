@@ -1,0 +1,27 @@
+<view class="page" wx:if="{{client}}">
+  <view class="page-title">记录收款</view>
+  <view class="card payment-summary">
+    <view class="row-title">{{client.name}}</view>
+    <view class="summary-row"><text>本期货款</text><text>{{shipmentTotal}}</text></view>
+    <view class="summary-row"><text>已收</text><text class="amount-success">{{received}}</text></view>
+    <view class="summary-row important"><text>剩余应收</text><text class="amount-danger">{{outstanding}}</text></view>
+  </view>
+  <view class="card">
+    <view class="label-action"><text class="form-label">收款金额 *</text><text class="fill-link" bindtap="fillAll">填入全额</text></view>
+    <input class="form-input" type="digit" value="{{amountYuan}}" data-field="amountYuan" bindinput="onInput" />
+    <text class="form-label">收款日期 *</text><picker mode="date" value="{{paymentDate}}" bindchange="onDate"><view class="picker-box">{{paymentDate}} ›</view></picker>
+    <text class="form-label">收款方式 *</text><picker mode="selector" range="{{methods}}" value="{{methodIndex}}" bindchange="onMethod"><view class="picker-box">{{methods[methodIndex]}} ›</view></picker>
+    <text class="form-label">备注</text><textarea class="form-textarea" value="{{note}}" data-field="note" bindinput="onInput" placeholder="例如：9月货款第一次收款" />
+  </view>
+  <button class="primary-button" bindtap="submit">确认收款</button>
+  <view wx:if="{{showSettlementConfirm}}" class="settlement-mask">
+    <view class="settlement-dialog">
+      <view class="settlement-title">本期已全部收款</view>
+      <view class="settlement-content">是否结清本期并生成历史账单？暂不结清时，本期仍保持进行中，后续发货继续记在本期。</view>
+      <view class="settlement-actions">
+        <button class="dialog-secondary" bindtap="deferSettlement" disabled="{{closing}}">暂不结清</button>
+        <button class="dialog-primary" bindtap="confirmSettlement" loading="{{closing}}" disabled="{{closing}}">确认结清本期</button>
+      </view>
+    </view>
+  </view>
+</view>

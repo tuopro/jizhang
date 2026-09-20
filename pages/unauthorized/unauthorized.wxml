@@ -1,0 +1,14 @@
+<view class="page access-page">
+  <view class="access-card">
+    <view class="brand-mark">账</view>
+    <view class="access-title">{{title}}</view>
+    <view class="access-message">{{message}}</view>
+    <view wx:if="{{!disabled}}" class="access-detail">
+      用于企业内部记录客户发货、应收、收款和账期对账。
+    </view>
+    <view class="invite-note">
+      {{disabled ? '停用状态下不能通过邀请重新注册。' : '如需使用，请通过企业管理员发送的微信邀请卡片进入。'}}
+    </view>
+    <button class="secondary-button retry-button" bindtap="retry">重新检查权限</button>
+  </view>
+</view>

@@ -1,0 +1,50 @@
+<view class="page">
+  <view class="card">
+    <view class="page-title">粘贴真实订单测试</view>
+    <view class="page-tip">
+      这里只做规则识别，不调用 AI。未写颜色时不猜测；未写单位时默认为“米”并明确提示。
+    </view>
+    <textarea
+      class="order-input"
+      value="{{sourceText}}"
+      bindinput="onTextInput"
+      auto-height="false"
+      maxlength="-1"
+      placeholder="例如：40×40开口 100米"
+    />
+    <button class="primary-button" bindtap="runParse">解析</button>
+  </view>
+
+  <view wx:if="{{parsed}}" class="result-heading">
+    结构化结果（{{items.length}} 项）
+  </view>
+
+  <view wx:for="{{items}}" wx:key="index" class="card result-card">
+    <view class="result-topline">
+      <text class="result-index">第 {{item.index}} 项</text>
+      <text class="{{item.statusClass}}">{{item.statusText}}</text>
+    </view>
+    <view class="product-label">{{item.productLabel}}</view>
+    <view wx:if="{{item.specialLengthText}}" class="warning-text">特殊长度：{{item.specialLengthText}}</view>
+    <view class="quantity">{{item.quantityText}} {{item.unit}}</view>
+    <view class="source">原文：{{item.sourceText}}</view>
+    <view wx:for="{{item.issues}}" wx:for-item="issue" wx:key="*this" class="issue">
+      · {{issue}}
+    </view>
+  </view>
+
+  <view wx:if="{{parsed && items.length === 0}}" class="card empty-result">
+    没有识别到带有效数量的产品内容。
+  </view>
+
+  <view wx:if="{{parsed}}" class="card metadata-card">
+    <view class="metadata-row">
+      <text class="metadata-label">物流</text>
+      <text>{{logisticsText}}</text>
+    </view>
+    <view wx:if="{{unmatchedLines.length > 0}}" class="unmatched-block">
+      <view class="metadata-label">未作为商品处理的文字</view>
+      <view wx:for="{{unmatchedLines}}" wx:key="*this" class="unmatched-line">{{item}}</view>
+    </view>
+  </view>
+</view>

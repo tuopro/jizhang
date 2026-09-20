@@ -1,0 +1,48 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/clients/clients",
+    "pages/history/history",
+    "pages/mine/mine",
+    "pages/quick-entry/quick-entry",
+    "pages/client-form/client-form",
+    "pages/client-ledger/client-ledger",
+    "pages/shipment-detail/shipment-detail",
+    "pages/payment-form/payment-form",
+    "pages/statement/statement",
+    "pages/products/products",
+    "pages/product-form/product-form",
+    "pages/customer-prices/customer-prices",
+    "pages/enterprise/enterprise",
+    "pages/members/members",
+    "pages/join-enterprise/join-enterprise",
+    "pages/unauthorized/unauthorized",
+    "pages/owner-transfer/owner-transfer",
+    "pages/audit-logs/audit-logs",
+    "pages/help/help",
+    "pages/data-settings/data-settings",
+    "pages/parser-test/parser-test"
+  ],
+  "entryPagePath": "pages/index/index",
+  "window": {
+    "navigationBarTitleText": "月结客户记账",
+    "navigationBarBackgroundColor": "#123B67",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F4F6F8",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#6E7C89",
+    "selectedColor": "#123B67",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      { "pagePath": "pages/index/index", "text": "首页" },
+      { "pagePath": "pages/clients/clients", "text": "客户" },
+      { "pagePath": "pages/history/history", "text": "历史" },
+      { "pagePath": "pages/mine/mine", "text": "我的" }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,10 @@
+.home-brand { margin: 4rpx 4rpx 22rpx; color: #5f7080; font-size: 25rpx; }
+.hero-card { padding: 42rpx 36rpx; border-radius: 24rpx; background: #123b67; color: #fff; }
+.hero-label { opacity: .78; font-size: 26rpx; }
+.hero-amount { margin: 14rpx 0 10rpx; font-size: 64rpx; font-weight: 700; letter-spacing: -2rpx; }
+.hero-meta { opacity: .84; font-size: 26rpx; }
+.entry-button { margin: 24rpx 0 36rpx; }
+.section-link { color: #325f8d; font-size: 25rpx; }
+.compact-card { padding-top: 4rpx; padding-bottom: 4rpx; }
+.shipment-copy { min-width: 0; flex: 1; margin-right: 20rpx; }
+.shipment-row .row-note { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

@@ -1,0 +1,10 @@
+<view class="page">
+  <view class="page-title">{{id ? '编辑自定义产品' : '新增自定义产品'}}</view>
+  <view class="card">
+    <text class="form-label">产品名称 *</text><input class="form-input" value="{{name}}" data-field="name" bindinput="onInput" placeholder="例如：白色40×40-1.2米长" />
+    <text class="form-label">识别别名</text><textarea class="form-textarea" value="{{aliasesText}}" data-field="aliasesText" bindinput="onInput" placeholder="多个别名用分号或换行隔开" />
+    <text class="form-label">备注</text><textarea class="form-textarea" value="{{note}}" data-field="note" bindinput="onInput" placeholder="可不填" />
+  </view>
+  <view class="safe-note">产品修改只影响以后选择；历史发货保存的是成交时快照。</view>
+  <button class="primary-button" bindtap="save">保存产品</button>
+</view>

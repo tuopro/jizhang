@@ -1,0 +1,13 @@
+<view class="page">
+  <view class="page-title">操作记录</view>
+  <view wx:if="{{!allowed}}" class="card empty-state">只有管理员可以查看完整操作记录。</view>
+  <view wx:elif="{{logs.length === 0}}" class="card empty-state">暂无操作记录。</view>
+  <view wx:else class="card log-list">
+    <view wx:for="{{logs}}" wx:key="id" class="log-row">
+      <view class="row-title">{{item.actionText}}</view>
+      <view class="row-note">{{item.operator}} · {{item.time}}</view>
+      <view wx:if="{{item.detail}}" class="row-note">{{item.detail}}</view>
+      <view wx:if="{{item.reason}}" class="row-note">原因：{{item.reason}}</view>
+    </view>
+  </view>
+</view>
