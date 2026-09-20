@@ -169,3 +169,10 @@
 - 隐私事实盘点已写入 `docs/隐私数据与微信接口盘点.md`。当前不读取微信昵称/头像，不调用 `getPhoneNumber`，不获取定位、相册/摄像头、文件、麦克风、剪贴板或通讯录，也不发送数据给第三方 AI/外部 API。但代码确实处理人工填写的企业/客户联系人、电话和企业地址，微信隐私指引不能漏报。
 - 新增 `tests/access-control.test.js` 的 26 个指定访问控制场景，及 `tests/privacy-boundary.test.js` 的 4 个快照脱敏/日志/权限申明检查。全量 `npm test` 为 `158/158` 通过；`npm run check` 通过 22 个页面、61 个 JavaScript、22 个 WXML 和 23 个 WXSS 的微信原生编译；本地/云端 `ledger-repository.js` 完全一致。
 - 本轮代码尚未部署到正式云环境。线上生效前必须在微信开发者工具重新对 `cloudfunctions/ledger` 执行“上传并部署：云端安装依赖”，然后上传新体验版用三个微信做管理员/受邀成员/陌生或失效邀请的最终真机验收。
+
+## 2026-09-20 GitHub 源码备份
+
+- 当前项目已初始化为独立 Git 仓库，默认分支为 `main`，远程仓库为 `https://github.com/tuopro/jizhang.git`；首次完整源码备份提交为 `f479a6e`。
+- 备份包含小程序源码、`ledger` 云函数源码、测试、部署文档和项目偏好文档；`.DS_Store`、`project.private.config.json`、`node_modules/`、测试覆盖率目录及 npm 调试日志均通过 `.gitignore` 排除。
+- 上传前未发现 `.env`、私钥、访问令牌、证书或常见 API 密钥特征；`npm test` 为 `158/158` 通过，`npm run check` 通过 22 个页面、61 个 JavaScript、22 个 WXML 和 23 个 WXSS 的微信原生编译。
+- GitHub 当前只是代码与文档备份，不包含微信云数据库中的正式客户、账目、成员或审计数据，也不等于云函数部署或微信体验版上传；云端业务数据仍需单独设置定时备份并做恢复演练。
