@@ -11,7 +11,7 @@ Page({
   data: { client: null, period: null, periodTitle: '', periodLabel: '', periodOwnerText: '未设置', isClosed: false, canExport: false, openingImageExport: false, exportingExcel: false, excelProgress: '', excelReady: false, excelFileName: '', shipments: [], payments: [], itemsSubtotal: '¥0.00', freightTotal: '¥0.00', total: '¥0.00', received: '¥0.00', outstanding: '¥0.00' },
   onLoad(options) { this.clientId = options.clientId || ''; this.periodId = options.periodId || ''; this.load() },
   onShow() { this.setData({ openingImageExport: false }) },
-  onUnload() { cancelProgressiveModel(this) },
+  onUnload() { this.excelPageUnloaded = true; cancelProgressiveModel(this) },
   load() {
     loadPage(this, (repository, tenantId) => {
       this.repository = repository
@@ -75,22 +75,25 @@ Page({
       this.clientId,
       period.id,
       wx,
-      progress => this.setData({ excelProgress: progress })
+      progress => { if (!this.excelPageUnloaded) this.setData({ excelProgress: progress }) }
     ).then(file => {
+      if (this.excelPageUnloaded) return
       this.excelFile = file
       this.setData({
         excelReady: true,
         excelFileName: file.fileName,
-        excelProgress: file.cloudFileCleaned ? 'Excel 已下载，云端临时文件已清理' : 'Excel 已下载；云端临时文件清理未确认，请联系管理员检查'
+        excelProgress: 'Excel 已准备好，可打开或发送'
       })
       return openExcelFile(wx, file.filePath)
     }).then(() => {
       wx.hideLoading()
+      if (this.excelPageUnloaded) return
       this.setData({ exportingExcel: false })
     }, error => {
+      wx.hideLoading()
+      if (this.excelPageUnloaded) return
       if (handleAccessError(error)) return
       wx.showModal({ title: 'Excel 导出失败', content: error.message || '请检查网络后重试', showCancel: false })
-      wx.hideLoading()
       this.setData({ exportingExcel: false })
     })
   },

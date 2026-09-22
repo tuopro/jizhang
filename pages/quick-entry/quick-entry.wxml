@@ -77,7 +77,7 @@
     </view>
 
     <button
-      wx:if="{{item.canCreateCustomProduct}}"
+      wx:if="{{item.canCreateCustomProduct && canCreateForClient}}"
       class="custom-product-button"
       data-index="{{index}}"
       bindtap="createCustomProduct"
@@ -286,12 +286,12 @@
             没有找到产品，可修改搜索词或新建自定义规格。
           </view>
         </scroll-view>
-        <button class="custom-product-button selector-create-button" bindtap="openCustomProductForm">
+        <button wx:if="{{canCreateForClient}}" class="custom-product-button selector-create-button" bindtap="openCustomProductForm">
           + 新建自定义规格
         </button>
       </block>
 
-      <scroll-view wx:else class="custom-form" scroll-y="true">
+      <scroll-view wx:elif="{{canCreateForClient}}" class="custom-form" scroll-y="true">
         <view class="form-heading">新建自定义规格</view>
         <view class="form-tip">名称可完全自由修改，保存后加入当前企业产品库并用于本单。</view>
 
@@ -346,7 +346,7 @@
 
         <view class="custom-form-actions action-row action-row--responsive">
           <button class="secondary-form-button" bindtap="closeProductSelector">取消</button>
-          <button class="primary-button save-use-button" bindtap="saveCustomProduct">保存并使用</button>
+          <button class="primary-button save-use-button" bindtap="saveCustomProduct" loading="{{creatingCustomProduct}}" disabled="{{creatingCustomProduct}}">保存并使用</button>
         </view>
       </scroll-view>
     </view>

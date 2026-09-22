@@ -14,7 +14,7 @@ async function withLedger(callback) {
   const cloud = {
     init() {}, database: () => db, getWXContext: () => ({ OPENID: fixture.openid }),
     uploadFile: async () => ({ fileID: 'cloud://synthetic/export.xlsx' }),
-    deleteFile: async () => ({ fileList: [{ status: 0 }] })
+    deleteFile: async ({ fileList }) => ({ fileList: fileList.map(fileID => ({ fileID, status: 0 })) })
   }
   Module._load = function (request, ...args) {
     loads.push(request)
@@ -34,7 +34,7 @@ test('普通 ledger action 和临时文件清理不加载 ExcelJS 或工作簿�
       assert.ok(!loads.some(name => /statement-excel/.test(name)), action)
     }
     const { cloudPrefix } = require('../cloudfunctions/ledger/services/statement-export-file')
-    const cleaned = await ledger.main({ action: 'cleanupStatementExportFile', payload: { fileID: `cloud://synthetic/${cloudPrefix(fixture.snapshot.memberships[0])}sample.xlsx` } })
+    const cleaned = await ledger.main({ action: 'cleanupStatementExportFile', payload: { fileID: `cloud://synthetic/${cloudPrefix(fixture.snapshot.memberships[0])}1789990000000-0123456789abcdef01234567.xlsx` } })
     assert.equal(cleaned.ok, true)
     assert.ok(!loads.includes('exceljs'))
   })

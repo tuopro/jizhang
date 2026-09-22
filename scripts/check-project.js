@@ -131,7 +131,9 @@ const productSource = fs.readFileSync(path.join(root, 'data/product-specs.js'), 
 if (/basePrice\s*:/.test(productSource)) failures.push('产品库中不应出现通用基础价格')
 
 const sharedCloudFiles = [
+  ['cloudfunctions/ledger/services/export-file-policy.js', 'cloudfunctions/statement-export-gc/services/export-file-policy.js'],
   ['services/ledger-repository.js', 'cloudfunctions/ledger/services/ledger-repository.js'],
+  ['services/product-identity.js', 'cloudfunctions/ledger/services/product-identity.js'],
   ['services/content-security.js', 'cloudfunctions/ledger/services/content-security.js'],
   ['services/statement-export.js', 'cloudfunctions/ledger/services/statement-export.js'],
   ['services/pricing.js', 'cloudfunctions/ledger/services/pricing.js'],

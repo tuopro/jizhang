@@ -101,7 +101,7 @@ function createCloudRepository() {
   }
   ;[
     'getEnterprise', 'listClients', 'getClient', 'getCustomerPrice', 'getCustomerPriceForProduct',
-    'getCustomerPriceAccess', 'listCustomProducts', 'listProducts', 'getShipment', 'getShipmentEditContext', 'listShipments',
+    'getCustomerPriceAccess', 'getCustomProductCreateAccess', 'listCustomProducts', 'listProducts', 'getShipment', 'getShipmentEditContext', 'listShipments',
     'listPayments', 'listBillingPeriods', 'getPeriodDetail', 'getClientLedger', 'getDashboard',
     'getStatement', 'getAuditLogs', 'listMembers'
   ].forEach(method => {

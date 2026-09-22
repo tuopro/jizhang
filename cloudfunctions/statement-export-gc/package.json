@@ -1,0 +1,11 @@
+{
+  "name": "statement-export-gc",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "@cloudbase/manager-node": "5.8.8",
+    "wx-server-sdk": "4.0.2"
+  }
+}

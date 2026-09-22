@@ -1,6 +1,6 @@
 // Shipment correction is additionally authorized against its actual client and
 // open period by the domain repository inside the write transaction.
-const MEMBER_MUTATIONS = new Set(['saveClient', 'postShipment', 'updateShipment', 'recordPayment', 'closeBillingPeriod', 'deleteClient', 'saveCustomerPrice'])
+const MEMBER_MUTATIONS = new Set(['saveClient', 'postShipment', 'updateShipment', 'recordPayment', 'closeBillingPeriod', 'deleteClient', 'saveCustomerPrice', 'createCustomProduct'])
 const { createServiceError } = require('./service-errors')
 
 function validateDisplayName(value) {

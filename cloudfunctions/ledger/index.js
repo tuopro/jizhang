@@ -42,7 +42,7 @@ const COLLECTIONS = {
 }
 
 const ADMIN_MUTATIONS = new Set([
-  'updateEnterprise', 'createCustomProduct', 'updateCustomProduct',
+  'updateEnterprise', 'updateCustomProduct',
   'setCustomProductActive', 'setProductActive',
   'updateClientOwner', 'updateBillingPeriodOwner', 'updateMemberDisplayName',
   'setMemberStatus', 'assignUnownedClients'
@@ -235,6 +235,22 @@ async function loadCustomerPriceScope(source, snapshot, membership, action, args
   }
 }
 
+async function loadCustomProductCreateScope(source, snapshot, membership, input) {
+  const tenantId = membership.tenantId
+  // The OPENID-derived member may be outside the general snapshot's 1000 rows.
+  snapshot.memberships = snapshot.memberships.filter(item => item.id !== membership.id).concat(membership)
+  if (membership.role === 'admin') return
+  const clientId = input && input.clientId
+  if (typeof clientId !== 'string' || !clientId.trim()) throw new Error('创建自定义规格必须指定业务客户')
+  const response = await source.collection('clients').doc(clientId).get().catch(() => null)
+  const client = response && response.data && clean(response.data)
+  if (!client || client.id !== clientId || client.tenantId !== tenantId) throw new Error('客户不存在或不属于当前企业')
+  const periods = await source.collection('billing_periods').where({ tenantId, clientId, status: 'open' }).limit(2).get()
+  snapshot.clients = snapshot.clients.filter(item => item.id !== clientId).concat(client)
+  snapshot.billingPeriods = snapshot.billingPeriods.filter(item => item.clientId !== clientId || item.status !== 'open')
+    .concat((periods.data || []).map(clean))
+}
+
 async function mutate(openid, membership, action, payload) {
   const args = payload && Array.isArray(payload.args) ? payload.args : []
   assertMutationPermission(membership, action, args)
@@ -251,6 +267,7 @@ async function mutate(openid, membership, action, payload) {
     assertMutationPermission(currentMembership, action, args)
     const before = await loadSnapshot(tenantId, transaction)
     if (action === 'saveCustomerPrice') await loadCustomerPriceScope(transaction, before, currentMembership, action, args)
+    if (action === 'createCustomProduct') await loadCustomProductCreateScope(transaction, before, currentMembership, args[0])
     const domain = buildRepository(tenantId, before, currentMembership)
     result = domain.repository[action].apply(null, [tenantId].concat(args))
     const root = domain.storage.read()

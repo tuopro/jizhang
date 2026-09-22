@@ -134,7 +134,7 @@ test('Excel 正式账单包含三个 Sheet、数值金额和真实成交快照�
 test('云端文件路径按 tenant 和 member 隔离，不能清理其他成员文件', () => {
   const memberA = { id: 'member_a', tenantId: 'tenant_a' }
   const memberB = { id: 'member_b', tenantId: 'tenant_a' }
-  const fileID = `cloud://env.bucket/${cloudPrefix(memberA)}file.xlsx`
+  const fileID = `cloud://env.bucket/${cloudPrefix(memberA)}1789990000000-0123456789abcdef01234567.xlsx`
   assert.equal(assertOwnedExportFile(memberA, fileID), fileID)
   assert.throws(() => assertOwnedExportFile(memberB, fileID), /无权清理/)
   assert.throws(() => assertOwnedExportFile(memberA, 'https://public.example/file.xlsx'), /无权清理/)

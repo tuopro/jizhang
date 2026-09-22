@@ -1,5 +1,4 @@
 const {
-  SPEC_DIMENSIONS,
   COVER_WIDTHS,
   availableTeethForDimension,
   findProduct,
@@ -9,12 +8,11 @@ const {
   normalizeCustomProductName
 } = require('../data/product-specs')
 
-const COLOR_ALIASES = [
-  { value: '灰色', aliases: ['银灰色', '浅灰色', '灰色', '银灰', '灰', 'gray', 'grey'] },
-  { value: '白色', aliases: ['乳白色', '白色', '乳白', '白'] },
-  { value: '蓝色', aliases: ['蓝色', '蓝'] },
-  { value: '黑色', aliases: ['黑色', '黑'] }
-]
+const {
+  findDimensionMatches, extractTooth, extractLastColor,
+  extractSpecialProductFeatures, extractAnyDimension, identityFromProduct,
+  compatibleBottomGrooveIdentity, sameBottomGrooveIdentity
+} = require('./product-identity')
 
 const LOGISTICS_ALIASES = [
   { value: '长荣物流', aliases: ['长荣物流', '长荣'] },
@@ -23,8 +21,6 @@ const LOGISTICS_ALIASES = [
   { value: '顺丰', aliases: ['顺丰速运', '顺丰'] },
   { value: '中通', aliases: ['中通快运', '中通快递', '中通'] }
 ]
-
-const SPECIAL_PRODUCT_TAGS = ['定尺', '定制', '非标', '短料', '加长', '裁切', '装潢', '特殊']
 
 function normalizeText(text) {
   return String(text == null ? '' : text)
@@ -36,46 +32,6 @@ function normalizeText(text) {
 
 function normalizeLine(line) {
   return line.replace(/[，；;]/g, ' ').replace(/\s+/g, ' ').trim()
-}
-
-function findDimensionMatches(line) {
-  const matches = []
-  const explicitPattern = /(\d{2,3})\s*[×xX*]\s*(\d{2,3})/g
-  let match
-
-  while ((match = explicitPattern.exec(line)) !== null) {
-    matches.push({
-      start: match.index,
-      end: explicitPattern.lastIndex,
-      height: Number(match[1]),
-      width: Number(match[2]),
-      raw: match[0],
-      form: 'explicit'
-    })
-  }
-
-  const tokens = SPEC_DIMENSIONS
-    .map(([height, width]) => `${height}${width}`)
-    .sort((left, right) => right.length - left.length)
-  const compactPattern = new RegExp(tokens.join('|'), 'g')
-
-  while ((match = compactPattern.exec(line)) !== null) {
-    const overlapsExplicit = matches.some(item => match.index >= item.start && match.index < item.end)
-    if (overlapsExplicit) continue
-
-    const dimensions = SPEC_DIMENSIONS.find(([height, width]) => `${height}${width}` === match[0])
-    if (!dimensions) continue
-    matches.push({
-      start: match.index,
-      end: compactPattern.lastIndex,
-      height: dimensions[0],
-      width: dimensions[1],
-      raw: match[0],
-      form: 'compact'
-    })
-  }
-
-  return matches.sort((left, right) => left.start - right.start)
 }
 
 function findCoverMatches(line) {
@@ -114,30 +70,6 @@ function findCoverMatches(line) {
   })
 
   return matches.sort((left, right) => left.start - right.start)
-}
-
-function extractTooth(text) {
-  if (/全封闭|全封|封闭/.test(text)) return '全封闭'
-  if (/封口/.test(text)) return '封口'
-  if (/细齿/.test(text) || /细(?=\s*(?:灰|白|蓝|银|共?\d|$))/.test(text)) return '细齿'
-  if (/粗齿|开口/.test(text) || /(?:粗|开)(?=\s*(?:灰|白|蓝|银|共?\d|$))/.test(text)) return '粗齿'
-  return null
-}
-
-function extractLastColor(text) {
-  const lowerText = text.toLowerCase()
-  let chosen = null
-
-  COLOR_ALIASES.forEach(group => {
-    group.aliases.forEach(alias => {
-      const index = lowerText.lastIndexOf(alias.toLowerCase())
-      if (index !== -1 && (!chosen || index > chosen.index)) {
-        chosen = { value: group.value, index }
-      }
-    })
-  })
-
-  return chosen ? chosen.value : null
 }
 
 function isProductLengthMatch(text, matchEnd) {
@@ -218,52 +150,11 @@ function textAfterLastQuantity(text) {
   return matches.length ? text.slice(matches[matches.length - 1].end) : text
 }
 
-function extractProductLength(text) {
-  const matches = Array.from(String(text || '').matchAll(
-    /(?:长度\s*)?(\d+(?:\.\d+)?)\s*(?:米|m(?!m))\s*(?:长(?:度)?(?:的)?|的|\/\s*根|每根)?/gi
-  ))
-  if (!matches.length) return null
-  const value = Number(matches[matches.length - 1][1])
-  return Number.isFinite(value) && value > 0 ? value : null
-}
-
-function extractSpecialProductFeatures(text) {
-  const source = String(text || '')
-  const unitLengthMeters = extractProductLength(source)
-  const specialTags = SPECIAL_PRODUCT_TAGS.filter(tag => source.includes(tag))
-  return {
-    unitLengthMeters,
-    productLength: unitLengthMeters ? `${unitLengthMeters}米` : null,
-    specialTags,
-    hasSpecialAttributes: Boolean(unitLengthMeters || specialTags.length)
-  }
-}
-
-function extractAnyDimension(text) {
-  const explicit = String(text || '').match(/(\d{2,3})\s*[×xX*]\s*(\d{2,3})/)
-  if (explicit) return { height: Number(explicit[1]), width: Number(explicit[2]) }
-  const known = findDimensionMatches(String(text || ''))[0]
-  return known ? { height: known.height, width: known.width } : null
-}
-
-function identityFromProduct(product) {
-  const fallbackDimension = extractAnyDimension(product.name || '')
-  const fallbackFeatures = extractSpecialProductFeatures(product.name || '')
-  return {
-    height: product.height != null ? Number(product.height) : (fallbackDimension && fallbackDimension.height),
-    width: product.width != null ? Number(product.width) : (fallbackDimension && fallbackDimension.width),
-    toothType: product.toothType || extractTooth(product.name || ''),
-    color: product.color || extractLastColor(product.name || ''),
-    unitLengthMeters: product.unitLengthMeters != null
-      ? Number(product.unitLengthMeters)
-      : fallbackFeatures.unitLengthMeters,
-    specialTags: Array.isArray(product.specialTags) ? product.specialTags : fallbackFeatures.specialTags
-  }
-}
-
 function findCustomProduct(name, customProducts, identity) {
   const normalizedName = normalizeCustomProductName(name)
-  const activeProducts = (customProducts || []).filter(product => product.active !== false)
+  const requested = identity || identityFromProduct({ name })
+  const activeProducts = (customProducts || []).filter(product => product.active !== false &&
+    compatibleBottomGrooveIdentity(requested, identityFromProduct(product)))
   const exact = activeProducts.find(product => {
     const names = [product.name || product.normalizedName]
       .concat(product.aliases || [], product.recognitionKeywords || [])
@@ -280,6 +171,7 @@ function findCustomProduct(name, customProducts, identity) {
 
   const structuredMatches = activeProducts.filter(product => {
     const current = identityFromProduct(product)
+    if ((expected.specialTags || []).includes('底槽')) return sameBottomGrooveIdentity(expected, current)
     if (current.height !== Number(expected.height) || current.width !== Number(expected.width)) return false
     if (expected.color && current.color !== expected.color) return false
     if (expected.toothType && current.toothType && current.toothType !== expected.toothType) return false
@@ -297,6 +189,7 @@ function buildSuggestedCustomName(identity) {
   if (identity.color) parts.push(identity.color)
   if (identity.height && identity.width) parts.push(`${identity.height}×${identity.width}`)
   if (identity.toothType) parts.push(identity.toothType)
+  if ((identity.specialTags || []).includes('底槽')) parts.push(...identity.specialTags)
   const base = parts.join('')
   return identity.unitLengthMeters
     ? `${base || '自定义产品'}-${identity.unitLengthMeters}米长`
@@ -416,7 +309,7 @@ function parseCoverCandidate(line, cover, previousEnd, nextStart, customProducts
       color,
       unitLengthMeters: specialFeatures.unitLengthMeters,
       specialTags: specialFeatures.specialTags,
-      suggestedName: `${color || ''}${cover.width}mm盖子${specialFeatures.unitLengthMeters ? `-${specialFeatures.unitLengthMeters}米长` : ''}`
+      suggestedName: `${color || ''}${cover.width}mm盖子${specialFeatures.specialTags.includes('底槽') ? specialFeatures.specialTags.join('') : ''}${specialFeatures.unitLengthMeters ? `-${specialFeatures.unitLengthMeters}米长` : ''}`
     })
   }
   if (!COVER_WIDTHS.includes(cover.width)) {

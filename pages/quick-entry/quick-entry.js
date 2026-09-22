@@ -8,6 +8,7 @@ const { handleAccessError } = require('../../services/page-context')
 const { canEditShipment } = require('../../services/ledger-repository')
 const { runAfterPrivacyConsent } = require('../../services/privacy-consent')
 const { parseOrderText } = require('../../services/order-parser')
+const { specialTagsFromProduct } = require('../../services/product-identity')
 const { formatProductLabel } = require('../../data/product-specs')
 const { calculatePricedItem } = require('../../services/pricing')
 const { yuanToCents, centsToYuan, formatCurrency } = require('../../utils/money')
@@ -35,7 +36,8 @@ function buildProductOptions(repository) {
       height: product.height != null ? product.height : null,
       width: product.width != null ? product.width : null,
       toothType: product.toothType || null,
-      color: product.color || null
+      color: product.color || null,
+      specialTags: specialTagsFromProduct(product)
     }
   })
 }
@@ -88,6 +90,8 @@ Page({
     selectorSearch: '',
     showCustomForm: false,
     customForm: null,
+    canCreateForClient: false,
+    creatingCustomProduct: false,
     colorOptions: COLOR_OPTIONS,
     toothOptions: TOOTH_OPTIONS,
     unitOptions: UNIT_OPTIONS,
@@ -141,10 +145,12 @@ Page({
     this.standardProductOptions = productOptions.filter(option => option.isStandard)
     this.customProductOptions = productOptions.filter(option => !option.isStandard)
     this.clients = clients
+    const selectedClientId = this.loadOptions.clientId || (clients.length ? clients[0].id : '')
     this.setData({
       clientNames: clients.map(client => client.name),
       selectedClientIndex: Math.max(0, clients.findIndex(client => client.id === this.loadOptions.clientId)),
-      selectedClientId: this.loadOptions.clientId || (clients.length ? clients[0].id : '')
+      selectedClientId,
+      canCreateForClient: repository.getCustomProductCreateAccess(getActiveTenantId(), selectedClientId)
     }, () => {
       if (this.loadOptions.shipmentId) this.loadShipmentForEdit(this.loadOptions.shipmentId)
     })
@@ -178,6 +184,7 @@ Page({
       canSaveCorrectionPrices: identity.role === 'admin',
       selectedClientIndex,
       selectedClientId: shipment.clientId,
+      canCreateForClient: repository.getCustomProductCreateAccess(getActiveTenantId(), shipment.clientId),
       shipmentDate: shipment.shipmentDate,
       orderText: shipment.sourceText || '',
       hasParsed: true,
@@ -207,6 +214,8 @@ Page({
     const index = Number(event.detail.value)
     const client = this.clients[index]
     this.setData({ selectedClientIndex: index, selectedClientId: client ? client.id : '' })
+    this.closeProductSelector()
+    this.refreshCustomProductAccess()
     if (this.data.rows.length) this.reloadPricesForClient()
   },
 
@@ -276,6 +285,7 @@ Page({
       needsProductConfirmation: !effectiveProductId,
       canCreateCustomProduct: Boolean(item.canCreateCustomProduct),
       customProductDraft: item.customProductDraft || null,
+      specialTags: item.specialTags || (productOption && productOption.specialTags) || [],
       height: item.height != null ? item.height : (productOption && productOption.height),
       width: item.width != null ? item.width : (productOption && productOption.width),
       toothType: item.toothType || (productOption && productOption.toothType) || null,
@@ -392,8 +402,11 @@ Page({
       ? this.customProductOptions
       : this.standardProductOptions
     const keyword = String(search || '').trim().toLowerCase()
+    const row = this.data.rows[this.data.selectorRowIndex]
+    const isBottom = Boolean(row && (row.specialTags || []).includes('底槽'))
     const filtered = source.filter(option =>
-      !keyword || option.searchText.includes(keyword)
+      (!keyword || option.searchText.includes(keyword)) &&
+      (option.specialTags || []).includes('底槽') === isBottom
     ).slice(0, 80)
     this.setData({ selectorTab: tab, selectorSearch: search || '', filteredProductOptions: filtered })
   },
@@ -437,6 +450,10 @@ Page({
 
   applyProductSelection(rowIndex, option, created) {
     if (!option || !this.data.rows[rowIndex]) return
+    if (!created && (this.data.rows[rowIndex].specialTags || []).includes('底槽') !== (option.specialTags || []).includes('底槽')) {
+      wx.showToast({ title: '底槽与普通规格不能混用', icon: 'none' })
+      return
+    }
     const rows = this.data.rows.slice()
     const price = getRepository().getCustomerPriceForProduct(
       getActiveTenantId(),
@@ -450,6 +467,7 @@ Page({
       needsProductConfirmation: false,
       canCreateCustomProduct: false,
       customProductDraft: null,
+      specialTags: option.specialTags || [],
       height: option.height,
       width: option.width,
       toothType: option.toothType,
@@ -479,6 +497,7 @@ Page({
   },
 
   openCustomProductForm(event) {
+    if (!this.refreshCustomProductAccess()) return
     const eventIndex = event && event.currentTarget && event.currentTarget.dataset.index
     const rowIndex = eventIndex !== undefined ? Number(eventIndex) : this.data.selectorRowIndex
     const row = this.data.rows[rowIndex]
@@ -494,6 +513,7 @@ Page({
       selectorRowIndex: rowIndex,
       showCustomForm: true,
       customForm: {
+        clientId: this.data.selectedClientId,
         name,
         height: draft.height != null ? draft.height : row.height,
         width: draft.width != null ? draft.width : row.width,
@@ -516,6 +536,12 @@ Page({
     this.openCustomProductForm(event)
   },
 
+  refreshCustomProductAccess() {
+    const allowed = getRepository().getCustomProductCreateAccess(getActiveTenantId(), this.data.selectedClientId)
+    this.setData({ canCreateForClient: allowed })
+    return allowed
+  },
+
   onCustomFormInput(event) {
     if (!this.data.customForm) return
     const field = event.currentTarget.dataset.field
@@ -536,8 +562,10 @@ Page({
   },
 
   saveCustomProduct() {
+    if (this.data.creatingCustomProduct || !this.refreshCustomProductAccess()) return
     const form = this.data.customForm
     const rowIndex = this.data.selectorRowIndex
+    if (form && form.clientId !== this.data.selectedClientId) return
     if (!form || !String(form.name || '').trim()) {
       wx.showToast({ title: '请填写产品名称', icon: 'none' })
       return
@@ -547,6 +575,7 @@ Page({
       const unitLengthMeters = Number(form.unitLengthText)
       const result = repository.createCustomProduct(getActiveTenantId(), {
         confirmed: true,
+        clientId: form.clientId,
         name: String(form.name).trim(),
         aliases: splitAliases(form.aliasesText),
         recognitionKeywords: form.recognitionKeywords || [],
@@ -560,16 +589,18 @@ Page({
         note: ''
       })
       if (result && typeof result.then === 'function') {
+        this.setData({ creatingCustomProduct: true })
         wx.showLoading({ title: '保存中' })
-        result.then(product => {
+        return result.then(product => {
           wx.hideLoading()
-          this.finishCustomProductSave(rowIndex, product)
+          if (this.data.selectedClientId === form.clientId) this.finishCustomProductSave(rowIndex, product)
         }).catch(error => {
           wx.hideLoading()
           if (handleAccessError(error)) return
           wx.showModal({ title: '未能创建产品', content: error.message, showCancel: false })
+        }).finally(() => {
+          this.setData({ creatingCustomProduct: false })
         })
-        return
       }
       this.finishCustomProductSave(rowIndex, result)
     } catch (error) {

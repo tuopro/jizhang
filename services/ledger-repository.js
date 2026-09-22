@@ -2,6 +2,7 @@ const { products, getProductById, formatProductLabel, normalizeCustomProductName
 const { createDemoSeed, DEMO_TENANT_ID } = require('../data/demo-seed')
 const { calculatePricedItem } = require('./pricing')
 const { yuanToCents } = require('../utils/money')
+const { identityFromProduct, compatibleBottomGrooveIdentity, sameBottomGrooveIdentity } = require('./product-identity')
 
 const VALID_UNITS = ['米', '根', '箱']
 const VALID_PAYMENT_METHODS = ['微信', '支付宝', '银行转账', '现金', '其他']
@@ -54,6 +55,18 @@ function canManageCustomerPrices(identity, client, openPeriod) {
           openPeriod.tenantId === client.tenantId && memberId === openPeriod.ownerMemberId)
       ))
     ))
+}
+
+function canCreateCustomProduct(identity, client, openPeriod) {
+  const memberId = identity && (identity.id || identity.memberId)
+  return Boolean(identity && identity.status === 'active' && (
+    identity.role === 'admin' || (identity.role === 'member' && memberId && client &&
+      identity.tenantId === client.tenantId && (
+        memberId === client.ownerMemberId ||
+        (openPeriod && openPeriod.status === 'open' && openPeriod.clientId === client.id &&
+          openPeriod.tenantId === client.tenantId && memberId === openPeriod.ownerMemberId)
+      ))
+  ))
 }
 
 function legacyPeriodIdForShipment(shipment) {
@@ -668,31 +681,61 @@ function createLedgerRepository(storage, options) {
     return clone(standard.concat(listCustomProducts(tenantId, options)))
   }
 
+  function customProductCreateActor(tenant, clientId) {
+    // Re-read the stored member; a cached actor/permission flag is not authority.
+    const actor = priceActor(tenant)
+    const client = tenant.clients.find(item => item.id === clientId && item.tenantId === tenant.enterprise.id)
+    if (!canCreateCustomProduct(actor, client, currentPriceOpenPeriod(tenant, clientId))) {
+      const error = new Error('仅管理员、当前客户负责人或当前开放账期负责人可以创建自定义规格')
+      error.code = 'CUSTOM_PRODUCT_CREATE_FORBIDDEN'
+      throw error
+    }
+    return actor
+  }
+
+  function getCustomProductCreateAccess(tenantId, clientId) {
+    const tenant = requireTenant(readRoot(), tenantId, true)
+    try { customProductCreateActor(tenant, clientId); return true } catch (error) { return false }
+  }
+
   function createCustomProduct(tenantId, input) {
     if (!input || input.confirmed !== true) throw new Error('创建自定义产品前必须经过人工确认')
+    const root = readRoot()
+    const tenant = requireTenant(root, tenantId, true)
+    const actor = customProductCreateActor(tenant, input.clientId)
     const name = String(input.name || '').trim()
-    const normalizedName = normalizeCustomProductName(name)
-    if (normalizedName.length < 2) throw new Error('自定义产品名称无效')
+    const productIdentity = identityFromProduct(Object.assign({}, input, { name }))
+    const specialTags = productIdentity.specialTags.includes('底槽') ? productIdentity.specialTags : (input.specialTags || [])
+    const normalizedName = normalizeCustomProductName(name) +
+      (specialTags.includes('底槽') && !name.includes('底槽') ? '底槽' : '')
+    if (normalizeCustomProductName(name).length < 2) throw new Error('自定义产品名称无效')
     const aliases = Array.from(new Set((input.aliases || []).map(value => String(value || '').trim())
       .filter(value => value && normalizeCustomProductName(value) !== normalizedName)))
     const recognitionKeywords = Array.from(new Set((input.recognitionKeywords || []).map(value => String(value || '').trim()).filter(Boolean)))
     const candidates = [name].concat(aliases).map(normalizeCustomProductName)
-    const root = readRoot()
-    const tenant = requireTenant(root, tenantId)
-    const existing = tenant.customProducts.find(product => !product.isStandardOverride && product.active !== false &&
-      [product.name || product.normalizedName].concat(product.aliases || [], product.recognitionKeywords || [])
-        .some(value => candidates.includes(normalizeCustomProductName(value))))
+    const matches = tenant.customProducts.filter(product => !product.isStandardOverride && product.active !== false &&
+      compatibleBottomGrooveIdentity(productIdentity, identityFromProduct(product)) && (
+        [product.name || product.normalizedName].concat(product.aliases || [], product.recognitionKeywords || [])
+          .some(value => candidates.includes(normalizeCustomProductName(value))) ||
+        sameBottomGrooveIdentity(productIdentity, identityFromProduct(product))))
+    if (specialTags.includes('底槽') && matches.length > 1) throw new Error('存在多个相同底槽规格，请人工选择已有产品')
+    const existing = matches[0]
     if (existing) {
+      // Creation is not an update capability. Members may reuse an existing ID,
+      // but cannot merge aliases, tags, lengths or any other persisted fields.
+      if (actor.role !== 'admin') return clone(existing)
       let changed = false
       const merge = (field, values) => {
         const next = Array.from(new Set((existing[field] || []).concat(values || [])))
         if (JSON.stringify(next) !== JSON.stringify(existing[field] || [])) { existing[field] = next; changed = true }
       }
-      merge('aliases', aliases); merge('recognitionKeywords', recognitionKeywords); merge('specialTags', input.specialTags)
+      merge('aliases', aliases); merge('recognitionKeywords', recognitionKeywords); merge('specialTags', specialTags)
       ;['height', 'width', 'toothType', 'color', 'unitLengthMeters', 'lengthDescription'].forEach(field => {
         if ((existing[field] == null || existing[field] === '') && input[field] != null && input[field] !== '') { existing[field] = input[field]; changed = true }
       })
-      if (existing.normalizedName !== normalizeCustomProductName(existing.name || name)) { existing.normalizedName = normalizeCustomProductName(existing.name || name); changed = true }
+      const existingNormalizedName = normalizeCustomProductName(existing.name || name) +
+        (specialTags.includes('底槽') && !(existing.name || name).includes('底槽') ? '底槽' : '')
+      if (existing.normalizedName !== existingNormalizedName) { existing.normalizedName = existingNormalizedName; changed = true }
       if (changed) { existing.updatedAt = now().toISOString(); storage.write(root) }
       return clone(existing)
     }
@@ -703,7 +746,7 @@ function createLedgerRepository(storage, options) {
       width: input.width != null && input.width !== '' ? Number(input.width) : null,
       toothType: input.toothType || null, color: input.color || null,
       unitLengthMeters: Number(input.unitLengthMeters) > 0 ? Number(input.unitLengthMeters) : null,
-      lengthDescription: input.lengthDescription || '', specialTags: clone(input.specialTags || []),
+      lengthDescription: input.lengthDescription || '', specialTags: clone(specialTags),
       note: input.note || '', isStandard: false, productType: 'custom', active: true,
       createdAt: timestamp, updatedAt: timestamp
     }
@@ -1257,11 +1300,11 @@ function createLedgerRepository(storage, options) {
     listMembers, updateMemberDisplayName, setMemberStatus, assignUnownedClients,
     listClients, getClient, getClientDeletePreview, deleteClient, saveClient, updateClientOwner, updateBillingPeriodOwner,
     getCustomerPriceAccess, getCustomerPrice, getCustomerPriceForProduct, listCustomerPrices, saveCustomerPrice,
-    listCustomProducts, listProducts, createCustomProduct, updateCustomProduct, setCustomProductActive, setProductActive,
+    listCustomProducts, listProducts, getCustomProductCreateAccess, createCustomProduct, updateCustomProduct, setCustomProductActive, setProductActive,
     postShipment, updateShipment, getShipment, getShipmentEditContext, listShipments,
     recordPayment, closeBillingPeriod, listPayments, listBillingPeriods, getPeriodDetail,
     getClientLedger, getDashboard, getStatement, getAuditLogs
   }
 }
 
-module.exports = { VALID_UNITS, VALID_PAYMENT_METHODS, currentPeriodId, canCloseBillingPeriod, canEditShipment, canManageCustomerPrices, currentPriceOpenPeriod, createLedgerRepository }
+module.exports = { VALID_UNITS, VALID_PAYMENT_METHODS, currentPeriodId, canCloseBillingPeriod, canEditShipment, canManageCustomerPrices, canCreateCustomProduct, currentPriceOpenPeriod, createLedgerRepository }

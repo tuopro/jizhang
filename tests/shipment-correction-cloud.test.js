@@ -178,7 +178,7 @@ test('云端修正保留确认、原因和已收款约束', async () => {
 
 test('客户负责人和账期负责人结清权限仍独立，其它管理员 action 仍拒绝 member', async () => {
   const h = cloudHarness()
-  for (const action of ['createCustomProduct', 'updateCustomProduct', 'setCustomProductActive', 'setProductActive', 'updateEnterprise', 'updateClientOwner', 'updateBillingPeriodOwner', 'updateMemberDisplayName', 'setMemberStatus', 'assignUnownedClients']) {
+  for (const action of ['updateCustomProduct', 'setCustomProductActive', 'setProductActive', 'updateEnterprise', 'updateClientOwner', 'updateBillingPeriodOwner', 'updateMemberDisplayName', 'setMemberStatus', 'assignUnownedClients']) {
     const before = h.read()
     const response = await h.main({ action, payload: { args: [{ confirmed: true }] } })
     assert.equal(response.ok, false, action)

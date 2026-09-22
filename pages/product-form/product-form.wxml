@@ -1,4 +1,4 @@
-<view class="page">
+<view wx:if="{{isAdmin}}" class="page">
   <view class="page-title">{{id ? '编辑自定义产品' : '新增自定义产品'}}</view>
   <view class="card">
     <text class="form-label">产品名称 *</text><input class="form-input" value="{{name}}" data-field="name" bindinput="onInput" placeholder="例如：白色40×40-1.2米长" />

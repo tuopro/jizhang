@@ -9,19 +9,31 @@ function call(api, method, options) {
   })
 }
 
-async function cleanupWithRetry(repository, tenantId, fileID) {
+const CLEANUP_TIMEOUT_MS = 6000
+
+function reportCleanupFailure(error, attempt) {
+  const value = String(error && (error.code || error.errCode) || '')
+  const code = /^-?\d{1,9}$/.test(value) || ['CLEANUP_TIMEOUT', 'CLEANUP_UNCONFIRMED'].includes(value) ? value : 'CLEANUP_FAILED'
+  console.warn('[excel-temp-cleanup]', { attempt, code })
+}
+
+function boundedCleanup(operation, timeoutMs) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(Object.assign(new Error('cleanup timeout'), { code: 'CLEANUP_TIMEOUT' })), timeoutMs)
+    Promise.resolve().then(operation).then(value => { clearTimeout(timer); resolve(value) }, error => { clearTimeout(timer); reject(error) })
+  })
+}
+
+async function cleanupWithRetry(repository, tenantId, fileID, timeoutMs = CLEANUP_TIMEOUT_MS) {
   if (!fileID || !repository || typeof repository.cleanupStatementExportFile !== 'function') return false
-  try {
-    await repository.cleanupStatementExportFile(tenantId, fileID)
-    return true
-  } catch (firstError) {
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
     try {
-      await repository.cleanupStatementExportFile(tenantId, fileID)
+      const result = await boundedCleanup(() => repository.cleanupStatementExportFile(tenantId, fileID), timeoutMs)
+      if (!result || result.cleaned !== true) throw Object.assign(new Error('cleanup unconfirmed'), { code: 'CLEANUP_UNCONFIRMED' })
       return true
-    } catch (secondError) {
-      return false
-    }
+    } catch (error) { reportCleanupFailure(error, attempt) }
   }
+  return false
 }
 
 async function createAndDownloadExcel(repository, tenantId, clientId, periodId, api, onProgress) {
@@ -30,16 +42,18 @@ async function createAndDownloadExcel(repository, tenantId, clientId, periodId, 
   }
   let exportInfo = null
   let downloaded = null
+  // An unloaded page or presentation callback must never interrupt cleanup.
+  const progress = text => { try { if (onProgress) onProgress(text) } catch (error) {} }
   try {
-    if (onProgress) onProgress('正在云端生成 Excel…')
+    progress('正在云端生成 Excel…')
     exportInfo = await repository.createStatementExcel(tenantId, clientId, periodId)
     if (!exportInfo || !exportInfo.fileID) throw new Error('云端未返回 Excel 临时文件')
-    if (onProgress) onProgress('正在下载 Excel…')
+    progress('正在下载 Excel…')
     downloaded = await call(api, 'downloadFile', { fileID: exportInfo.fileID })
-    if (!downloaded || !downloaded.tempFilePath) throw new Error('Excel 下载失败')
+    if (!downloaded || typeof downloaded.tempFilePath !== 'string' || !downloaded.tempFilePath) throw new Error('Excel 下载失败')
   } finally {
     if (exportInfo && exportInfo.fileID) {
-      if (onProgress) onProgress('正在清理云端临时文件…')
+      progress('正在准备本地文件…')
       exportInfo.cloudFileCleaned = await cleanupWithRetry(repository, tenantId, exportInfo.fileID)
     }
   }

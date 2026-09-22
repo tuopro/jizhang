@@ -4,6 +4,7 @@ const os = require('os')
 const path = require('path')
 const { readStatementExportSource } = require('./statement-export-cloud')
 const { buildStatementExportDocument } = require('./statement-export')
+const { parseExportFileID, isMissing, safeCode, serviceError } = require('./export-file-policy')
 
 function scopeHash(value) {
   return crypto.createHash('sha256').update(String(value || '')).digest('hex').slice(0, 24)
@@ -23,13 +24,14 @@ function cloudPrefix(membership) {
   return `statement-exports/${scopeHash(membership.tenantId)}/${scopeHash(membership.id)}/`
 }
 
-function assertOwnedExportFile(membership, fileID) {
-  const value = String(fileID || '')
-  const expected = `/${cloudPrefix(membership)}`
-  if (!value.startsWith('cloud://') || !value.includes(expected) || !value.toLowerCase().endsWith('.xlsx')) {
+function assertOwnedExportFile(membership, fileID, environmentId) {
+  const parsed = parseExportFileID(fileID)
+  if (!membership || !membership.id || !membership.tenantId || !parsed ||
+    !parsed.key.startsWith(cloudPrefix(membership)) ||
+    (environmentId && !parsed.authority.startsWith(`${environmentId}.`))) {
     throw new Error('临时账单文件不存在或无权清理')
   }
-  return value
+  return fileID
 }
 
 async function createStatementExcel(database, cloud, membership, payload, options) {
@@ -40,6 +42,7 @@ async function createStatementExcel(database, cloud, membership, payload, option
   const localPath = path.join(settings.tempDirectory || os.tmpdir(), `ledger-${crypto.randomBytes(12).toString('hex')}.xlsx`)
   let fileID = ''
   try {
+    const fileName = safeDownloadName(document)
     const writeWorkbook = settings.writeWorkbook || require('./statement-excel').writeStatementWorkbook
     await writeWorkbook(document, localPath)
     const cloudPath = `${cloudPrefix(membership)}${randomName()}`
@@ -48,24 +51,36 @@ async function createStatementExcel(database, cloud, membership, payload, option
     if (!fileID) throw new Error('临时 Excel 文件上传失败')
     return {
       fileID,
-      fileName: safeDownloadName(document),
+      fileName,
       generatedAt,
       sourceVersion: document.sourceVersion,
       expiresHint: '下载完成后立即删除云端临时文件；未下载完成时可重新生成'
     }
+  } catch (error) {
+    // If upload returned an ID but the response cannot be completed, clean it here.
+    if (fileID) {
+      try { await cleanupStatementExportFile(cloud, membership, { fileID }) } catch (cleanupError) {}
+    }
+    throw error
   } finally {
     try { if (fs.existsSync(localPath)) fs.unlinkSync(localPath) } catch (error) {}
   }
 }
 
 async function cleanupStatementExportFile(cloud, membership, payload) {
-  const fileID = assertOwnedExportFile(membership, payload && payload.fileID)
-  const response = await cloud.deleteFile({ fileList: [fileID] })
-  const result = response && response.fileList && response.fileList[0]
-  if (result && result.status !== 0 && result.status !== '0') {
-    throw new Error('云端临时账单文件清理失败')
+  const environmentId = typeof cloud.getWXContext === 'function' && cloud.getWXContext().ENV
+  const fileID = assertOwnedExportFile(membership, payload && payload.fileID, environmentId)
+  try {
+    const response = await cloud.deleteFile({ fileList: [fileID] })
+    const result = response && Array.isArray(response.fileList) && response.fileList.find(item => item && item.fileID === fileID)
+    if (!result) throw serviceError('CLEANUP_UNCONFIRMED', '云端临时账单文件清理未确认')
+    if (result.status === 0 || result.status === '0' || isMissing(result)) return { cleaned: true }
+    throw serviceError(safeCode(result), '云端临时账单文件清理失败')
+  } catch (error) {
+    if (isMissing(error)) return { cleaned: true }
+    console.warn('[excel-temp-cleanup]', { code: safeCode(error) })
+    throw serviceError(safeCode(error), '云端临时账单文件清理未确认')
   }
-  return { cleaned: true }
 }
 
 module.exports = {

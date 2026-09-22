@@ -2,10 +2,17 @@ const { loadPage, handleMutation } = require('../../services/page-context')
 const { formatProductLabel } = require('../../data/product-specs')
 
 Page({
-  data: { tab: 'standard', keyword: '', products: [] },
+  data: { tab: 'standard', keyword: '', products: [], isAdmin: false },
   onShow() { this.load() },
   load() {
     loadPage(this, (repository, tenantId) => {
+      const isAdmin = !repository.isCloudRepository || repository.getIdentity().role === 'admin'
+      if (!isAdmin) {
+        this.allProducts = []
+        this.setData({ isAdmin: false, products: [] })
+        wx.showModal({ title: '无权管理产品', content: '产品管理仅限管理员。请在负责客户的记账流程中创建并使用新规格。', showCancel: false, success: () => wx.navigateBack() })
+        return
+      }
       this.allProducts = repository.listProducts(tenantId, { includeInactive: true }).map(item => {
         const label = formatProductLabel(item)
         return {
@@ -13,7 +20,7 @@ Page({
           active: item.active !== false, search: [label].concat(item.aliases || []).join(' ').toLowerCase()
         }
       })
-      this.filter()
+      this.filter({ isAdmin })
     })
   },
   changeTab(event) { this.filter({ tab: event.currentTarget.dataset.tab }) },
@@ -25,9 +32,10 @@ Page({
       (state.tab === 'standard' ? item.isStandard : !item.isStandard) && (!keyword || item.search.includes(keyword))
     ).slice(0, 150).map(({ id, label, isStandard, active }) => ({ id, label, isStandard, active })) }, patch))
   },
-  add() { wx.navigateTo({ url: '/pages/product-form/product-form' }) },
-  edit(event) { if (this.data.tab === 'custom') wx.navigateTo({ url: `/pages/product-form/product-form?id=${event.currentTarget.dataset.id}` }) },
+  add() { if (this.data.isAdmin) wx.navigateTo({ url: '/pages/product-form/product-form' }) },
+  edit(event) { if (this.data.isAdmin && this.data.tab === 'custom') wx.navigateTo({ url: `/pages/product-form/product-form?id=${event.currentTarget.dataset.id}` }) },
   toggle(event) {
+    if (!this.data.isAdmin) return
     const id = event.currentTarget.dataset.id
     const product = this.allProducts.find(item => item.id === id)
     if (!product) return
