@@ -1,10 +1,16 @@
 const { getRepository, resetRepository, isCloudMode } = require('../../services/repository-instance')
 const { accessReason, isInviteError } = require('../../services/access-control')
+const { runAfterPrivacyConsent } = require('../../services/privacy-consent')
 
 Page({
   data: { loading: true, joining: false, enterpriseName: '', displayName: '', error: '' },
   onLoad(options) {
-    this.inviteToken = decodeURIComponent(options.inviteToken || '')
+    runAfterPrivacyConsent(this, () => this.loadInvite(options), {
+      route: 'pages/join-enterprise/join-enterprise', query: options || {}
+    })
+  },
+  loadInvite(options) {
+    this.inviteToken = decodeURIComponent(options && options.inviteToken || '')
     if (!this.inviteToken || !isCloudMode()) {
       this.setData({ loading: false, error: '邀请链接无效，或当前不是正式云端模式。' })
       return

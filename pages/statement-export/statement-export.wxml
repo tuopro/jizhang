@@ -1,0 +1,45 @@
+<view class="page export-preview-page">
+  <canvas type="2d" id="statementCanvas" class="render-canvas"></canvas>
+
+  <view wx:if="{{generating}}" class="card generation-card">
+    <view class="generation-spinner"></view>
+    <view class="generation-title">正在生成分页账单</view>
+    <view class="row-note">{{progressText}}</view>
+  </view>
+
+  <view wx:elif="{{error}}" class="card generation-card">
+    <view class="generation-title">账单图片未生成</view>
+    <view class="error-message">{{error}}</view>
+    <button class="primary-button retry-button" bindtap="retry">重新生成</button>
+  </view>
+
+  <block wx:else>
+    <view class="preview-head">
+      <view class="preview-copy">
+        <view class="page-title preview-title">账单图片</view>
+        <view class="row-note">共 {{totalPages}} 页，可逐页分享或一次保存到相册</view>
+      </view>
+      <view class="page-chip">{{pageLabel}}</view>
+    </view>
+
+    <view class="image-shell" bindtap="previewAll">
+      <image class="statement-image" src="{{currentPath}}" mode="widthFix" show-menu-by-longpress="true" />
+      <view class="preview-hint">点击查看全部高清页面</view>
+    </view>
+
+    <view class="page-switcher">
+      <button class="secondary-button switch-button" bindtap="previousPage" disabled="{{currentIndex === 0}}">上一页</button>
+      <text>{{pageLabel}}</text>
+      <button class="secondary-button switch-button" bindtap="nextPage" disabled="{{currentIndex >= totalPages - 1}}">下一页</button>
+    </view>
+
+    <view class="preview-actions">
+      <view class="action-row action-row--responsive">
+        <button class="secondary-button" bindtap="previewAll">预览全部</button>
+        <button class="secondary-button" bindtap="shareCurrent">分享当前页</button>
+      </view>
+      <button class="primary-button save-button" bindtap="saveAll" disabled="{{saving}}">{{saving ? (saveProgress || '保存中…') : '保存全部图片'}}</button>
+    </view>
+    <view class="share-note">微信一次只能稳定分享当前一张图片；需要发送多页时，请先保存全部，再在微信聊天中从相册多选发送。</view>
+  </block>
+</view>

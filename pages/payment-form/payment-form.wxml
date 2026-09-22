@@ -18,7 +18,7 @@
     <view class="settlement-dialog">
       <view class="settlement-title">本期已全部收款</view>
       <view class="settlement-content">是否结清本期并生成历史账单？暂不结清时，本期仍保持进行中，后续发货继续记在本期。</view>
-      <view class="settlement-actions">
+      <view class="settlement-actions action-row action-row--responsive">
         <button class="dialog-secondary" bindtap="deferSettlement" disabled="{{closing}}">暂不结清</button>
         <button class="dialog-primary" bindtap="confirmSettlement" loading="{{closing}}" disabled="{{closing}}">确认结清本期</button>
       </view>

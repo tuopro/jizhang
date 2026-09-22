@@ -1,1 +1,11 @@
-.profile-card{display:flex;align-items:center;padding:36rpx;border-radius:24rpx;background:#123b67;color:#fff}.enterprise-avatar{display:flex;align-items:center;justify-content:center;width:84rpx;height:84rpx;margin-right:24rpx;border-radius:22rpx;background:#fff;color:#123b67;font-size:38rpx;font-weight:700}.enterprise-name{font-size:34rpx;font-weight:700}.profile-meta{margin-top:8rpx;opacity:.75;font-size:24rpx}.menu-card{margin-top:24rpx;padding:0 28rpx;border-radius:20rpx;background:#fff;border:1rpx solid #e3e8ed}.menu-row{display:flex;align-items:center;justify-content:space-between;min-height:98rpx;border-bottom:1rpx solid #edf0f3;color:#23374c;font-size:29rpx}.menu-row:last-child{border-bottom:0}.dev-card{margin-top:16rpx}.logout-button{margin-top:30rpx;border-radius:16rpx;background:#fff;color:#c43d3d;font-size:29rpx}
+.profile-card { display:flex;align-items:center;padding:34rpx;border:1rpx solid var(--ledger-primary-strong);border-radius:20rpx;background:var(--ledger-primary);color:#fff;box-shadow:0 14rpx 34rpx rgba(23,63,104,.16); }
+.enterprise-avatar { display:flex;align-items:center;justify-content:center;flex-shrink:0;width:82rpx;height:82rpx;margin-right:22rpx;border-radius:20rpx;background:#fff;color:var(--ledger-primary);font-size:36rpx;font-weight:700; }
+.profile-card > view:last-child { min-width:0; }
+.enterprise-name { overflow:hidden;font-size:33rpx;font-weight:700;text-overflow:ellipsis;white-space:nowrap; }
+.profile-meta { margin-top:7rpx;opacity:.78;font-size:23rpx; }
+.menu-card { margin-top:20rpx;padding:0 26rpx;border:1rpx solid var(--ledger-border);border-radius:var(--ledger-card-radius);background:var(--ledger-surface);box-shadow:var(--ledger-card-shadow); }
+.menu-row { display:flex;align-items:center;justify-content:space-between;min-height:96rpx;border-bottom:1rpx solid var(--ledger-divider);color:var(--ledger-text);font-size:29rpx; }
+.menu-row text:last-child { color:var(--ledger-text-muted);font-size:32rpx; }
+.menu-row:last-child { border-bottom:0; }
+.dev-card { margin-top:14rpx; }
+.logout-button { margin-top:28rpx;border:1rpx solid #e0a7ad;border-radius:var(--ledger-button-radius);background:var(--ledger-surface);color:var(--ledger-danger);font-size:29rpx; }

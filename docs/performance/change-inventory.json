@@ -1,0 +1,29 @@
+{
+  "basis": "Exact files captured at task start, including all pre-existing uncommitted work, not git HEAD. Performance patch includes changed existing files and new runtime/test/benchmark JS; report/evidence documents listed separately.",
+  "changedExistingFiles": [
+    "PREFERENCES.md",
+    "cloudfunctions/ledger/index.js",
+    "cloudfunctions/ledger/services/statement-export-file.js",
+    "pages/client-ledger/client-ledger.js",
+    "pages/clients/clients.js",
+    "pages/clients/clients.wxml",
+    "pages/customer-prices/customer-prices.js",
+    "pages/history/history.js",
+    "pages/products/products.js",
+    "pages/quick-entry/quick-entry.js",
+    "pages/statement/statement.js",
+    "services/cloud-repository.js",
+    "services/page-context.js",
+    "tests/quick-entry-page.test.js"
+  ],
+  "newCodeFiles": [
+    "scripts/benchmark-performance.js",
+    "scripts/performance-fixture.js",
+    "services/progressive-list.js",
+    "tests/performance-client.test.js",
+    "tests/performance-cloud.test.js",
+    "tests/progressive-list.test.js"
+  ],
+  "deletedOriginalFiles": [],
+  "preExistingFileCount": 178
+}

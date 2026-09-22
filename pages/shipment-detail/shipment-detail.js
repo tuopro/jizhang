@@ -1,12 +1,14 @@
 const { loadPage } = require('../../services/page-context')
+const { canEditShipment } = require('../../services/ledger-repository')
 const { formatCurrency } = require('../../utils/money')
 
 const ACTION_NAMES = { CREATE_SHIPMENT: '创建发货记录', UPDATE_SHIPMENT: '修正发货记录' }
 
 Page({
-  data: { shipment: null, itemsSubtotal: '¥0.00', freight: '¥0.00', total: '¥0.00', lines: [], audits: [], canEdit: true },
+  data: { shipment: null, itemsSubtotal: '¥0.00', freight: '¥0.00', total: '¥0.00', lines: [], audits: [], canEdit: false, isClosed: false, editUnavailableReason: '' },
   onLoad(options) { this.shipmentId = options.id || '' },
   onShow() {
+    this.setData({ canEdit: false, isClosed: false, editUnavailableReason: '' })
     loadPage(this, (repository, tenantId) => {
       const shipment = repository.getShipment(tenantId, this.shipmentId)
       if (!shipment) {
@@ -16,14 +18,24 @@ Page({
         })
         return
       }
-      const period = repository.getPeriodDetail(tenantId, shipment.periodId)
-      const identity = repository.isCloudRepository ? repository.getIdentity() : { role: 'admin' }
+      const identity = repository.isCloudRepository ? repository.getIdentity() : { role: 'admin', status: 'active' }
+      let canEdit = false
+      let isClosed = false
+      let editUnavailableReason = ''
+      try {
+        const { client, period } = repository.getShipmentEditContext(tenantId, shipment.id)
+        isClosed = period.isClosed
+        canEdit = canEditShipment(identity, client, period)
+        if (!isClosed && period.status !== 'open') editUnavailableReason = '账期状态异常，暂不能修正'
+      } catch (error) {
+        editUnavailableReason = error.message
+      }
       this.setData({
         shipment: Object.assign({}, shipment, { createdByText: shipment.createdByNameSnapshot || '未记录' }),
         itemsSubtotal: formatCurrency(shipment.itemsSubtotalCents),
         freight: formatCurrency(shipment.freightCents),
         total: formatCurrency(shipment.totalAmountCents),
-        canEdit: identity.role === 'admin' && !(period && period.period.isClosed),
+        canEdit, isClosed, editUnavailableReason,
         lines: shipment.lines.map(line => ({
           id: line.id, product: line.productSnapshot.label,
           quantity: `${line.originalQuantity}${line.originalUnit}`,
@@ -39,5 +51,7 @@ Page({
       })
     })
   },
-  edit() { wx.navigateTo({ url: `/pages/quick-entry/quick-entry?shipmentId=${this.shipmentId}` }) }
+  edit() {
+    if (this.data.canEdit) wx.navigateTo({ url: `/pages/quick-entry/quick-entry?shipmentId=${this.shipmentId}` })
+  }
 })

@@ -6,6 +6,7 @@ const {
   resetRepository
 } = require('./repository-instance')
 const { isAccessError, accessReason } = require('./access-control')
+const { runAfterPrivacyConsent } = require('./privacy-consent')
 
 let redirectingForAccess = false
 
@@ -22,23 +23,41 @@ function handleAccessError(error) {
   return true
 }
 
-function loadPage(page, callback) {
-  if (!isCloudMode()) {
-    getRepository().initializeDemoTenant()
-    callback(getRepository(), getActiveTenantId())
-    return
-  }
-  wx.showLoading({ title: '加载中' })
-  prepareRepository().then(() => {
-    wx.hideLoading()
-    callback(getRepository(), getActiveTenantId())
-  }).catch(error => {
-    wx.hideLoading()
-    if (handleAccessError(error)) return
-    wx.showModal({
-      title: '数据加载失败',
-      content: error.message || '请检查云开发环境和 ledger 云函数',
-      showCancel: false
+function loadPage(page, callback, onError) {
+  runAfterPrivacyConsent(page, () => {
+    if (!isCloudMode()) {
+      getRepository().initializeDemoTenant()
+      callback(getRepository(), getActiveTenantId())
+      return
+    }
+    const repository = getRepository()
+    const refreshing = page && page._loadedRepository === repository
+    if (!refreshing) wx.showLoading({ title: '加载中' })
+    else if (wx.showNavigationBarLoading) wx.showNavigationBarLoading()
+    const finishLoading = () => {
+      if (!refreshing) wx.hideLoading()
+      else if (wx.hideNavigationBarLoading) wx.hideNavigationBarLoading()
+    }
+    prepareRepository().then(() => {
+      finishLoading()
+      const current = getRepository()
+      current.withReadSnapshot(() => callback(current, getActiveTenantId()))
+      if (page) page._loadedRepository = current
+    }).catch(error => {
+      finishLoading()
+      if (handleAccessError(error)) {
+        if (onError) onError(error)
+        return
+      }
+      if (onError) {
+        onError(error)
+        return
+      }
+      wx.showModal({
+        title: '数据加载失败',
+        content: error.message || '请检查云开发环境和 ledger 云函数',
+        showCancel: false
+      })
     })
   })
 }

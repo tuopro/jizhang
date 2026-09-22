@@ -1,2 +1,46 @@
-.statement-paper{padding:38rpx 30rpx;border:1rpx solid #dfe5ea;border-radius:18rpx;background:#fff}.statement-title{text-align:center;font-size:40rpx;font-weight:700;color:#152a40}.statement-client{margin-top:28rpx;font-size:32rpx;font-weight:700}.statement-period{margin-top:10rpx;color:#6c7b88;font-size:24rpx}.status-chip{display:inline-block;margin-top:18rpx;padding:8rpx 18rpx;border-radius:20rpx;background:#fff0e2;color:#b8620b;font-size:23rpx}.status-chip.settled{background:#e8f7ef;color:#21865a}.statement-section{margin:36rpx 0 16rpx;padding-bottom:12rpx;border-bottom:2rpx solid #173d66;font-weight:700}.shipment-block{margin-bottom:22rpx}.shipment-header{display:flex;justify-content:space-between;padding:14rpx 0;background:#f4f7f9;font-weight:650}.statement-line{padding:16rpx 0;border-bottom:1rpx solid #edf0f3}.line-product{font-weight:600}.line-meta{display:flex;justify-content:space-between;margin-top:8rpx;color:#667685;font-size:24rpx}.payment-line{display:flex;justify-content:space-between;padding:16rpx 0;border-bottom:1rpx solid #edf0f3}.empty-inline{color:#82909d;font-size:25rpx}.totals{margin-top:34rpx;padding-top:20rpx;border-top:2rpx solid #173d66}.totals>view{display:flex;justify-content:space-between;margin-top:18rpx}.outstanding-total{font-size:32rpx;font-weight:700}.export-note{margin:24rpx 8rpx;color:#7a8793;font-size:23rpx;line-height:1.6}
-.shipment-totals{margin-top:8rpx;padding:14rpx 0;border-bottom:1rpx solid #dfe5ea;color:#5e6f7e;font-size:23rpx}.shipment-totals>view{display:flex;justify-content:space-between;margin-top:8rpx}.shipment-totals>view:first-child{margin-top:0}.shipment-total-row{padding-top:10rpx;border-top:1rpx dashed #d5dde4;color:#213b54;font-weight:700}
+.statement-page { padding-top:20rpx; }
+.statement-paper { padding:34rpx 28rpx;border:1rpx solid var(--ledger-border);border-radius:var(--ledger-card-radius);background:var(--ledger-surface);box-shadow:var(--ledger-card-shadow); }
+.statement-heading { display:flex;align-items:flex-start;justify-content:space-between;gap:20rpx;padding-bottom:24rpx;border-bottom:2rpx solid var(--ledger-primary); }
+.statement-heading > view:first-child { min-width:0; }
+.statement-title { color:var(--ledger-text);font-size:38rpx;font-weight:700;line-height:1.25; }
+.statement-client { margin-top:10rpx;color:var(--ledger-text-secondary);font-size:29rpx;font-weight:650;overflow-wrap:anywhere;word-break:break-word; }
+.statement-meta { padding:18rpx 0 2rpx; }
+.statement-period { display:flex;justify-content:space-between;gap:24rpx;margin-top:10rpx;color:var(--ledger-text-muted);font-size:24rpx;line-height:1.5; }
+.statement-period text:last-child { min-width:0;color:var(--ledger-text-secondary);text-align:right;overflow-wrap:anywhere;word-break:break-word; }
+.status-chip { flex-shrink:0;padding:8rpx 16rpx;border-radius:18rpx;background:var(--ledger-warning-soft);color:var(--ledger-warning);font-size:22rpx;font-weight:600; }
+.status-chip.settled { background:var(--ledger-success-soft);color:var(--ledger-success); }
+.statement-section { margin:34rpx 0 14rpx;padding-bottom:11rpx;border-bottom:2rpx solid var(--ledger-primary);color:var(--ledger-text);font-weight:700; }
+.shipment-block { margin-bottom:24rpx;border-bottom:1rpx solid var(--ledger-border); }
+.shipment-header { display:flex;justify-content:space-between;gap:16rpx;padding:14rpx 12rpx;background:#f3f6f9;color:var(--ledger-text);font-size:24rpx;font-weight:650;line-height:1.5; }
+.shipment-header text:first-child { min-width:0;overflow-wrap:anywhere;word-break:break-word; }
+.shipment-header text:last-child { flex-shrink:0;text-align:right; }
+.statement-line { padding:15rpx 0;border-bottom:1rpx solid var(--ledger-divider); }
+.line-product { color:var(--ledger-text);font-weight:600;line-height:1.5;overflow-wrap:anywhere;word-break:break-all; }
+.line-meta { display:flex;justify-content:space-between;gap:18rpx;margin-top:7rpx;color:var(--ledger-text-muted);font-size:24rpx; }
+.line-meta text:first-child { min-width:0;overflow-wrap:anywhere;word-break:break-word; }
+.line-meta text:last-child { flex-shrink:0;text-align:right;white-space:nowrap; }
+.payment-line { display:flex;justify-content:space-between;gap:20rpx;padding:16rpx 0;border-bottom:1rpx solid var(--ledger-divider); }
+.payment-line > view { min-width:0; }
+.empty-inline { color:var(--ledger-text-muted);font-size:25rpx; }
+.totals { margin-top:30rpx;padding:20rpx 18rpx;border-top:2rpx solid var(--ledger-primary);background:#f7f9fb; }
+.totals>view { display:flex;justify-content:space-between;gap:24rpx;margin-top:16rpx; }
+.totals>view text:last-child { flex-shrink:0;text-align:right;white-space:nowrap; }
+.totals>view:first-child { margin-top:0; }
+.outstanding-total { padding-top:16rpx;border-top:1rpx solid var(--ledger-border);font-size:32rpx;font-weight:700; }
+.export-note { margin:22rpx 8rpx;color:var(--ledger-text-muted);font-size:23rpx;line-height:1.6; }
+.statement-export-actions { min-width:0;margin-top:28rpx;padding-top:24rpx;border-top:1rpx solid var(--ledger-border); }
+.excel-ready-card { box-sizing:border-box;width:100%;min-width:0;margin-top:16rpx;padding:20rpx;border:1rpx solid var(--ledger-border);border-radius:var(--ledger-control-radius);background:var(--ledger-primary-soft); }
+.excel-file-name { color:var(--ledger-text);font-size:26rpx;font-weight:650;overflow-wrap:anywhere;word-break:break-all; }
+.excel-file-actions { gap:14rpx;margin-top:16rpx; }
+.excel-file-actions .secondary-button { min-height:72rpx;font-size:26rpx; }
+.shipment-totals { margin-top:6rpx;padding:13rpx 0 16rpx;color:var(--ledger-text-secondary);font-size:23rpx; }
+.shipment-totals>view { display:flex;justify-content:space-between;gap:20rpx;margin-top:8rpx; }
+.shipment-totals>view text:last-child { flex-shrink:0;text-align:right;white-space:nowrap; }
+.shipment-totals>view:first-child { margin-top:0; }
+.shipment-total-row { padding-top:10rpx;border-top:1rpx dashed var(--ledger-border);color:var(--ledger-text);font-weight:700; }
+
+@media (max-width: 340px) {
+  .statement-paper { padding-right:22rpx;padding-left:22rpx; }
+  .statement-title { font-size:35rpx; }
+  .shipment-header { font-size:22rpx; }
+}

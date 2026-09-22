@@ -1,11 +1,17 @@
 <view class="page statement-page" wx:if="{{client}}">
   <view class="statement-paper">
-    <view class="statement-title">客户对账单</view>
-    <view class="statement-client">{{client.name}}</view>
-    <view class="statement-period">账期：{{periodTitle}}</view>
-    <view class="statement-period">对账周期：{{periodLabel}}</view>
-    <view class="statement-period">负责人：{{periodOwnerText}}</view>
-    <view class="status-chip {{isClosed ? 'settled' : ''}}">{{isClosed ? '已结清' : '进行中'}}</view>
+    <view class="statement-heading">
+      <view>
+        <view class="statement-title">客户对账单</view>
+        <view class="statement-client">{{client.name}}</view>
+      </view>
+      <view class="status-chip {{isClosed ? 'settled' : ''}}">{{isClosed ? '已结清' : '进行中'}}</view>
+    </view>
+    <view class="statement-meta">
+      <view class="statement-period"><text>账期</text><text>{{periodTitle}}</text></view>
+      <view class="statement-period"><text>起止日期</text><text>{{periodLabel}}</text></view>
+      <view class="statement-period"><text>负责人</text><text>{{periodOwnerText}}</text></view>
+    </view>
 
     <view class="statement-section">发货明细</view>
     <view wx:if="{{shipments.length === 0}}" class="empty-state">当前周期暂无发货</view>
@@ -35,6 +41,21 @@
       <view><text>已收</text><text class="amount-success">{{received}}</text></view>
       <view class="outstanding-total"><text>剩余应收</text><text class="amount-danger">{{outstanding}}</text></view>
     </view>
+
+    <view wx:if="{{canExport}}" class="statement-export-actions">
+      <view class="action-row action-row--responsive statement-export-row">
+        <button class="secondary-button" bindtap="generateShareImages" disabled="{{openingImageExport}}">{{openingImageExport ? '正在打开…' : '生成分享图片'}}</button>
+        <button class="primary-button" bindtap="exportExcel" disabled="{{exportingExcel}}">{{exportingExcel ? '正在生成 Excel…' : (excelReady ? '重新导出 Excel' : '导出 Excel')}}</button>
+      </view>
+      <view wx:if="{{excelReady}}" class="excel-ready-card">
+        <view class="excel-file-name">{{excelFileName}}</view>
+        <view class="row-note">{{excelProgress}}</view>
+        <view class="action-row action-row--responsive excel-file-actions">
+          <button class="secondary-button" bindtap="openExcel">打开 Excel</button>
+          <button class="secondary-button" bindtap="shareExcel">发送 Excel</button>
+        </view>
+      </view>
+    </view>
   </view>
-  <view class="export-note">第一版已完成小程序内预览。长图、PDF、Excel 将作为后续导出能力增加，不影响当前记账闭环。</view>
+  <view wx:if="{{canExport}}" class="export-note">图片按表格分页生成；Excel 在云端只读生成，下载后立即清理云端临时文件。两种导出都不会修改账务数据。</view>
 </view>

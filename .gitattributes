@@ -1,0 +1,2 @@
+# Unified diff uses one space for an empty context line; preserve this evidence file.
+docs/performance/performance-only.patch whitespace=-blank-at-eol

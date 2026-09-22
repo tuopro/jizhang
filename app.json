@@ -10,12 +10,14 @@
     "pages/shipment-detail/shipment-detail",
     "pages/payment-form/payment-form",
     "pages/statement/statement",
+    "pages/statement-export/statement-export",
     "pages/products/products",
     "pages/product-form/product-form",
     "pages/customer-prices/customer-prices",
     "pages/enterprise/enterprise",
     "pages/members/members",
     "pages/join-enterprise/join-enterprise",
+    "pages/privacy-consent/privacy-consent",
     "pages/unauthorized/unauthorized",
     "pages/owner-transfer/owner-transfer",
     "pages/audit-logs/audit-logs",
@@ -44,5 +46,10 @@
     ]
   },
   "style": "v2",
+  "permission": {
+    "scope.writePhotosAlbum": {
+      "desc": "用于在你主动点击保存时，将分页账单图片保存到系统相册"
+    }
+  },
   "sitemapLocation": "sitemap.json"
 }

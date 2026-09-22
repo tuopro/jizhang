@@ -170,7 +170,7 @@
 
     <view wx:if="{{item.calculationText}}" class="calculation-note">{{item.calculationText}}</view>
 
-    <view wx:if="{{item.unitPriceYuan}}" class="save-price-row">
+    <view wx:if="{{item.unitPriceYuan && (!editing || canSaveCorrectionPrices)}}" class="save-price-row">
       <view>
         <view class="save-title">
           {{item.savedPriceCents === null ? '保存为该客户以后默认价格' : '更新该客户以后默认价格'}}
@@ -344,7 +344,7 @@
         />
         <view class="form-tip">例如：白色4040 1.2米；4040白1.2。别名只用于识别，不改变产品名称。</view>
 
-        <view class="custom-form-actions">
+        <view class="custom-form-actions action-row action-row--responsive">
           <button class="secondary-form-button" bindtap="closeProductSelector">取消</button>
           <button class="primary-button save-use-button" bindtap="saveCustomProduct">保存并使用</button>
         </view>

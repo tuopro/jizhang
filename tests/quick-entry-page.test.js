@@ -1,17 +1,23 @@
 const test = require('node:test')
 const assert = require('node:assert/strict')
 
-test('记一笔页面可完成验收示例并在补齐28元后解锁确认入账', () => {
+test('记一笔页面可完成验收示例并在补齐28元后解锁确认入账', async () => {
   let storedValue = null
   let pageDefinition = null
   let navigatedBack = false
 
   global.wx = {
-    getStorageSync() {
+    getStorageSync(key) {
+      if (key === 'ledger_privacy_consent') {
+        return { version: '2026-09-v2', agreedAt: '2026-09-20T12:00:00.000Z' }
+      }
       return storedValue
     },
     setStorageSync(key, value) {
       storedValue = JSON.parse(JSON.stringify(value))
+    },
+    getPrivacySetting(options) {
+      options.success({ needAuthorization: false, privacyContractName: '线槽记账助手隐私保护指引' })
     },
     showToast() {},
     showModal(options) {
@@ -41,7 +47,7 @@ test('记一笔页面可完成验收示例并在补齐28元后解锁确认入账
 
   const page = createPage()
 
-  page.onLoad()
+  await page.onLoad()
   page.loadAcceptanceSample()
   assert.equal(page.data.rows.length, 3)
   assert.equal(page.data.missingCount, 1)
@@ -86,7 +92,7 @@ test('记一笔页面可完成验收示例并在补齐28元后解锁确认入账
   ))
 
   const mismatchPage = createPage()
-  mismatchPage.onLoad()
+  await mismatchPage.onLoad()
   mismatchPage.setData({ orderText: '4040开口白色50根' })
   mismatchPage.parseOrder()
   assert.equal(mismatchPage.data.rows[0].unit, '根')
@@ -101,7 +107,7 @@ test('记一笔页面可完成验收示例并在补齐28元后解锁确认入账
   assert.equal(mismatchPage.data.totalText, '¥680.00')
 
   const customPage = createPage()
-  customPage.onLoad()
+  await customPage.onLoad()
   customPage.setData({ orderText: '白色装潢1525，1.3米长的50根' })
   customPage.parseOrder()
   assert.equal(customPage.data.rows[0].canCreateCustomProduct, true)
@@ -127,7 +133,7 @@ test('记一笔页面可完成验收示例并在补齐28元后解锁确认入账
   customPage.postShipment()
 
   const repeatPage = createPage()
-  repeatPage.onLoad()
+  await repeatPage.onLoad()
   repeatPage.setData({ orderText: '白色装潢1525，1.3米的100根' })
   repeatPage.parseOrder()
   assert.equal(repeatPage.data.rows[0].canCreateCustomProduct, false)
@@ -136,15 +142,15 @@ test('记一笔页面可完成验收示例并在补齐28元后解锁确认入账
   assert.equal(repeatPage.data.canPost, true)
 
   const correctionPage = createPage()
-  correctionPage.onLoad()
+  await correctionPage.onLoad()
   correctionPage.setData({ orderText: '白色4040，1.2米长的1000根' })
   correctionPage.parseOrder()
   assert.equal(correctionPage.data.rows[0].productId, '')
   correctionPage.openProductSelector({ currentTarget: { dataset: { index: 0 } } })
   assert.equal(correctionPage.data.selectorOpen, true)
-  assert.ok(correctionPage.data.standardProductOptions.length > 0)
-  assert.ok(correctionPage.data.customProductOptions.length > 0)
-  const standardOption = correctionPage.data.productOptions.find(option =>
+  assert.ok(correctionPage.standardProductOptions.length > 0)
+  assert.ok(correctionPage.customProductOptions.length > 0)
+  const standardOption = correctionPage.productOptions.find(option =>
     option.label === '40×40 / 粗齿 / 白色'
   )
   correctionPage.selectProduct({ currentTarget: { dataset: { productId: standardOption.id } } })
@@ -152,7 +158,7 @@ test('记一笔页面可完成验收示例并在补齐28元后解锁确认入账
   assert.equal(correctionPage.data.rows[0].needsProductConfirmation, false)
 
   const lengthPage = createPage()
-  lengthPage.onLoad()
+  await lengthPage.onLoad()
   lengthPage.setData({ orderText: '白色4040，1.2米长的1000根' })
   lengthPage.parseOrder()
   assert.equal(lengthPage.data.rows[0].productLengthMeters, 1.2)
@@ -180,7 +186,7 @@ test('记一笔页面可完成验收示例并在补齐28元后解锁确认入账
   lengthPage.postShipment()
 
   const lengthRepeatPage = createPage()
-  lengthRepeatPage.onLoad()
+  await lengthRepeatPage.onLoad()
   lengthRepeatPage.setData({ orderText: '白色4040 1.2米长500根' })
   lengthRepeatPage.parseOrder()
   assert.equal(lengthRepeatPage.data.rows[0].canCreateCustomProduct, false)

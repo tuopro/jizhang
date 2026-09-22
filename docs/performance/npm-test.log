@@ -1,0 +1,1556 @@
+
+> monthly-credit-ledger-miniprogram@0.1.0 test
+> node --test tests/*.test.js
+
+TAP version 13
+# Subtest: 1 active admin 可正常建立企业身份
+ok 1 - 1 active admin 可正常建立企业身份
+  ---
+  duration_ms: 0.533167
+  type: 'test'
+  ...
+# Subtest: 2 active member 可正常建立企业身份
+ok 2 - 2 active member 可正常建立企业身份
+  ---
+  duration_ms: 0.090459
+  type: 'test'
+  ...
+# Subtest: 3 无 membership 不能读取客户列表
+ok 3 - 3 无 membership 不能读取客户列表
+  ---
+  duration_ms: 0.225833
+  type: 'test'
+  ...
+# Subtest: 4 无 membership 不能读取客户详情
+ok 4 - 4 无 membership 不能读取客户详情
+  ---
+  duration_ms: 0.052792
+  type: 'test'
+  ...
+# Subtest: 5 无 membership 不能读取账期
+ok 5 - 5 无 membership 不能读取账期
+  ---
+  duration_ms: 0.104584
+  type: 'test'
+  ...
+# Subtest: 6 无 membership 不能读取历史账
+ok 6 - 6 无 membership 不能读取历史账
+  ---
+  duration_ms: 0.04
+  type: 'test'
+  ...
+# Subtest: 7 无 membership 不能读取客户价格
+ok 7 - 7 无 membership 不能读取客户价格
+  ---
+  duration_ms: 0.088875
+  type: 'test'
+  ...
+# Subtest: 8 无 membership 不能新增客户
+ok 8 - 8 无 membership 不能新增客户
+  ---
+  duration_ms: 0.044375
+  type: 'test'
+  ...
+# Subtest: 9 无 membership 不能记发货
+ok 9 - 9 无 membership 不能记发货
+  ---
+  duration_ms: 0.244042
+  type: 'test'
+  ...
+# Subtest: 10 无 membership 不能登记收款
+ok 10 - 10 无 membership 不能登记收款
+  ---
+  duration_ms: 0.219167
+  type: 'test'
+  ...
+# Subtest: 11 无 membership 不能结清账期
+ok 11 - 11 无 membership 不能结清账期
+  ---
+  duration_ms: 0.149125
+  type: 'test'
+  ...
+# Subtest: 12 无 membership 不能调用删除与删除预览
+ok 12 - 12 无 membership 不能调用删除与删除预览
+  ---
+  duration_ms: 0.045792
+  type: 'test'
+  ...
+# Subtest: 13 disabled member 不能读取企业快照
+ok 13 - 13 disabled member 不能读取企业快照
+  ---
+  duration_ms: 0.049708
+  type: 'test'
+  ...
+# Subtest: 14 disabled member 不能写入
+ok 14 - 14 disabled member 不能写入
+  ---
+  duration_ms: 0.041875
+  type: 'test'
+  ...
+# Subtest: 15 disabled member 不能通过 inviteToken 重新加入
+ok 15 - 15 disabled member 不能通过 inviteToken 重新加入
+  ---
+  duration_ms: 0.066875
+  type: 'test'
+  ...
+# Subtest: 16 无 membership 加有效 inviteToken 可进入加入流程
+ok 16 - 16 无 membership 加有效 inviteToken 可进入加入流程
+  ---
+  duration_ms: 0.889334
+  type: 'test'
+  ...
+# Subtest: 17 无效 token 不能加入
+ok 17 - 17 无效 token 不能加入
+  ---
+  duration_ms: 0.07375
+  type: 'test'
+  ...
+# Subtest: 18 过期 token 不能加入
+ok 18 - 18 过期 token 不能加入
+  ---
+  duration_ms: 0.051584
+  type: 'test'
+  ...
+# Subtest: 19 revoked token 不能加入
+ok 19 - 19 revoked token 不能加入
+  ---
+  duration_ms: 0.040584
+  type: 'test'
+  ...
+# Subtest: 20 同一成员不能重复加入
+ok 20 - 20 同一成员不能重复加入
+  ---
+  duration_ms: 0.035125
+  type: 'test'
+  ...
+# Subtest: 21 前端伪造 tenantId 不参与服务端授权
+ok 21 - 21 前端伪造 tenantId 不参与服务端授权
+  ---
+  duration_ms: 0.105292
+  type: 'test'
+  ...
+# Subtest: 22 前端伪造 memberId 不参与服务端身份建立
+ok 22 - 22 前端伪造 memberId 不参与服务端身份建立
+  ---
+  duration_ms: 0.080958
+  type: 'test'
+  ...
+# Subtest: 23 前端伪造 role admin 不参与服务端授权
+ok 23 - 23 前端伪造 role admin 不参与服务端授权
+  ---
+  duration_ms: 0.04625
+  type: 'test'
+  ...
+# Subtest: 24 直接访问任一正式页仍会进入统一身份检查
+ok 24 - 24 直接访问任一正式页仍会进入统一身份检查
+  ---
+  duration_ms: 2.220875
+  type: 'test'
+  ...
+# Subtest: 25 陌生用户不会自动创建 enterprise
+ok 25 - 25 陌生用户不会自动创建 enterprise
+  ---
+  duration_ms: 0.132542
+  type: 'test'
+  ...
+# Subtest: 26 陌生用户不会自动创建 admin membership
+ok 26 - 26 陌生用户不会自动创建 admin membership
+  ---
+  duration_ms: 0.074708
+  type: 'test'
+  ...
+# Subtest: 27 账单导出 action 全部要求 active membership 且不是公开入口
+ok 27 - 27 账单导出 action 全部要求 active membership 且不是公开入口
+  ---
+  duration_ms: 0.057875
+  type: 'test'
+  ...
+# Subtest: 9月1日开始发货、9月15日确认结清，形成一个9/1至9/15账期
+ok 28 - 9月1日开始发货、9月15日确认结清，形成一个9/1至9/15账期
+  ---
+  duration_ms: 4.966375
+  type: 'test'
+  ...
+# Subtest: 9月18日至10月3日是一个跨月账期，不按月份拆成两张账单
+ok 29 - 9月18日至10月3日是一个跨月账期，不按月份拆成两张账单
+  ---
+  duration_ms: 0.738416
+  type: 'test'
+  ...
+# Subtest: 欠10000先收6000，账期继续进行
+ok 30 - 欠10000先收6000，账期继续进行
+  ---
+  duration_ms: 1.422875
+  type: 'test'
+  ...
+# Subtest: 再收4000余额归零时不能静默关闭，只返回需要人工确认
+ok 31 - 再收4000余额归零时不能静默关闭，只返回需要人工确认
+  ---
+  duration_ms: 0.400542
+  type: 'test'
+  ...
+# Subtest: 余额为0选择暂不结清时仍保持open，后续发货继续记在同一期
+ok 32 - 余额为0选择暂不结清时仍保持open，后续发货继续记在同一期
+  ---
+  duration_ms: 5.800833
+  type: 'test'
+  ...
+# Subtest: 只有用户确认结清后账期才进入历史并保存完整汇总
+ok 33 - 只有用户确认结清后账期才进入历史并保存完整汇总
+  ---
+  duration_ms: 0.504166
+  type: 'test'
+  ...
+# Subtest: 结清后再发货自动创建客户下一期，ID不依赖月份
+ok 34 - 结清后再发货自动创建客户下一期，ID不依赖月份
+  ---
+  duration_ms: 0.998292
+  type: 'test'
+  ...
+# Subtest: 历史账单页面使用期号与开始至结清日期，不用自然月命名
+ok 35 - 历史账单页面使用期号与开始至结清日期，不用自然月命名
+  ---
+  duration_ms: 0.267791
+  type: 'test'
+  ...
+# Subtest: 当前对账单默认覆盖整个进行中账期，包含跨月发货与收款
+ok 36 - 当前对账单默认覆盖整个进行中账期，包含跨月发货与收款
+  ---
+  duration_ms: 0.903875
+  type: 'test'
+  ...
+# Subtest: 旧月份账期可继续读取并派生客户期号，查询不会静默重写原数据
+ok 37 - 旧月份账期可继续读取并派生客户期号，查询不会静默重写原数据
+  ---
+  duration_ms: 0.776042
+  type: 'test'
+  ...
+# Subtest: 普通成员可以删除空客户，客户消失并保留DELETE_EMPTY_CLIENT审计
+ok 38 - 普通成员可以删除空客户，客户消失并保留DELETE_EMPTY_CLIENT审计
+  ---
+  duration_ms: 7.984291
+  type: 'test'
+  ...
+# Subtest: 普通成员不能删除存在shipment的客户，即使本人是客户负责人或伪造role=admin
+ok 39 - 普通成员不能删除存在shipment的客户，即使本人是客户负责人或伪造role=admin
+  ---
+  duration_ms: 1.784334
+  type: 'test'
+  ...
+# Subtest: 普通成员会分别被payment、billing_period和customer_price任一关联阻止
+ok 40 - 普通成员会分别被payment、billing_period和customer_price任一关联阻止
+  ---
+  duration_ms: 0.850083
+  type: 'test'
+  ...
+# Subtest: 管理员可以删除空客户
+ok 41 - 管理员可以删除空客户
+  ---
+  duration_ms: 0.221584
+  type: 'test'
+  ...
+# Subtest: 管理员删除有账客户前预览发货、收款、账期、价格、进行中账期和未收金额
+ok 42 - 管理员删除有账客户前预览发货、收款、账期、价格、进行中账期和未收金额
+  ---
+  duration_ms: 2.005625
+  type: 'test'
+  ...
+# Subtest: 管理员必须准确输入客户名称，才能彻底删除有正式账务的客户
+ok 43 - 管理员必须准确输入客户名称，才能彻底删除有正式账务的客户
+  ---
+  duration_ms: 0.382875
+  type: 'test'
+  ...
+# Subtest: 管理员彻底删除客户及全部专属账务，但保留旧审计和最终删除摘要
+ok 44 - 管理员彻底删除客户及全部专属账务，但保留旧审计和最终删除摘要
+  ---
+  duration_ms: 1.008
+  type: 'test'
+  ...
+# Subtest: 删除客户A不影响客户B、企业共享标准产品和企业共享自定义产品
+ok 45 - 删除客户A不影响客户B、企业共享标准产品和企业共享自定义产品
+  ---
+  duration_ms: 3.415417
+  type: 'test'
+  ...
+# Subtest: 删除客户不会删除enterprise、memberships或邀请类数据结构
+ok 46 - 删除客户不会删除enterprise、memberships或邀请类数据结构
+  ---
+  duration_ms: 0.674583
+  type: 'test'
+  ...
+# Subtest: tenant A管理员即使知道tenant B clientId也无法预览或删除
+ok 47 - tenant A管理员即使知道tenant B clientId也无法预览或删除
+  ---
+  duration_ms: 0.369208
+  type: 'test'
+  ...
+# Subtest: preview后新增业务时deleteClient重新统计，普通成员和管理员空客户快捷确认都不能绕过
+ok 48 - preview后新增业务时deleteClient重新统计，普通成员和管理员空客户快捷确认都不能绕过
+  ---
+  duration_ms: 1.37025
+  type: 'test'
+  ...
+# Subtest: 删除后旧clientId、periodId和shipmentId读取安全返回不存在
+ok 49 - 删除后旧clientId、periodId和shipmentId读取安全返回不存在
+  ---
+  duration_ms: 0.510667
+  type: 'test'
+  ...
+# Subtest: 云函数删除由服务端身份和事务控制，前端不能提交tenantId、memberId或role决定权限
+ok 50 - 云函数删除由服务端身份和事务控制，前端不能提交tenantId、memberId或role决定权限
+  ---
+  duration_ms: 0.498125
+  type: 'test'
+  ...
+# Subtest: 客户删除页面提供影响统计、欠款警告、名称完全匹配和危险操作区
+ok 51 - 客户删除页面提供影响统计、欠款警告、名称完全匹配和危险操作区
+  ---
+  duration_ms: 0.34225
+  type: 'test'
+  ...
+# Subtest: 云端从微信身份解析企业并在事务内写入，不接受前端 tenantId
+ok 52 - 云端从微信身份解析企业并在事务内写入，不接受前端 tenantId
+  ---
+  duration_ms: 0.960417
+  type: 'test'
+  ...
+# Subtest: 小程序前端不直接访问云数据库，正式模式默认启用云仓储
+ok 53 - 小程序前端不直接访问云数据库，正式模式默认启用云仓储
+  ---
+  duration_ms: 2.028291
+  type: 'test'
+  ...
+# Subtest: 云端领域服务重新计算商品合计与含运费总额，不采信前端total
+ok 54 - 云端领域服务重新计算商品合计与含运费总额，不采信前端total
+  ---
+  duration_ms: 0.4305
+  type: 'test'
+  ...
+# Subtest: 确认结清是独立云端事务操作，不由前端或收款动作直接改状态
+ok 55 - 确认结清是独立云端事务操作，不由前端或收款动作直接改状态
+  ---
+  duration_ms: 1.183833
+  type: 'test'
+  ...
+# Subtest: A或B创建客户时默认由真实当前成员负责，且双方仍共享查看全部客户
+ok 56 - A或B创建客户时默认由真实当前成员负责，且双方仍共享查看全部客户
+  ---
+  duration_ms: 8.780375
+  type: 'test'
+  ...
+# Subtest: 不同tenant继续绝对隔离，负责人字段不能替代tenant边界
+ok 57 - 不同tenant继续绝对隔离，负责人字段不能替代tenant边界
+  ---
+  duration_ms: 0.309875
+  type: 'test'
+  ...
+# Subtest: 新账期继承客户当前负责人，发货操作人可以是另一成员
+ok 58 - 新账期继承客户当前负责人，发货操作人可以是另一成员
+  ---
+  duration_ms: 1.183708
+  type: 'test'
+  ...
+# Subtest: B给A负责客户登记收款时账期负责人不变，payment记录B为登记人
+ok 59 - B给A负责客户登记收款时账期负责人不变，payment记录B为登记人
+  ---
+  duration_ms: 0.579125
+  type: 'test'
+  ...
+# Subtest: 客户负责人和当前账期负责人可以独立不同
+ok 60 - 客户负责人和当前账期负责人可以独立不同
+  ---
+  duration_ms: 1.462542
+  type: 'test'
+  ...
+# Subtest: 修改客户负责人可明确选择只改客户或连同当前账期一起转移
+ok 61 - 修改客户负责人可明确选择只改客户或连同当前账期一起转移
+  ---
+  duration_ms: 0.843459
+  type: 'test'
+  ...
+# Subtest: 已结清历史账期负责人快照不随客户转移或成员改名变化
+ok 62 - 已结清历史账期负责人快照不随客户转移或成员改名变化
+  ---
+  duration_ms: 1.414125
+  type: 'test'
+  ...
+# Subtest: 下一期重新继承届时客户负责人，不继承上一期临时负责人
+ok 63 - 下一期重新继承届时客户负责人，不继承上一期临时负责人
+  ---
+  duration_ms: 0.924125
+  type: 'test'
+  ...
+# Subtest: 账目修正和结清审计保存真实操作成员，不采信业务记录负责人
+ok 64 - 账目修正和结清审计保存真实操作成员，不采信业务记录负责人
+  ---
+  duration_ms: 1.073
+  type: 'test'
+  ...
+# Subtest: 停用仍负责客户的成员必须先选择接替人，转移后历史姓名仍保留
+ok 65 - 停用仍负责客户的成员必须先选择接替人，转移后历史姓名仍保留
+  ---
+  duration_ms: 1.669041
+  type: 'test'
+  ...
+# Subtest: 企业至少保留一个有效管理员且不能停用当前登录管理员
+ok 66 - 企业至少保留一个有效管理员且不能停用当前登录管理员
+  ---
+  duration_ms: 0.218459
+  type: 'test'
+  ...
+# Subtest: 旧客户负责人不会静默迁移，只能通过管理员确认的批量动作补齐并审计
+ok 67 - 旧客户负责人不会静默迁移，只能通过管理员确认的批量动作补齐并审计
+  ---
+  duration_ms: 0.223125
+  type: 'test'
+  ...
+# Subtest: 云函数邀请与身份安全边界由真实OPENID和membership决定
+ok 68 - 云函数邀请与身份安全边界由真实OPENID和membership决定
+  ---
+  duration_ms: 0.33125
+  type: 'test'
+  ...
+# Subtest: 无效、过期、作废和旧used状态的邀请码都被服务端规则拒绝
+ok 69 - 无效、过期、作废和旧used状态的邀请码都被服务端规则拒绝
+  ---
+  duration_ms: 0.110417
+  type: 'test'
+  ...
+# Subtest: 企业显示姓名必须明确填写且长度合法
+ok 70 - 企业显示姓名必须明确填写且长度合法
+  ---
+  duration_ms: 0.051
+  type: 'test'
+  ...
+# Subtest: 任何无membership微信用户都不会自动创建企业或管理员
+ok 71 - 任何无membership微信用户都不会自动创建企业或管理员
+  ---
+  duration_ms: 0.141458
+  type: 'test'
+  ...
+# Subtest: 普通成员可发起本人负责账期的结清，其它高风险操作仍由管理员权限拦截
+ok 72 - 普通成员可发起本人负责账期的结清，其它高风险操作仍由管理员权限拦截
+  ---
+  duration_ms: 0.380625
+  type: 'test'
+  ...
+# Subtest: 成员列表快照不会向前端暴露openid，邀请token也不进入企业账本快照
+ok 73 - 成员列表快照不会向前端暴露openid，邀请token也不进入企业账本快照
+  ---
+  duration_ms: 0.127916
+  type: 'test'
+  ...
+# Subtest: 1 安全文本允许创建客户，并使用官方2.0资料场景
+ok 74 - 1 安全文本允许创建客户，并使用官方2.0资料场景
+  ---
+  duration_ms: 2.51225
+  type: 'test'
+  ...
+# Subtest: 1.1 wx-server-sdk 成功包装的 errCode=0 和 pass 必须放行
+ok 75 - 1.1 wx-server-sdk 成功包装的 errCode=0 和 pass 必须放行
+  ---
+  duration_ms: 0.613166
+  type: 'test'
+  ...
+# Subtest: 2 风险文本拒绝创建客户
+ok 76 - 2 风险文本拒绝创建客户
+  ---
+  duration_ms: 0.685125
+  type: 'test'
+  ...
+# Subtest: 3 风险 displayName 拒绝成员加入
+ok 77 - 3 风险 displayName 拒绝成员加入
+  ---
+  duration_ms: 0.243708
+  type: 'test'
+  ...
+# Subtest: 4 风险 displayName 拒绝管理员修改成员姓名
+ok 78 - 4 风险 displayName 拒绝管理员修改成员姓名
+  ---
+  duration_ms: 0.148333
+  type: 'test'
+  ...
+# Subtest: 5 风险 sourceText 拒绝正式发货入账
+ok 79 - 5 风险 sourceText 拒绝正式发货入账
+  ---
+  duration_ms: 0.332708
+  type: 'test'
+  ...
+# Subtest: 6 风险 shipment note 拒绝保存
+ok 80 - 6 风险 shipment note 拒绝保存
+  ---
+  duration_ms: 0.134833
+  type: 'test'
+  ...
+# Subtest: 7 风险 payment note 拒绝保存
+ok 81 - 7 风险 payment note 拒绝保存
+  ---
+  duration_ms: 0.091875
+  type: 'test'
+  ...
+# Subtest: 8 风险账目修正 reason 拒绝保存
+ok 82 - 8 风险账目修正 reason 拒绝保存
+  ---
+  duration_ms: 0.277167
+  type: 'test'
+  ...
+# Subtest: 9 风险自定义产品名称拒绝保存
+ok 83 - 9 风险自定义产品名称拒绝保存
+  ---
+  duration_ms: 0.586166
+  type: 'test'
+  ...
+# Subtest: 10 微信内容安全 API 异常时不静默放行，仅保留脱敏诊断
+ok 84 - 10 微信内容安全 API 异常时不静默放行，仅保留脱敏诊断
+  ---
+  duration_ms: 0.569416
+  type: 'test'
+  ...
+# Subtest: 10.1 本地 JavaScript 异常记录脱敏 name/message，不冒充微信错误
+ok 85 - 10.1 本地 JavaScript 异常记录脱敏 name/message，不冒充微信错误
+  ---
+  duration_ms: 0.282208
+  type: 'test'
+  ...
+# Subtest: 10.2 微信原始 v2 非零 errcode 才按 API 异常处理
+ok 86 - 10.2 微信原始 v2 非零 errcode 才按 API 异常处理
+  ---
+  duration_ms: 0.118208
+  type: 'test'
+  ...
+# Subtest: 11 没有新增或修改自由文本时跳过检查，已有账单读取不受 API 异常影响
+ok 87 - 11 没有新增或修改自由文本时跳过检查，已有账单读取不受 API 异常影响
+  ---
+  duration_ms: 0.053375
+  type: 'test'
+  ...
+# Subtest: 12 金额、日期、ID、电话和固定枚举不参与普通文本审核
+ok 88 - 12 金额、日期、ID、电话和固定枚举不参与普通文本审核
+  ---
+  duration_ms: 0.097334
+  type: 'test'
+  ...
+# Subtest: 13 前端伪造 contentSafe=true 不会形成服务端放行依据
+ok 89 - 13 前端伪造 contentSafe=true 不会形成服务端放行依据
+  ---
+  duration_ms: 0.043583
+  type: 'test'
+  ...
+# Subtest: 14 直接调用 ledger 云函数仍使用服务端 OPENID 和统一安全检查
+ok 90 - 14 直接调用 ledger 云函数仍使用服务端 OPENID 和统一安全检查
+  ---
+  duration_ms: 0.304458
+  type: 'test'
+  ...
+# Subtest: 14.1 ledger 云函数声明 msgSecCheck 云调用权限
+ok 91 - 14.1 ledger 云函数声明 msgSecCheck 云调用权限
+  ---
+  duration_ms: 0.228042
+  type: 'test'
+  ...
+# Subtest: 15 一次请求的多个自由文本字段会组合成一次检查
+ok 92 - 15 一次请求的多个自由文本字段会组合成一次检查
+  ---
+  duration_ms: 0.128875
+  type: 'test'
+  ...
+# Subtest: 16 超长文本按官方2500字上限安全分段
+ok 93 - 16 超长文本按官方2500字上限安全分段
+  ---
+  duration_ms: 1.680459
+  type: 'test'
+  ...
+# Subtest: 17 被拒绝文本在数据库持久化之前拦截
+ok 94 - 17 被拒绝文本在数据库持久化之前拦截
+  ---
+  duration_ms: 0.263458
+  type: 'test'
+  ...
+# Subtest: 18 内容安全实现和错误日志不会输出完整文本、openid或邀请 token
+ok 95 - 18 内容安全实现和错误日志不会输出完整文本、openid或邀请 token
+  ---
+  duration_ms: 0.524625
+  type: 'test'
+  ...
+# Subtest: 19 正常发货的金额、运费和账期字段不进入安全检查
+ok 96 - 19 正常发货的金额、运费和账期字段不进入安全检查
+  ---
+  duration_ms: 0.103042
+  type: 'test'
+  ...
+# Subtest: 20 review 与 risky 一样拒绝，只有明确 pass 才放行
+ok 97 - 20 review 与 risky 一样拒绝，只有明确 pass 才放行
+  ---
+  duration_ms: 0.155042
+  type: 'test'
+  ...
+# Subtest: 21 物流原始文本和非固定物流商名称接受审核，固定物流商枚举不重复审核
+ok 98 - 21 物流原始文本和非固定物流商名称接受审核，固定物流商枚举不重复审核
+  ---
+  duration_ms: 0.21925
+  type: 'test'
+  ...
+# Subtest: Excel 下载完成后立即清理所属云端临时文件
+ok 99 - Excel 下载完成后立即清理所属云端临时文件
+  ---
+  duration_ms: 0.977375
+  type: 'test'
+  ...
+# Subtest: Excel 下载失败仍清理云端临时文件，失败不会触发账务写入 action
+ok 100 - Excel 下载失败仍清理云端临时文件，失败不会触发账务写入 action
+  ---
+  duration_ms: 0.288291
+  type: 'test'
+  ...
+# Subtest: Excel 可直接打开并使用微信文件消息发送
+ok 101 - Excel 可直接打开并使用微信文件消息发送
+  ---
+  duration_ms: 0.152375
+  type: 'test'
+  ...
+# Subtest: 对账单页面防止连续点击重复生成图片或 Excel
+ok 102 - 对账单页面防止连续点击重复生成图片或 Excel
+  ---
+  duration_ms: 0.22975
+  type: 'test'
+  ...
+# Subtest: 运费为空时按0元入账，总金额等于商品合计
+ok 103 - 运费为空时按0元入账，总金额等于商品合计
+  ---
+  duration_ms: 3.767708
+  type: 'test'
+  ...
+# Subtest: 运费120元与商品1800元合计1920元，服务端不信任前端总额
+ok 104 - 运费120元与商品1800元合计1920元，服务端不信任前端总额
+  ---
+  duration_ms: 0.753958
+  type: 'test'
+  ...
+# Subtest: 运费小数12.50元正确保存为1250分
+ok 105 - 运费小数12.50元正确保存为1250分
+  ---
+  duration_ms: 0.210416
+  type: 'test'
+  ...
+# Subtest: 负数运费必须禁止入账
+ok 106 - 负数运费必须禁止入账
+  ---
+  duration_ms: 0.476667
+  type: 'test'
+  ...
+# Subtest: 修改已入账运费后本期应收、剩余应收和审计快照同步更新
+ok 107 - 修改已入账运费后本期应收、剩余应收和审计快照同步更新
+  ---
+  duration_ms: 7.763291
+  type: 'test'
+  ...
+# Subtest: 升级前的历史发货自动补齐商品合计和0元运费，原总额不变
+ok 108 - 升级前的历史发货自动补齐商品合计和0元运费，原总额不变
+  ---
+  duration_ms: 0.872166
+  type: 'test'
+  ...
+# Subtest: 对账单和已结清历史账单保留商品、运费与最终金额快照
+ok 109 - 对账单和已结清历史账单保留商品、运费与最终金额快照
+  ---
+  duration_ms: 1.380125
+  type: 'test'
+  ...
+# Subtest: 客户收款使用含运费后的总金额，归零后仍需人工确认结清
+ok 110 - 客户收款使用含运费后的总金额，归零后仍需人工确认结清
+  ---
+  duration_ms: 0.721334
+  type: 'test'
+  ...
+# Subtest: 正式闭环：客户价、持续发货、部分收款、全额结清、历史和新账期
+ok 111 - 正式闭环：客户价、持续发货、部分收款、全额结清、历史和新账期
+  ---
+  duration_ms: 2.176334
+  type: 'test'
+  ...
+# Subtest: 账目修正保留前后审计，已结清后禁止修改且不能低于已收款
+ok 112 - 账目修正保留前后审计，已结清后禁止修改且不能低于已收款
+  ---
+  duration_ms: 2.202333
+  type: 'test'
+  ...
+# Subtest: 收款校验企业、客户和剩余金额边界
+ok 113 - 收款校验企业、客户和剩余金额边界
+  ---
+  duration_ms: 0.50875
+  type: 'test'
+  ...
+# Subtest: 标准和自定义产品都可按企业停用，且历史成交快照不受影响
+ok 114 - 标准和自定义产品都可按企业停用，且历史成交快照不受影响
+  ---
+  duration_ms: 2.8095
+  type: 'test'
+  ...
+# Subtest: 同一token可供成员A加入
+ok 115 - 同一token可供成员A加入
+  ---
+  duration_ms: 0.454709
+  type: 'test'
+  ...
+# Subtest: 同一token在成员A加入后仍可供成员B加入
+ok 116 - 同一token在成员A加入后仍可供成员B加入
+  ---
+  duration_ms: 0.118875
+  type: 'test'
+  ...
+# Subtest: 同一token仍可供第三位成员C加入
+ok 117 - 同一token仍可供第三位成员C加入
+  ---
+  duration_ms: 0.564625
+  type: 'test'
+  ...
+# Subtest: 成员加入不会把token改成used或写入usedBy数组
+ok 118 - 成员加入不会把token改成used或写入usedBy数组
+  ---
+  duration_ms: 0.332458
+  type: 'test'
+  ...
+# Subtest: 同一openid不能通过邀请重复加入同一企业
+ok 119 - 同一openid不能通过邀请重复加入同一企业
+  ---
+  duration_ms: 0.275541
+  type: 'test'
+  ...
+# Subtest: token过期后不能加入
+ok 120 - token过期后不能加入
+  ---
+  duration_ms: 0.102292
+  type: 'test'
+  ...
+# Subtest: revoked token不能加入
+ok 121 - revoked token不能加入
+  ---
+  duration_ms: 0.132334
+  type: 'test'
+  ...
+# Subtest: 新成员固定为member和active
+ok 122 - 新成员固定为member和active
+  ---
+  duration_ms: 0.050958
+  type: 'test'
+  ...
+# Subtest: 前端伪造role为admin无效
+ok 123 - 前端伪造role为admin无效
+  ---
+  duration_ms: 0.218375
+  type: 'test'
+  ...
+# Subtest: 前端伪造tenantId无效，成员企业只来自invite
+ok 124 - 前端伪造tenantId无效，成员企业只来自invite
+  ---
+  duration_ms: 0.242375
+  type: 'test'
+  ...
+# Subtest: disabled member不能借inviteToken重新加入绕过停用
+ok 125 - disabled member不能借inviteToken重新加入绕过停用
+  ---
+  duration_ms: 0.089084
+  type: 'test'
+  ...
+# Subtest: 管理员可以作废旧token并留下作废信息
+ok 126 - 管理员可以作废旧token并留下作废信息
+  ---
+  duration_ms: 0.236375
+  type: 'test'
+  ...
+# Subtest: 新生成token与旧revoked token相互独立
+ok 127 - 新生成token与旧revoked token相互独立
+  ---
+  duration_ms: 0.05625
+  type: 'test'
+  ...
+# Subtest: 旧revoked token永久不能恢复使用
+ok 128 - 旧revoked token永久不能恢复使用
+  ---
+  duration_ms: 0.03825
+  type: 'test'
+  ...
+# Subtest: 识别 ×、x、X、* 和紧凑规格写法
+ok 129 - 识别 ×、x、X、* 和紧凑规格写法
+  ---
+  duration_ms: 4.213958
+  type: 'test'
+  ...
+# Subtest: 灰、银灰、白和蓝色别名映射到三种标准颜色
+ok 130 - 灰、银灰、白和蓝色别名映射到三种标准颜色
+  ---
+  duration_ms: 0.759834
+  type: 'test'
+  ...
+# Subtest: 原文未写颜色时不猜测
+ok 131 - 原文未写颜色时不猜测
+  ---
+  duration_ms: 0.159708
+  type: 'test'
+  ...
+# Subtest: 盖板、盖和盖子均归一为盖子，支持宽度前后不同写法
+ok 132 - 盖板、盖和盖子均归一为盖子，支持宽度前后不同写法
+  ---
+  duration_ms: 0.511583
+  type: 'test'
+  ...
+# Subtest: 盖子未写颜色时识别宽度但要求人工选色
+ok 133 - 盖子未写颜色时识别宽度但要求人工选色
+  ---
+  duration_ms: 0.897083
+  type: 'test'
+  ...
+# Subtest: 截图实例银灰色盖板60会直接匹配标准盖子
+ok 134 - 截图实例银灰色盖板60会直接匹配标准盖子
+  ---
+  duration_ms: 0.311583
+  type: 'test'
+  ...
+# Subtest: 同一行的线槽和盖子可分别识别
+ok 135 - 同一行的线槽和盖子可分别识别
+  ---
+  duration_ms: 0.544917
+  type: 'test'
+  ...
+# Subtest: 未写单位时默认米并透明提示
+ok 136 - 未写单位时默认米并透明提示
+  ---
+  duration_ms: 0.50125
+  type: 'test'
+  ...
+# Subtest: 根和箱保留原数量单位，不擅自换算
+ok 137 - 根和箱保留原数量单位，不擅自换算
+  ---
+  duration_ms: 1.21775
+  type: 'test'
+  ...
+# Subtest: 多行与连续文字都能拆出标准商品
+ok 138 - 多行与连续文字都能拆出标准商品
+  ---
+  duration_ms: 1.575166
+  type: 'test'
+  ...
+# Subtest: 完整微信文本能提取商品和已知物流，其余文字不入账
+ok 139 - 完整微信文本能提取商品和已知物流，其余文字不入账
+  ---
+  duration_ms: 0.604958
+  type: 'test'
+  ...
+# Subtest: 小规格的开口口语按产品库自动纠正为细齿，不写死2525
+ok 140 - 小规格的开口口语按产品库自动纠正为细齿，不写死2525
+  ---
+  duration_ms: 0.237
+  type: 'test'
+  ...
+# Subtest: 标准规格支持多齿型时保留用户明确输入，模糊输入不猜
+ok 141 - 标准规格支持多齿型时保留用户明确输入，模糊输入不猜
+  ---
+  duration_ms: 0.208291
+  type: 'test'
+  ...
+# Subtest: 标准尺寸带特殊长度时保留基础规格和订单数量，但不降级匹配普通标准品
+ok 142 - 标准尺寸带特殊长度时保留基础规格和订单数量，但不降级匹配普通标准品
+  ---
+  duration_ms: 0.395167
+  type: 'test'
+  ...
+# Subtest: 带特殊长度的标准尺寸优先按结构化属性匹配已有自定义规格
+ok 143 - 带特殊长度的标准尺寸优先按结构化属性匹配已有自定义规格
+  ---
+  duration_ms: 1.060666
+  type: 'test'
+  ...
+# Subtest: 定尺、定制和非标等描述会阻止普通标准品直接匹配
+ok 144 - 定尺、定制和非标等描述会阻止普通标准品直接匹配
+  ---
+  duration_ms: 1.102958
+  type: 'test'
+  ...
+# Subtest: 自定义产品的长度不会被当成订单数量
+ok 145 - 自定义产品的长度不会被当成订单数量
+  ---
+  duration_ms: 0.305375
+  type: 'test'
+  ...
+# Subtest: 自定义产品再次出现时按空格和符号差异匹配已有产品
+ok 146 - 自定义产品再次出现时按空格和符号差异匹配已有产品
+  ---
+  duration_ms: 0.409834
+  type: 'test'
+  ...
+# Subtest: 自定义产品名称会移除连接数量的“的”
+ok 147 - 自定义产品名称会移除连接数量的“的”
+  ---
+  duration_ms: 0.318708
+  type: 'test'
+  ...
+# Subtest: 规格库外的明确尺寸进入自定义产品确认，不阻止记账
+ok 148 - 规格库外的明确尺寸进入自定义产品确认，不阻止记账
+  ---
+  duration_ms: 0.200375
+  type: 'test'
+  ...
+# Subtest: 重复标准商品合并数量并留下显式提醒
+ok 149 - 重复标准商品合并数量并留下显式提醒
+  ---
+  duration_ms: 0.18275
+  type: 'test'
+  ...
+# Subtest: 异常输入不会生成商品
+ok 150 - 异常输入不会生成商品
+  ---
+  duration_ms: 0.226625
+  type: 'test'
+  ...
+# Subtest: 一次同步页面计算只复制一个工作快照，所有读取结果与原领域仓储一致
+ok 151 - 一次同步页面计算只复制一个工作快照，所有读取结果与原领域仓储一致
+  ---
+  duration_ms: 25.729375
+  type: 'test'
+  ...
+# Subtest: 原有 prepareRepository 并发去重：3个调用只有1个请求；完成与失败均清理
+ok 152 - 原有 prepareRepository 并发去重：3个调用只有1个请求；完成与失败均清理
+  ---
+  duration_ms: 2.013042
+  type: 'test'
+  ...
+# Subtest: 写入返回的新快照立即被下一次读取使用，退出后不复用旧tenant
+ok 153 - 写入返回的新快照立即被下一次读取使用，退出后不复用旧tenant
+  ---
+  duration_ms: 2.439625
+  type: 'test'
+  ...
+# Subtest: 返回页保留内容且仍重新授权；disabled立即清仓储并跳转；callback不会执行两次
+ok 154 - 返回页保留内容且仍重新授权；disabled立即清仓储并跳转；callback不会执行两次
+  ---
+  duration_ms: 4.657666
+  type: 'test'
+  ...
+# Subtest: 列表与快速记账只向setData发送渲染数据；完整产品和客户仍可选择和搜索
+ok 155 - 列表与快速记账只向setData发送渲染数据；完整产品和客户仍可选择和搜索
+  ---
+  duration_ms: 26.46775
+  type: 'test'
+  ...
+# [ledger] {
+#   action: 'saveClient',
+#   code: 'SERVICE_ERROR',
+#   errCode: '',
+#   errMsg: '',
+#   errorName: '',
+#   errorMessage: ''
+# }
+# [ledger] {
+#   action: 'postShipment',
+#   code: 'SERVICE_ERROR',
+#   errCode: '',
+#   errMsg: '',
+#   errorName: '',
+#   errorMessage: ''
+# }
+# [ledger] {
+#   action: 'recordPayment',
+#   code: 'SERVICE_ERROR',
+#   errCode: '',
+#   errMsg: '',
+#   errorName: '',
+#   errorMessage: ''
+# }
+# [ledger] {
+#   action: 'closeBillingPeriod',
+#   code: 'SERVICE_ERROR',
+#   errCode: '',
+#   errMsg: '',
+#   errorName: '',
+#   errorMessage: ''
+# }
+# [ledger] {
+#   action: 'cleanupStatementExportFile',
+#   code: 'SERVICE_ERROR',
+#   errCode: '',
+#   errMsg: '',
+#   errorName: '',
+#   errorMessage: ''
+# }
+# [ledger] {
+#   action: 'bootstrap',
+#   code: 'MEMBERSHIP_DISABLED',
+#   errCode: '',
+#   errMsg: '',
+#   errorName: '',
+#   errorMessage: ''
+# }
+# [ledger] {
+#   action: 'createStatementExcel',
+#   code: 'MEMBERSHIP_DISABLED',
+#   errCode: '',
+#   errMsg: '',
+#   errorName: '',
+#   errorMessage: ''
+# }
+# [ledger] {
+#   action: 'saveClient',
+#   code: 'MEMBERSHIP_DISABLED',
+#   errCode: '',
+#   errMsg: '',
+#   errorName: '',
+#   errorMessage: ''
+# }
+# [ledger] {
+#   action: 'recordPayment',
+#   code: 'SERVICE_ERROR',
+#   errCode: '',
+#   errMsg: '',
+#   errorName: '',
+#   errorMessage: ''
+# }
+# Subtest: 普通 ledger action 和临时文件清理不加载 ExcelJS 或工作簿模块
+ok 156 - 普通 ledger action 和临时文件清理不加载 ExcelJS 或工作簿模块
+  ---
+  duration_ms: 18.390542
+  type: 'test'
+  ...
+# Subtest: bootstrap 在真实成员检查和企业读取后并行8个同tenant集合，返回快照保持脱敏
+ok 157 - bootstrap 在真实成员检查和企业读取后并行8个同tenant集合，返回快照保持脱敏
+  ---
+  duration_ms: 3.076083
+  type: 'test'
+  ...
+# Subtest: 失效成员在任何tenant读取和Excel require之前拒绝
+ok 158 - 失效成员在任何tenant读取和Excel require之前拒绝
+  ---
+  duration_ms: 2.889708
+  type: 'test'
+  ...
+# Subtest: 事务内仍重新检查成员并串行读取快照
+ok 159 - 事务内仍重新检查成员并串行读取快照
+  ---
+  duration_ms: 2.794334
+  type: 'test'
+  ...
+# Subtest: 只有有效 createStatementExcel 加载工作簿和ExcelJS；继续生成真实xlsx
+ok 160 - 只有有效 createStatementExcel 加载工作簿和ExcelJS；继续生成真实xlsx
+  ---
+  duration_ms: 106.237333
+  type: 'test'
+  ...
+# Subtest: 首次相册授权后按顺序保存全部图片并报告进度
+ok 161 - 首次相册授权后按顺序保存全部图片并报告进度
+  ---
+  duration_ms: 0.91425
+  type: 'test'
+  ...
+# Subtest: 曾拒绝相册权限时允许进入设置重新开启
+ok 162 - 曾拒绝相册权限时允许进入设置重新开启
+  ---
+  duration_ms: 0.1635
+  type: 'test'
+  ...
+# Subtest: 用户取消重新授权时不写相册且返回可识别取消状态
+ok 163 - 用户取消重新授权时不写相册且返回可识别取消状态
+  ---
+  duration_ms: 0.252959
+  type: 'test'
+  ...
+# Subtest: 金额用分保存并正确处理两位小数
+ok 164 - 金额用分保存并正确处理两位小数
+  ---
+  duration_ms: 0.56475
+  type: 'test'
+  ...
+# Subtest: 数量乘客户单价得到行金额和合计
+ok 165 - 数量乘客户单价得到行金额和合计
+  ---
+  duration_ms: 0.244375
+  type: 'test'
+  ...
+# Subtest: 任意商品缺产品、数量或价格都拒绝正式入账
+ok 166 - 任意商品缺产品、数量或价格都拒绝正式入账
+  ---
+  duration_ms: 0.190417
+  type: 'test'
+  ...
+# Subtest: 按根和按箱价格直接计算，不换算成米
+ok 167 - 按根和按箱价格直接计算，不换算成米
+  ---
+  duration_ms: 0.116125
+  type: 'test'
+  ...
+# Subtest: 订单单位与客户计价单位不一致时必须人工换算
+ok 168 - 订单单位与客户计价单位不一致时必须人工换算
+  ---
+  duration_ms: 0.408417
+  type: 'test'
+  ...
+# Subtest: 前端快照递归删除openid、邀请token和云数据库内部字段
+ok 169 - 前端快照递归删除openid、邀请token和云数据库内部字段
+  ---
+  duration_ms: 0.885208
+  type: 'test'
+  ...
+# Subtest: 成员前端快照只保留必要展示和授权字段
+ok 170 - 成员前端快照只保留必要展示和授权字段
+  ---
+  duration_ms: 0.168917
+  type: 'test'
+  ...
+# Subtest: 云函数诊断日志不输出请求内容和身份密钥
+ok 171 - 云函数诊断日志不输出请求内容和身份密钥
+  ---
+  duration_ms: 0.432583
+  type: 'test'
+  ...
+# Subtest: 正式配置只申请用户主动保存账单所需的相册写入权限
+ok 172 - 正式配置只申请用户主动保存账单所需的相册写入权限
+  ---
+  duration_ms: 0.254792
+  type: 'test'
+  ...
+# Subtest: 1 新用户首次进入必须跳转隐私同意页
+ok 173 - 1 新用户首次进入必须跳转隐私同意页
+  ---
+  duration_ms: 1.450666
+  type: 'test'
+  ...
+# Subtest: 2 checkbox 默认未勾选，未勾选时同意按钮 disabled 且不保存
+ok 174 - 2 checkbox 默认未勾选，未勾选时同意按钮 disabled 且不保存
+  ---
+  duration_ms: 1.094917
+  type: 'test'
+  ...
+# Subtest: 3 点击不同意只进入未同意状态，不执行业务回调
+ok 175 - 3 点击不同意只进入未同意状态，不执行业务回调
+  ---
+  duration_ms: 0.550959
+  type: 'test'
+  ...
+# Subtest: 4 同意当前版本且微信不再要求授权后才执行业务回调
+ok 176 - 4 同意当前版本且微信不再要求授权后才执行业务回调
+  ---
+  duration_ms: 2.628333
+  type: 'test'
+  ...
+# Subtest: 5 已同意当前版本的二次进入不重复显示 gate
+ok 177 - 5 已同意当前版本的二次进入不重复显示 gate
+  ---
+  duration_ms: 1.125167
+  type: 'test'
+  ...
+# Subtest: 6 本地版本不一致时必须重新同意
+ok 178 - 6 本地版本不一致时必须重新同意
+  ---
+  duration_ms: 0.634584
+  type: 'test'
+  ...
+# Subtest: 7 即使本地已同意，微信平台重新要求授权时仍会进入 gate
+ok 179 - 7 即使本地已同意，微信平台重新要求授权时仍会进入 gate
+  ---
+  duration_ms: 0.392709
+  type: 'test'
+  ...
+# Subtest: 8 邀请链接先进隐私 gate，同意后原样恢复 inviteToken 路由
+ok 180 - 8 邀请链接先进隐私 gate，同意后原样恢复 inviteToken 路由
+  ---
+  duration_ms: 0.250416
+  type: 'test'
+  ...
+# Subtest: 9 inviteToken 不会写入隐私 localStorage
+ok 181 - 9 inviteToken 不会写入隐私 localStorage
+  ---
+  duration_ms: 1.516
+  type: 'test'
+  ...
+# Subtest: 10 所有页面直接访问都不能绕过统一 privacy gate
+ok 182 - 10 所有页面直接访问都不能绕过统一 privacy gate
+  ---
+  duration_ms: 2.111041
+  type: 'test'
+  ...
+# Subtest: 11 隐私同意不等于 membership 授权，原身份拦截仍在 gate 之后
+ok 183 - 11 隐私同意不等于 membership 授权，原身份拦截仍在 gate 之后
+  ---
+  duration_ms: 0.749709
+  type: 'test'
+  ...
+# Subtest: 12 陌生用户、disabled member 和 active member 仍使用原 bootstrap 身份结果
+ok 184 - 12 陌生用户、disabled member 和 active member 仍使用原 bootstrap 身份结果
+  ---
+  duration_ms: 0.390833
+  type: 'test'
+  ...
+# Subtest: 13 “我的 → 隐私保护指引”通过 wx.openPrivacyContract 长期可见
+ok 185 - 13 “我的 → 隐私保护指引”通过 wx.openPrivacyContract 长期可见
+  ---
+  duration_ms: 0.320042
+  type: 'test'
+  ...
+# Subtest: 14 官方隐私授权使用 getPrivacySetting 和 agreePrivacyAuthorization 组件
+ok 186 - 14 官方隐私授权使用 getPrivacySetting 和 agreePrivacyAuthorization 组件
+  ---
+  duration_ms: 0.131042
+  type: 'test'
+  ...
+# Subtest: 15 隐私 localStorage 只包含版本和同意时间
+ok 187 - 15 隐私 localStorage 只包含版本和同意时间
+  ---
+  duration_ms: 0.283958
+  type: 'test'
+  ...
+# Subtest: 16 隐私平台状态读取失败时不启动业务
+ok 188 - 16 隐私平台状态读取失败时不启动业务
+  ---
+  duration_ms: 0.340125
+  type: 'test'
+  ...
+# Subtest: 产品库保留报价小程序当前66个高×宽规格且不带通用价格
+ok 189 - 产品库保留报价小程序当前66个高×宽规格且不带通用价格
+  ---
+  duration_ms: 1.149083
+  type: 'test'
+  ...
+# Subtest: 盖子规格库包含15个宽度和白蓝灰黑四色
+ok 190 - 盖子规格库包含15个宽度和白蓝灰黑四色
+  ---
+  duration_ms: 1.195583
+  type: 'test'
+  ...
+# Subtest: 可选齿型严格按原产品规格边界
+ok 191 - 可选齿型严格按原产品规格边界
+  ---
+  duration_ms: 0.102
+  type: 'test'
+  ...
+# Subtest: 自定义产品长度的常见写法归一但保留长度数值
+ok 192 - 自定义产品长度的常见写法归一但保留长度数值
+  ---
+  duration_ms: 2.5525
+  type: 'test'
+  ...
+# Subtest: 自定义产品名称中的紧凑标准尺寸与乘号尺寸归一
+ok 193 - 自定义产品名称中的紧凑标准尺寸与乘号尺寸归一
+  ---
+  duration_ms: 0.321459
+  type: 'test'
+  ...
+# Subtest: 多段账单分批发送，完整汇总立即保留，最终数据逐字段相同
+ok 194 - 多段账单分批发送，完整汇总立即保留，最终数据逐字段相同
+  ---
+  duration_ms: 9.64825
+  type: 'test'
+  ...
+# Subtest: 账单的新刷新取消旧批次，卸载后不再发送数据，小账单无延时任务
+ok 195 - 账单的新刷新取消旧批次，卸载后不再发送数据，小账单无延时任务
+  ---
+  duration_ms: 11.874917
+  type: 'test'
+  ...
+# Subtest: 渐进列表小样本不分段，长列表只追加新行并保持完整顺序
+ok 196 - 渐进列表小样本不分段，长列表只追加新行并保持完整顺序
+  ---
+  duration_ms: 0.824375
+  type: 'test'
+  ...
+# Subtest: 客户完整搜索、负责人过滤、总数与排序不受首批30行限制
+ok 197 - 客户完整搜索、负责人过滤、总数与排序不受首批30行限制
+  ---
+  duration_ms: 32.149167
+  type: 'test'
+  ...
+# Subtest: 历史的月份和负责人筛选始终作用于全部历史，追加后无丢失或重复
+ok 198 - 历史的月份和负责人筛选始终作用于全部历史，追加后无丢失或重复
+  ---
+  duration_ms: 4.659792
+  type: 'test'
+  ...
+# Subtest: 记一笔页面可完成验收示例并在补齐28元后解锁确认入账
+ok 199 - 记一笔页面可完成验收示例并在补齐28元后解锁确认入账
+  ---
+  duration_ms: 29.237917
+  type: 'test'
+  ...
+# Subtest: 第一阶段核心验收闭环：缺价补充、保存客户价并入账3020元
+ok 200 - 第一阶段核心验收闭环：缺价补充、保存客户价并入账3020元
+  ---
+  duration_ms: 5.461042
+  type: 'test'
+  ...
+# Subtest: 同一防重复编号不会重复入账
+ok 201 - 同一防重复编号不会重复入账
+  ---
+  duration_ms: 0.755209
+  type: 'test'
+  ...
+# Subtest: 未明确人工确认、缺价格或不存在产品时整笔拒绝
+ok 202 - 未明确人工确认、缺价格或不存在产品时整笔拒绝
+  ---
+  duration_ms: 0.410833
+  type: 'test'
+  ...
+# Subtest: 企业数据空间严格隔离
+ok 203 - 企业数据空间严格隔离
+  ---
+  duration_ms: 0.177959
+  type: 'test'
+  ...
+# Subtest: 旧试运行数据非覆盖式补入白色演示价
+ok 204 - 旧试运行数据非覆盖式补入白色演示价
+  ---
+  duration_ms: 0.27375
+  type: 'test'
+  ...
+# Subtest: 历史发货保留成交价快照，后续调价不会回写旧记录
+ok 205 - 历史发货保留成交价快照，后续调价不会回写旧记录
+  ---
+  duration_ms: 5.319792
+  type: 'test'
+  ...
+# Subtest: 自定义产品经人工确认后入库、防重，并可按根保存客户专属价
+ok 206 - 自定义产品经人工确认后入库、防重，并可按根保存客户专属价
+  ---
+  duration_ms: 1.530917
+  type: 'test'
+  ...
+# Subtest: 自定义规格单根长度只提供人工换算依据，不会绕过单位锁定
+ok 207 - 自定义规格单根长度只提供人工换算依据，不会绕过单位锁定
+  ---
+  duration_ms: 0.561833
+  type: 'test'
+  ...
+# Subtest: 单位不一致时仓储服务也会拒绝猜测，并保存人工换算快照
+ok 208 - 单位不一致时仓储服务也会拒绝猜测，并保存人工换算快照
+  ---
+  duration_ms: 0.623417
+  type: 'test'
+  ...
+# Subtest: 盖子可复用原记账闭环并保存产品类型快照
+ok 209 - 盖子可复用原记账闭环并保存产品类型快照
+  ---
+  duration_ms: 0.648209
+  type: 'test'
+  ...
+# Subtest: admin可以结清企业内任意负责人账期
+ok 210 - admin可以结清企业内任意负责人账期
+  ---
+  duration_ms: 2.812541
+  type: 'test'
+  ...
+# Subtest: member是当前账期负责人时可以结清
+ok 211 - member是当前账期负责人时可以结清
+  ---
+  duration_ms: 0.513958
+  type: 'test'
+  ...
+# Subtest: member是客户负责人但不是账期负责人时不能结清
+ok 212 - member是客户负责人但不是账期负责人时不能结清
+  ---
+  duration_ms: 1.035292
+  type: 'test'
+  ...
+# Subtest: member既不是客户负责人也不是账期负责人时不能结清
+ok 213 - member既不是客户负责人也不是账期负责人时不能结清
+  ---
+  duration_ms: 0.418916
+  type: 'test'
+  ...
+# Subtest: 账期负责人收款至0后可以主动结清
+ok 214 - 账期负责人收款至0后可以主动结清
+  ---
+  duration_ms: 0.374959
+  type: 'test'
+  ...
+# Subtest: 账期负责人余额未清零时仍不能结清
+ok 215 - 账期负责人余额未清零时仍不能结清
+  ---
+  duration_ms: 0.2865
+  type: 'test'
+  ...
+# Subtest: 非负责人即使余额为0也不能结清
+ok 216 - 非负责人即使余额为0也不能结清
+  ---
+  duration_ms: 0.327584
+  type: 'test'
+  ...
+# Subtest: 前端伪造ownerMemberId不能获得结清权限
+ok 217 - 前端伪造ownerMemberId不能获得结清权限
+  ---
+  duration_ms: 0.287625
+  type: 'test'
+  ...
+# Subtest: 前端伪造role为admin不能获得结清权限
+ok 218 - 前端伪造role为admin不能获得结清权限
+  ---
+  duration_ms: 1.315708
+  type: 'test'
+  ...
+# Subtest: admin代为结清时审计记录实际admin操作人
+ok 219 - admin代为结清时审计记录实际admin操作人
+  ---
+  duration_ms: 5.870459
+  type: 'test'
+  ...
+# Subtest: member本人结清时审计记录实际member操作人
+ok 220 - member本人结清时审计记录实际member操作人
+  ---
+  duration_ms: 0.501709
+  type: 'test'
+  ...
+# Subtest: 已结清账期不能使用新请求重复结清
+ok 221 - 已结清账期不能使用新请求重复结清
+  ---
+  duration_ms: 0.342917
+  type: 'test'
+  ...
+# Subtest: 云函数入口允许member发起结清，但前端与领域服务统一按账期负责人判断
+ok 222 - 云函数入口允许member发起结清，但前端与领域服务统一按账期负责人判断
+  ---
+  duration_ms: 0.444916
+  type: 'test'
+  ...
+# Subtest: Excel 正式账单包含三个 Sheet、数值金额和真实成交快照字段
+ok 223 - Excel 正式账单包含三个 Sheet、数值金额和真实成交快照字段
+  ---
+  duration_ms: 35.3045
+  type: 'test'
+  ...
+# Subtest: 云端文件路径按 tenant 和 member 隔离，不能清理其他成员文件
+ok 224 - 云端文件路径按 tenant 和 member 隔离，不能清理其他成员文件
+  ---
+  duration_ms: 0.381875
+  type: 'test'
+  ...
+# Subtest: Excel 临时文件上传失败不会修改账务数据且会清理本地临时文件
+ok 225 - Excel 临时文件上传失败不会修改账务数据且会清理本地临时文件
+  ---
+  duration_ms: 1.278375
+  type: 'test'
+  ...
+# Subtest: 客户端只组装服务端账单分页，版本或金额变化会拒绝生成图片
+ok 226 - 客户端只组装服务端账单分页，版本或金额变化会拒绝生成图片
+  ---
+  duration_ms: 1.431333
+  type: 'test'
+  ...
+# Subtest: 账单服务按目标账期分页读取超过 1000 笔发货，不依赖 bootstrap 上限
+ok 227 - 账单服务按目标账期分页读取超过 1000 笔发货，不依赖 bootstrap 上限
+  ---
+  duration_ms: 22.065542
+  type: 'test'
+  ...
+# Subtest: 分页 action 每批最多 100 条，并能连续读完目标账期
+ok 228 - 分页 action 每批最多 100 条，并能连续读完目标账期
+  ---
+  duration_ms: 1.145667
+  type: 'test'
+  ...
+# Subtest: 跨 tenant 客户、账期和伪造 tenantId 均不能改变服务端租户范围
+ok 229 - 跨 tenant 客户、账期和伪造 tenantId 均不能改变服务端租户范围
+  ---
+  duration_ms: 0.593167
+  type: 'test'
+  ...
+# Subtest: 旧账期按客户分页扫描并沿用 legacy periodId，不写回数据库
+ok 230 - 旧账期按客户分页扫描并沿用 legacy periodId，不写回数据库
+  ---
+  duration_ms: 0.318375
+  type: 'test'
+  ...
+# Subtest: 已删除或停用的客户无法通过旧链接导出
+ok 231 - 已删除或停用的客户无法通过旧链接导出
+  ---
+  duration_ms: 0.08525
+  type: 'test'
+  ...
+# Subtest: 账单导出读取服务保持只读，不访问当前产品或客户价格
+ok 232 - 账单导出读取服务保持只读，不访问当前产品或客户价格
+  ---
+  duration_ms: 0.2025
+  type: 'test'
+  ...
+# Subtest: 当前账期导出保留多次发货、单次多商品、运费、多次收款和部分收款
+ok 233 - 当前账期导出保留多次发货、单次多商品、运费、多次收款和部分收款
+  ---
+  duration_ms: 7.568375
+  type: 'test'
+  ...
+# Subtest: 已全部收款但未人工结清时仍显示进行中，不被导出逻辑自动结清
+ok 234 - 已全部收款但未人工结清时仍显示进行中，不被导出逻辑自动结清
+  ---
+  duration_ms: 0.221541
+  type: 'test'
+  ...
+# Subtest: 已结清历史账期使用结清日期、客户/负责人/操作人快照和成交价格
+ok 235 - 已结清历史账期使用结清日期、客户/负责人/操作人快照和成交价格
+  ---
+  duration_ms: 0.144666
+  type: 'test'
+  ...
+# Subtest: 空账期可生成零金额导出数据，不制造不存在的商品或收款
+ok 236 - 空账期可生成零金额导出数据，不制造不存在的商品或收款
+  ---
+  duration_ms: 0.216875
+  type: 'test'
+  ...
+# Subtest: active admin 与 active member 均可调用只读导出，disabled 和陌生微信仍被统一拒绝
+ok 237 - active admin 与 active member 均可调用只读导出，disabled 和陌生微信仍被统一拒绝
+  ---
+  duration_ms: 0.236625
+  type: 'test'
+  ...
+# Subtest: Canvas 绘制每页重复企业、客户、账期、日期和页码，金额保持右侧列
+ok 238 - Canvas 绘制每页重复企业、客户、账期、日期和页码，金额保持右侧列
+  ---
+  duration_ms: 10.102375
+  type: 'test'
+  ...
+# Subtest: Canvas 使用成交快照产品名和成交单价，不读取当前产品字段
+ok 239 - Canvas 使用成交快照产品名和成交单价，不读取当前产品字段
+  ---
+  duration_ms: 0.758833
+  type: 'test'
+  ...
+# Subtest: 产品名称使用实际文字测量换行，动态增加商品行高度
+ok 240 - 产品名称使用实际文字测量换行，动态增加商品行高度
+  ---
+  duration_ms: 1.479125
+  type: 'test'
+  ...
+# Subtest: 能放入新页的完整 shipment 会整体移动，不拆商品行
+ok 241 - 能放入新页的完整 shipment 会整体移动，不拆商品行
+  ---
+  duration_ms: 0.497083
+  type: 'test'
+  ...
+# Subtest: 单笔超长 shipment 按完整商品行拆页，后续段标记续且只在末段显示小计
+ok 242 - 单笔超长 shipment 按完整商品行拆页，后续段标记续且只在末段显示小计
+  ---
+  duration_ms: 0.779583
+  type: 'test'
+  ...
+# Subtest: 收款记录按动态高度分页，最后一页始终包含账单汇总
+ok 243 - 收款记录按动态高度分页，最后一页始终包含账单汇总
+  ---
+  duration_ms: 0.658459
+  type: 'test'
+  ...
+# Subtest: 空发货、空收款仍生成可单独阅读的一页和零金额汇总
+ok 244 - 空发货、空收款仍生成可单独阅读的一页和零金额汇总
+  ---
+  duration_ms: 0.182792
+  type: 'test'
+  ...
+# Subtest: 超过图片安全行数时明确引导 Excel，不生成无限页
+ok 245 - 超过图片安全行数时明确引导 Excel，不生成无限页
+  ---
+  duration_ms: 0.313167
+  type: 'test'
+  ...
+1..245
+# tests 245
+# suites 0
+# pass 245
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 216.244292

@@ -1,6 +1,7 @@
 const { loadPage } = require('../../services/page-context')
 const { getRepository, isCloudMode, resetRepository } = require('../../services/repository-instance')
 const { canShowDeveloperTools } = require('../../services/runtime-flags')
+const { openPrivacyContract } = require('../../services/privacy-consent')
 
 Page({
   data: { enterpriseName: '', modeText: '', roleText: '管理员', displayName: '', isAdmin: false, showDeveloperTools: false },
@@ -21,6 +22,15 @@ Page({
     const url = event.currentTarget.dataset.url
     if (url === '/pages/clients/clients') wx.switchTab({ url })
     else wx.navigateTo({ url })
+  },
+  openPrivacyGuide() {
+    openPrivacyContract().catch(() => {
+      wx.showModal({
+        title: '暂时无法打开',
+        content: '请稍后重试，或将微信升级到最新版本后查看。',
+        showCancel: false
+      })
+    })
   },
   logout() {
     wx.showModal({

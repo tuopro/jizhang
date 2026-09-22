@@ -3,9 +3,31 @@ const { createLedgerRepository } = require('./ledger-repository')
 
 function createCloudRepository() {
   const storage = createMemoryStorage()
+  let readingSnapshot = false
+  let readSnapshot = null
   let cache = null
   let tenantId = ''
   let identity = null
+
+  // A detached working copy exists only during synchronous read/model construction.
+  // Domain getters still clone their results; writes always go through the cloud.
+  function withReadSnapshot(callback) {
+    if (readingSnapshot) return callback()
+    readingSnapshot = true
+    try { return callback() } finally {
+      readingSnapshot = false
+      readSnapshot = null
+    }
+  }
+
+  const viewStorage = {
+    read() {
+      if (!readingSnapshot) return storage.read()
+      if (!readSnapshot) readSnapshot = storage.read()
+      return readSnapshot
+    },
+    write() { throw new Error('云端快照只能通过服务端操作更新') }
+  }
 
   function requireReady() {
     if (!cache || !tenantId) throw new Error('企业数据尚未加载，请稍后重试')
@@ -15,7 +37,7 @@ function createCloudRepository() {
   function installSnapshot(snapshot) {
     tenantId = snapshot.enterprise.id
     storage.write({ schemaVersion: 1, tenants: { [tenantId]: snapshot } })
-    cache = createLedgerRepository(storage)
+    cache = createLedgerRepository(viewStorage, { actor: identity && Object.assign({}, identity, { id: identity.memberId }) })
   }
 
   function call(action, payload) {
@@ -32,6 +54,7 @@ function createCloudRepository() {
           error.code = data && data.code || 'REMOTE_SERVICE_ERROR'
           throw error
         }
+        if (action === 'bootstrap' || action === 'acceptInvite') identity = data.result
         if (data.snapshot) installSnapshot(data.snapshot)
         return data.result
       })
@@ -46,6 +69,7 @@ function createCloudRepository() {
 
   const api = {
     bootstrap,
+    withReadSnapshot,
     isCloudRepository: true,
     getIdentity: () => identity,
     inspectInvite: inviteToken => call('inspectInvite', { inviteToken }),
@@ -57,22 +81,45 @@ function createCloudRepository() {
     createMemberInvite: () => call('createMemberInvite'),
     revokeMemberInvite: inviteId => call('revokeMemberInvite', { inviteId })
   }
+  api.getStatementExportMeta = function (ignoredTenantId, clientId, periodId) {
+    return call('getStatementExportMeta', { clientId, periodId })
+  }
+  api.getStatementExportPage = function (ignoredTenantId, request) {
+    return call('getStatementExportPage', request)
+  }
+  api.createStatementExcel = function (ignoredTenantId, clientId, periodId) {
+    return call('createStatementExcel', { clientId, periodId })
+  }
+  api.cleanupStatementExportFile = function (ignoredTenantId, fileID) {
+    return call('cleanupStatementExportFile', { fileID })
+  }
   api.getClientDeletePreview = function (ignoredTenantId, clientId) {
     return call('getClientDeletePreview', { args: [clientId] })
   }
+  api.listCustomerPrices = function (ignoredTenantId, clientId) {
+    return call('listCustomerPrices', { args: [clientId] })
+  }
   ;[
     'getEnterprise', 'listClients', 'getClient', 'getCustomerPrice', 'getCustomerPriceForProduct',
-    'listCustomerPrices', 'listCustomProducts', 'listProducts', 'getShipment', 'listShipments',
+    'getCustomerPriceAccess', 'listCustomProducts', 'listProducts', 'getShipment', 'getShipmentEditContext', 'listShipments',
     'listPayments', 'listBillingPeriods', 'getPeriodDetail', 'getClientLedger', 'getDashboard',
     'getStatement', 'getAuditLogs', 'listMembers'
   ].forEach(method => {
     api[method] = function () {
       const args = Array.from(arguments)
       args[0] = tenantId
-      return requireReady()[method].apply(null, args)
+      return withReadSnapshot(() => {
+        try { return requireReady()[method].apply(null, args) } catch (error) {
+          // Quick entry keeps its existing missing-price/manual-confirmation flow.
+          // Unauthorized prices are never supplied by the server snapshot.
+          if (error.code === 'CUSTOMER_PRICE_FORBIDDEN' &&
+            (method === 'getCustomerPrice' || method === 'getCustomerPriceForProduct')) return null
+          throw error
+        }
+      })
     }
   })
-  api.initializeDemoTenant = () => requireReady().getEnterprise(tenantId)
+  api.initializeDemoTenant = () => api.getEnterprise(tenantId)
   api.initializeTenant = () => { throw new Error('云端企业只能由登录身份初始化') }
   ;[
     'updateEnterprise', 'saveClient', 'saveCustomerPrice', 'createCustomProduct',

@@ -1,10 +1,16 @@
-.home-brand { margin: 4rpx 4rpx 22rpx; color: #5f7080; font-size: 25rpx; }
-.hero-card { padding: 42rpx 36rpx; border-radius: 24rpx; background: #123b67; color: #fff; }
-.hero-label { opacity: .78; font-size: 26rpx; }
-.hero-amount { margin: 14rpx 0 10rpx; font-size: 64rpx; font-weight: 700; letter-spacing: -2rpx; }
-.hero-meta { opacity: .84; font-size: 26rpx; }
-.entry-button { margin: 24rpx 0 36rpx; }
-.section-link { color: #325f8d; font-size: 25rpx; }
-.compact-card { padding-top: 4rpx; padding-bottom: 4rpx; }
-.shipment-copy { min-width: 0; flex: 1; margin-right: 20rpx; }
+.home-page { padding-top: 18rpx; }
+.home-brand { margin: 2rpx 2rpx 18rpx; color: var(--ledger-text-secondary); font-size: 25rpx; font-weight: 600; overflow-wrap:anywhere; word-break:break-word; }
+.hero-card { padding: 38rpx 34rpx 36rpx; border: 1rpx solid var(--ledger-primary-strong); border-radius: 20rpx; background: var(--ledger-primary); color: #fff; box-shadow: 0 14rpx 34rpx rgba(23,63,104,.16); }
+.hero-label { opacity: .8; font-size: 25rpx; font-weight: 600; }
+.hero-amount { max-width:100%;margin:12rpx 0 8rpx;font-size:62rpx;font-weight:700;letter-spacing:-2rpx;line-height:1.15;overflow-wrap:anywhere;word-break:break-all; }
+.hero-meta { opacity: .84; font-size: 25rpx; }
+.entry-button { margin: 18rpx 0 28rpx; }
+.home-page .section-head { margin-top: 28rpx; }
+.section-link { color: var(--ledger-primary); font-size: 25rpx; font-weight: 600; }
+.compact-card { padding-top: 2rpx; padding-bottom: 2rpx; }
+.shipment-copy { min-width: 0; flex: 1; margin-right: 10rpx; }
 .shipment-row .row-note { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 340px) {
+  .hero-amount { font-size: 56rpx; }
+}

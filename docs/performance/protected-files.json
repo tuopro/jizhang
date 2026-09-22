@@ -1,0 +1,127 @@
+[
+  {
+    "file": "app.json",
+    "unchanged": true,
+    "sha256": "b66acb0185e06009aa088e041bea39fb4f4ca5ba154c613237e367fa9fd997bc"
+  },
+  {
+    "file": "app.js",
+    "unchanged": true,
+    "sha256": "c2b9a3e9c1503e5c01370c3d5d0efaf7863a722bd42d15bdd4cb345d8845eb6d"
+  },
+  {
+    "file": "app.wxss",
+    "unchanged": true,
+    "sha256": "10dcf4a8d8671f38429fe2b84d4d3bcf1402f16803472069d36ff97be09f657e"
+  },
+  {
+    "file": "project.config.json",
+    "unchanged": true,
+    "sha256": "a1468a9f69ed46f8ffa8a9a230bd4fcf7793ae28b9feaf6963c512d60a1cf30d"
+  },
+  {
+    "file": "services/ledger-repository.js",
+    "unchanged": true,
+    "sha256": "437c4ebefa67ffde141b9f651ef7710646b0c8bfa2badc00d1f7b88127e2150c"
+  },
+  {
+    "file": "cloudfunctions/ledger/services/ledger-repository.js",
+    "unchanged": true,
+    "sha256": "437c4ebefa67ffde141b9f651ef7710646b0c8bfa2badc00d1f7b88127e2150c"
+  },
+  {
+    "file": "services/order-parser.js",
+    "unchanged": true,
+    "sha256": "887321fcf6fb9bd89e0b0d501665a38489cdc5c9bbf79230a7f725d897b92640"
+  },
+  {
+    "file": "services/pricing.js",
+    "unchanged": true,
+    "sha256": "8da9a336ad245efbfe7a0703bfa667a8a63ad5ee7eecf07027ce8eb81f50515c"
+  },
+  {
+    "file": "data/product-specs.js",
+    "unchanged": true,
+    "sha256": "84b8a33db04478a5959a62ad0484c23c0efdf667d2da3d3142d042a89d8da3e9"
+  },
+  {
+    "file": "services/privacy-consent.js",
+    "unchanged": true,
+    "sha256": "f0794e15907754a7793581e7cad8936c4bd702cb6a41cd0cd7405456ecb91ebd"
+  },
+  {
+    "file": "services/access-control.js",
+    "unchanged": true,
+    "sha256": "e3a6d0c61c4c1f07bef67b80660e80595ed27f01c09ac97b64dda7e89c61726e"
+  },
+  {
+    "file": "cloudfunctions/ledger/services/access-control.js",
+    "unchanged": true,
+    "sha256": "71ebf0b6949fdf34243b0369ec4af9ce1ce2106d9a86a2a8bbd87d507a4980f7"
+  },
+  {
+    "file": "cloudfunctions/ledger/services/member-security.js",
+    "unchanged": true,
+    "sha256": "48f804e80ebf99e079484055823804d0d01fb701b98b04929a7da5564a1cfde5"
+  },
+  {
+    "file": "cloudfunctions/ledger/services/client-snapshot.js",
+    "unchanged": true,
+    "sha256": "c8426d26f8d7e05991534f0c3649a1f879eb9442eb1daaf0de67211af03acd04"
+  },
+  {
+    "file": "cloudfunctions/ledger/services/content-security.js",
+    "unchanged": true,
+    "sha256": "0f2d324d952e21efe216c21ef1e54690a70607aaf9a35a14c81a3e33ec56e72e"
+  },
+  {
+    "file": "cloudfunctions/ledger/services/statement-export-cloud.js",
+    "unchanged": true,
+    "sha256": "c1a06bbd9e79cf871564f69b29442f3247e42004da24a4f17642f4e2e0cb9e62"
+  },
+  {
+    "file": "cloudfunctions/ledger/services/statement-excel.js",
+    "unchanged": true,
+    "sha256": "c20cb6f18305dc0a17e5c12bc9e843cabcf7533637c2aa03b28b991c708e7f0f"
+  },
+  {
+    "file": "services/statement-export.js",
+    "unchanged": true,
+    "sha256": "70445e27b3974a2315b1a7cc8e371a6892b7f06e1ce44f331afa9f28a1f63ba8"
+  },
+  {
+    "file": "services/statement-export-client.js",
+    "unchanged": true,
+    "sha256": "61735ae0b1b297ce0d4fe3d15a97f9f495bfe960393d006b2242848ef807ead1"
+  },
+  {
+    "file": "services/excel-export-client.js",
+    "unchanged": true,
+    "sha256": "820d8abda5f59cad30a75fccbd7178dc8d8541b420dc5542bf52f9d82c8a1fe1"
+  },
+  {
+    "file": "services/statement-paginator.js",
+    "unchanged": true,
+    "sha256": "292f8d4e9a2c89c9e346056ecec9428acb91da5ceb69ffb572b808c53823b6b6"
+  },
+  {
+    "file": "services/statement-image-renderer.js",
+    "unchanged": true,
+    "sha256": "b9b5675751a9c8b0ec5a078a0ada7334e6579cfcca110a943ac0a4bfdc9406c2"
+  },
+  {
+    "file": "services/photo-album.js",
+    "unchanged": true,
+    "sha256": "a5bb877cc1d0a0ea883616bfab99cc2aeada06d4a14753e5a373752a933b5a43"
+  },
+  {
+    "file": "cloudfunctions/ledger/package.json",
+    "unchanged": true,
+    "sha256": "634ec3d48b3c556176fa8947a35333a2edbc5a7fa4eca01747c34c390c2558b0"
+  },
+  {
+    "file": "cloudfunctions/ledger/package-lock.json",
+    "unchanged": true,
+    "sha256": "35df0b8665d0ee9b7298ac95b05abbe6ed9bb562c62d3910ff71747dbb0ad93d"
+  }
+]

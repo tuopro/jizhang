@@ -1,0 +1,42 @@
+<view class="page privacy-page">
+  <view class="privacy-card">
+    <view class="privacy-mark">隐私</view>
+    <block wx:if="{{!declined}}">
+      <view class="privacy-title">隐私保护提示</view>
+      <view class="privacy-description">
+        为提供企业记账、客户管理、发货收款、账期管理、操作审计及账单导出功能，本小程序会按照《用户隐私保护指引》处理提供服务所必要的信息。只有你主动点击“保存全部图片”时，才会申请将分页账单写入系统相册。请阅读并确认同意后继续使用。
+      </view>
+      <view class="consent-row">
+        <checkbox-group bindchange="onConsentChange">
+          <label class="consent-check">
+            <checkbox value="agreed" checked="{{checked}}" color="#123B67" />
+            <text>我已阅读并同意</text>
+          </label>
+        </checkbox-group>
+        <text class="privacy-link" catchtap="openPrivacyGuide">《用户隐私保护指引》</text>
+      </view>
+      <view wx:if="{{checkingPrivacy}}" class="privacy-status">正在确认微信隐私授权状态…</view>
+      <view wx:if="{{error}}" class="privacy-error">{{error}}</view>
+      <button wx:if="{{error}}" class="secondary-button retry-status-button" bindtap="refreshPrivacyStatus">重试</button>
+      <view class="privacy-actions action-row action-row--responsive">
+        <button class="secondary-button" bindtap="disagree">不同意</button>
+        <button
+          id="privacy-agree-button"
+          class="primary-button"
+          open-type="agreePrivacyAuthorization"
+          bindtap="agreeAndContinue"
+          bindagreeprivacyauthorization="handleAgreePrivacyAuthorization"
+          disabled="{{!checked || !privacyStatusReady || agreeing}}"
+        >{{agreeing ? '正在继续…' : '同意并继续'}}</button>
+      </view>
+    </block>
+    <block wx:else>
+      <view class="privacy-title">暂未同意</view>
+      <view class="privacy-description declined-message">
+        你需要阅读并同意《用户隐私保护指引》后才能使用记账功能。
+      </view>
+      <text class="privacy-link standalone-link" bindtap="openPrivacyGuide">查看《用户隐私保护指引》</text>
+      <button class="primary-button reconsider-button" bindtap="reconsider">重新查看并同意</button>
+    </block>
+  </view>
+</view>

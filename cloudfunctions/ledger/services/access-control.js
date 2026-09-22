@@ -3,6 +3,9 @@ const { createServiceError } = require('./service-errors')
 const PUBLIC_ACTIONS = new Set(['inspectInvite', 'acceptInvite'])
 const ACTIVE_MEMBER_ACTIONS = new Set([
   'bootstrap', 'getClientDeletePreview',
+  'listCustomerPrices', 'getCustomerPrice', 'getCustomerPriceForProduct',
+  'getStatementExportMeta', 'getStatementExportPage',
+  'createStatementExcel', 'cleanupStatementExportFile',
   'getActiveMemberInvite', 'createMemberInvite', 'revokeMemberInvite',
   'updateEnterprise', 'saveCustomerPrice', 'createCustomProduct', 'updateCustomProduct',
   'setCustomProductActive', 'setProductActive', 'updateShipment',

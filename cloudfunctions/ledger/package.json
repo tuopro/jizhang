@@ -4,6 +4,7 @@
   "private": true,
   "main": "index.js",
   "dependencies": {
+    "exceljs": "4.4.0",
     "wx-server-sdk": "latest"
   }
 }

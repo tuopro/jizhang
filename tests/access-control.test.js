@@ -168,7 +168,11 @@ test('23 前端伪造 role admin 不参与服务端授权', () => {
 })
 
 test('24 直接访问任一正式页仍会进入统一身份检查', () => {
-  const publicPages = new Set(['pages/join-enterprise/join-enterprise', 'pages/unauthorized/unauthorized'])
+  const publicPages = new Set([
+    'pages/join-enterprise/join-enterprise',
+    'pages/privacy-consent/privacy-consent',
+    'pages/unauthorized/unauthorized'
+  ])
   appJson.pages.filter(page => !publicPages.has(page)).forEach(page => {
     const source = fs.readFileSync(path.join(root, `${page}.js`), 'utf8')
     assert.match(source, /loadPage|prepareRepository/, `${page} must use the centralized page guard`)
@@ -185,4 +189,13 @@ test('25 陌生用户不会自动创建 enterprise', () => {
 test('26 陌生用户不会自动创建 admin membership', () => {
   assert.doesNotMatch(cloudIndex, /displayName:\s*'管理员',\s*role:\s*'admin',\s*status:\s*'active'/)
   assert.match(cloudIndex, /createInvitedMembership/)
+})
+
+test('27 账单导出 action 全部要求 active membership 且不是公开入口', () => {
+  ;[
+    'getStatementExportMeta',
+    'getStatementExportPage',
+    'createStatementExcel',
+    'cleanupStatementExportFile'
+  ].forEach(assertProtectedAction)
 })

@@ -63,6 +63,47 @@ tabBarPages.forEach(pagePath => {
   if (subpackagePages.includes(pagePath)) failures.push(`Tab 页面不能放入分包：${pagePath}`)
 })
 
+const appStyles = fs.readFileSync(path.join(root, 'app.wxss'), 'utf8')
+const compactCss = value => String(value || '').replace(/\s+/g, '')
+const actionRowRule = appStyles.match(/\.action-row\s*\{([^}]*)\}/)
+const actionButtonRule = appStyles.match(/\.action-row\s*>\s*button\s*\{([^}]*)\}/)
+const responsiveActionRule = appStyles.match(/\.action-row--responsive\s*\{([^}]*)\}/)
+const actionRowCss = compactCss(actionRowRule && actionRowRule[1])
+const actionButtonCss = compactCss(actionButtonRule && actionButtonRule[1])
+const responsiveActionCss = compactCss(responsiveActionRule && responsiveActionRule[1])
+
+if (!actionRowRule || !['display:flex', 'width:100%', 'min-width:0', 'box-sizing:border-box']
+  .every(rule => actionRowCss.includes(rule))) {
+  failures.push('统一 action-row 必须使用可收缩的全宽 flex 布局')
+}
+if (!actionButtonRule || !['flex:110', 'width:auto', 'min-width:0', 'margin:0', 'box-sizing:border-box']
+  .every(rule => actionButtonCss.includes(rule))) {
+  failures.push('action-row 内按钮必须清除默认 margin，并允许在父容器内收缩')
+}
+if (!responsiveActionRule || !responsiveActionCss.includes('flex-direction:column')) {
+  failures.push('窄屏 action-row 必须提供纵向排列降级')
+}
+
+const pageStyleSources = appJson.pages.map(pagePath => ({
+  pagePath,
+  source: fs.readFileSync(path.join(root, `${pagePath}.wxss`), 'utf8')
+}))
+const unsafeActionGrid = /\.[^{]*action[^{]*\{(?=[^}]*grid-template-columns)(?![^}]*minmax\s*\(\s*0\s*,)[^}]*\}/gi
+pageStyleSources.forEach(({ pagePath, source }) => {
+  if (unsafeActionGrid.test(source)) {
+    failures.push(`横向按钮网格必须使用 minmax(0, 1fr) 防止内容撑宽：${pagePath}.wxss`)
+  }
+  unsafeActionGrid.lastIndex = 0
+})
+
+const responsiveActionCount = appJson.pages.reduce((count, pagePath) => {
+  const source = fs.readFileSync(path.join(root, `${pagePath}.wxml`), 'utf8')
+  return count + (source.match(/class="[^"]*\baction-row--responsive\b[^"]*"/g) || []).length
+}, 0)
+if (responsiveActionCount < 9) {
+  failures.push('关键双按钮操作区必须继续复用统一响应式 action-row')
+}
+
 const jsFiles = []
 function collectJs(directory) {
   fs.readdirSync(directory, { withFileTypes: true }).forEach(entry => {
@@ -91,6 +132,8 @@ if (/basePrice\s*:/.test(productSource)) failures.push('产品库中不应出现
 
 const sharedCloudFiles = [
   ['services/ledger-repository.js', 'cloudfunctions/ledger/services/ledger-repository.js'],
+  ['services/content-security.js', 'cloudfunctions/ledger/services/content-security.js'],
+  ['services/statement-export.js', 'cloudfunctions/ledger/services/statement-export.js'],
   ['services/pricing.js', 'cloudfunctions/ledger/services/pricing.js'],
   ['data/product-specs.js', 'cloudfunctions/ledger/data/product-specs.js'],
   ['data/demo-seed.js', 'cloudfunctions/ledger/data/demo-seed.js'],

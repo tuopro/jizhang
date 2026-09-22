@@ -1,8 +1,10 @@
 <view class="page" wx:if="{{shipment}}">
   <view class="detail-head">
-    <view class="row-title">{{shipment.clientNameSnapshot}}</view>
-    <view class="detail-date">{{shipment.shipmentDate}}</view>
-    <view class="detail-date">录入人：{{shipment.createdByText}}</view>
+    <view class="detail-head-copy">
+      <view class="row-title">{{shipment.clientNameSnapshot}}</view>
+      <view class="detail-date">{{shipment.shipmentDate}} · 录入人：{{shipment.createdByText}}</view>
+    </view>
+    <view class="detail-amount-label">本次合计</view>
     <view class="detail-total">{{total}}</view>
   </view>
   <view class="section-head"><text class="section-title">商品明细</text></view>
@@ -24,7 +26,8 @@
     <view>备注：{{shipment.note || '无'}}</view>
   </view>
   <button wx:if="{{canEdit}}" class="secondary-button" bindtap="edit">修正这笔账目</button>
-  <view wx:else class="settled-tip">该账期已结清，历史账单保持只读。</view>
+  <view wx:if="{{isClosed}}" class="settled-tip">该账期已结清，历史账单保持只读。</view>
+  <view wx:if="{{editUnavailableReason}}" class="settled-tip">{{editUnavailableReason}}</view>
   <view class="section-head"><text class="section-title">修改记录</text></view>
   <view class="card compact-card">
     <view wx:for="{{audits}}" wx:key="id" class="list-row"><view><view class="row-title">{{item.name}}</view><view class="row-note">{{item.time}} · {{item.operator}} {{item.reason ? '· ' + item.reason : ''}}</view></view></view>

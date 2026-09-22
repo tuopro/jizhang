@@ -1,0 +1,257 @@
+{
+  "method": "Approximate explicit element count per repeated row, excluding text nodes and block elements; conditional children conservatively included; statement nested item.lines uses 2-line fixture. Not a native rendered-node or FPS measurement.",
+  "pages": [
+    {
+      "page": "pages/index/index",
+      "loops": [
+        {
+          "expression": "{{owingClients}}",
+          "key": "id",
+          "templateElementEstimate": 5
+        },
+        {
+          "expression": "{{recentShipments}}",
+          "key": "id",
+          "templateElementEstimate": 5
+        },
+        {
+          "expression": "{{recentPayments}}",
+          "key": "id",
+          "templateElementEstimate": 5
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/clients/clients",
+      "loops": [
+        {
+          "expression": "{{clients}}",
+          "key": "id",
+          "templateElementEstimate": 8
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/history/history",
+      "loops": [
+        {
+          "expression": "{{histories}}",
+          "key": "id",
+          "templateElementEstimate": 13
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/mine/mine",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/quick-entry/quick-entry",
+      "loops": [
+        {
+          "expression": "{{rows}}",
+          "key": "rowId",
+          "templateElementEstimate": 49
+        },
+        {
+          "expression": "{{item.issues}}",
+          "key": "*this",
+          "templateElementEstimate": 1
+        },
+        {
+          "expression": "{{unmatchedLines}}",
+          "key": "*this",
+          "templateElementEstimate": 1
+        },
+        {
+          "expression": "{{filteredProductOptions}}",
+          "key": "id",
+          "templateElementEstimate": 3
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/client-form/client-form",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/client-ledger/client-ledger",
+      "loops": [
+        {
+          "expression": "{{shipments}}",
+          "key": "id",
+          "templateElementEstimate": 7
+        },
+        {
+          "expression": "{{payments}}",
+          "key": "id",
+          "templateElementEstimate": 6
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/shipment-detail/shipment-detail",
+      "loops": [
+        {
+          "expression": "{{lines}}",
+          "key": "id",
+          "templateElementEstimate": 14
+        },
+        {
+          "expression": "{{audits}}",
+          "key": "id",
+          "templateElementEstimate": 4
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/payment-form/payment-form",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/statement/statement",
+      "loops": [
+        {
+          "expression": "{{shipments}}",
+          "key": "id",
+          "templateElementEstimate": 24
+        },
+        {
+          "expression": "{{item.lines}}",
+          "key": "id",
+          "templateElementEstimate": 5
+        },
+        {
+          "expression": "{{payments}}",
+          "key": "id",
+          "templateElementEstimate": 5
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/statement-export/statement-export",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/products/products",
+      "loops": [
+        {
+          "expression": "{{products}}",
+          "key": "id",
+          "templateElementEstimate": 5
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/product-form/product-form",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/customer-prices/customer-prices",
+      "loops": [
+        {
+          "expression": "{{prices}}",
+          "key": "id",
+          "templateElementEstimate": 5
+        },
+        {
+          "expression": "{{filteredProducts}}",
+          "key": "id",
+          "templateElementEstimate": 1
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/enterprise/enterprise",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/members/members",
+      "loops": [
+        {
+          "expression": "{{members}}",
+          "key": "id",
+          "templateElementEstimate": 8
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/join-enterprise/join-enterprise",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/privacy-consent/privacy-consent",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/unauthorized/unauthorized",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/owner-transfer/owner-transfer",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/audit-logs/audit-logs",
+      "loops": [
+        {
+          "expression": "{{logs}}",
+          "key": "id",
+          "templateElementEstimate": 5
+        }
+      ],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/help/help",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/data-settings/data-settings",
+      "loops": [],
+      "hiddenCount": 0
+    },
+    {
+      "page": "pages/parser-test/parser-test",
+      "loops": [
+        {
+          "expression": "{{items}}",
+          "key": "index",
+          "templateElementEstimate": 9
+        },
+        {
+          "expression": "{{item.issues}}",
+          "key": "*this",
+          "templateElementEstimate": 1
+        },
+        {
+          "expression": "{{unmatchedLines}}",
+          "key": "*this",
+          "templateElementEstimate": 1
+        }
+      ],
+      "hiddenCount": 0
+    }
+  ]
+}

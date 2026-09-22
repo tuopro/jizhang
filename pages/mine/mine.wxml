@@ -7,6 +7,7 @@
     <view wx:if="{{isAdmin}}" class="menu-row" data-url="/pages/products/products" bindtap="go"><text>产品管理</text><text>›</text></view>
     <view class="menu-row" data-url="/pages/clients/clients" bindtap="go"><text>客户管理</text><text>›</text></view>
     <view class="menu-row" data-url="/pages/help/help" bindtap="go"><text>使用说明</text><text>›</text></view>
+    <view class="menu-row" bindtap="openPrivacyGuide"><text>隐私保护指引</text><text>›</text></view>
     <view wx:if="{{isAdmin}}" class="menu-row" data-url="/pages/data-settings/data-settings" bindtap="go"><text>数据相关设置</text><text>›</text></view>
   </view>
   <view wx:if="{{showDeveloperTools}}" class="menu-card dev-card"><view class="menu-row" data-url="/pages/parser-test/parser-test" bindtap="go"><text>开发测试：规则识别</text><text>›</text></view></view>

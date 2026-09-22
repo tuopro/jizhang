@@ -1,0 +1,27 @@
+{
+  "result": "pass",
+  "scenarios": [
+    "index",
+    "clients",
+    "history",
+    "client-ledger",
+    "statement",
+    "quick-entry",
+    "quick-entry-parsed",
+    "quick-entry-selector",
+    "shipment-detail",
+    "payment-form",
+    "products",
+    "customer-prices",
+    "customer-prices-picker",
+    "customer-prices-edit",
+    "members",
+    "mine",
+    "audit-logs",
+    "client-form",
+    "product-form",
+    "enterprise",
+    "owner-transfer"
+  ],
+  "method": "Baseline captured source versus current source, isolated processes, identical synthetic fixture and fixed Date.now; compare all remaining page data fields after full progressive loading, project only actually rendered fields for trimmed rows; also compare quick-entry parsed rows, product selector, price picker and edit form."
+}

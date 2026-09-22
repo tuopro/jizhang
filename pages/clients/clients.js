@@ -1,8 +1,9 @@
 const { loadPage } = require('../../services/page-context')
 const { formatCurrency } = require('../../utils/money')
+const { setProgressiveList, appendProgressiveList } = require('../../services/progressive-list')
 
 Page({
-  data: { keyword: '', allClients: [], clients: [], scope: 'all', currentMemberId: '' },
+  data: { keyword: '', clients: [], clientCount: 0, scope: 'all' },
   onShow() { this.loadClients() },
   loadClients() {
     loadPage(this, (repository, tenantId) => {
@@ -16,22 +17,26 @@ Page({
           ownerText: client.ownerDisplayName || client.ownerNameSnapshot || '未设置'
         })
       })
-      this.setData({ allClients, currentMemberId: identity.memberId }, () => this.filterClients(this.data.keyword))
+      this.allClients = allClients
+      this.currentMemberId = identity.memberId
+      this.filterClients(this.data.keyword)
     })
   },
   onSearch(event) { this.filterClients(event.detail.value) },
-  filterClients(keyword) {
+  filterClients(keyword, patch) {
     const value = String(keyword || '').trim().toLowerCase()
-    const mineOnly = this.data.scope === 'mine'
-    this.setData({
-      keyword: keyword || '',
-      clients: this.data.allClients.filter(item =>
-        (!mineOnly || item.ownerMemberId === this.data.currentMemberId) &&
+    const mineOnly = (patch && patch.scope || this.data.scope) === 'mine'
+    const clients = (this.allClients || []).filter(item =>
+        (!mineOnly || item.ownerMemberId === this.currentMemberId) &&
         (!value || [item.name, item.contact, item.phone, item.ownerText].join(' ').toLowerCase().includes(value)))
-    })
+        .map(({ id, name, contact, outstandingText, owing, periodText, ownerText }) =>
+          ({ id, name, contact, outstandingText, owing, periodText, ownerText }))
+    const reset = keyword !== this.data.keyword || Boolean(patch && patch.scope !== this.data.scope)
+    setProgressiveList(this, 'clients', clients, Object.assign({ keyword: keyword || '', clientCount: clients.length }, patch), reset)
   },
+  onReachBottom() { appendProgressiveList(this, 'clients') },
   setScope(event) {
-    this.setData({ scope: event.currentTarget.dataset.scope }, () => this.filterClients(this.data.keyword))
+    this.filterClients(this.data.keyword, { scope: event.currentTarget.dataset.scope })
   },
   addClient() { wx.navigateTo({ url: '/pages/client-form/client-form' }) },
   openClient(event) { wx.navigateTo({ url: `/pages/client-ledger/client-ledger?id=${event.currentTarget.dataset.id}` }) }

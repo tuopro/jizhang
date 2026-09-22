@@ -4,12 +4,19 @@
     <view class="scope-tab {{scope === 'all' ? 'active' : ''}}" data-scope="all" bindtap="setScope">全部</view>
     <view class="scope-tab {{scope === 'mine' ? 'active' : ''}}" data-scope="mine" bindtap="setScope">我负责的</view>
   </view>
-  <view class="section-head"><text class="section-title">客户（{{clients.length}}）</text></view>
+  <view class="section-head"><text class="section-title">客户（{{clientCount}}）</text></view>
   <view wx:if="{{clients.length === 0}}" class="card empty-state">还没有客户，先新增一个往来客户。</view>
   <view wx:else class="card client-list">
     <view wx:for="{{clients}}" wx:key="id" class="list-row" data-id="{{item.id}}" bindtap="openClient">
-      <view><view class="row-title">{{item.name}}</view><view class="row-note">{{item.contact || '未填写联系人'}} · {{item.periodText}}</view><view class="row-note owner-note">负责人：{{item.ownerText}}</view></view>
-      <view class="{{item.owing ? 'amount-danger' : 'amount-success'}}">{{item.outstandingText}} ›</view>
+      <view class="client-main">
+        <view class="row-title">{{item.name}}</view>
+        <view class="row-note period-note">{{item.periodText}}</view>
+        <view class="row-note owner-note">负责人：{{item.ownerText}} · {{item.contact || '未填写联系人'}}</view>
+      </view>
+      <view class="client-balance">
+        <view class="balance-label">当前应收</view>
+        <view class="{{item.owing ? 'amount-danger' : 'amount-success'}}">{{item.outstandingText}} ›</view>
+      </view>
     </view>
   </view>
   <view class="fixed-action-space"></view>

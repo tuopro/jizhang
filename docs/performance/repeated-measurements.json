@@ -1,0 +1,3059 @@
+{
+  "method": "Three sequential fresh processes per version/profile. Synthetic local Node timing; no device/network timings.",
+  "samples": {
+    "stress": {
+      "before": [
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1765,
+              "totalPayloadBytes": 1765,
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 804,
+              "rootCloneBytes": 2245484364,
+              "modelMs": 5333.436750000001,
+              "localInitializationMs": 5353.361459,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 87668,
+              "totalPayloadBytes": 175294,
+              "maxPayloadKeys": [
+                "allClients",
+                "currentMemberId"
+              ],
+              "rootReads": 801,
+              "rootCloneBytes": 2237105691,
+              "modelMs": 5276.335999999999,
+              "localInitializationMs": 5292.770208,
+              "rows": {
+                "allClients": 200,
+                "clients": 200
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 430732,
+              "totalPayloadBytes": 430732,
+              "maxPayloadKeys": [
+                "clients",
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId",
+                "productOptions",
+                "standardProductOptions",
+                "customProductOptions"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 11171564,
+              "modelMs": 29.272541999998793,
+              "localInitializationMs": 45.8650000000016,
+              "rows": {
+                "clients": 200,
+                "clientNames": 200,
+                "rows": 0,
+                "productOptions": 804,
+                "standardProductOptions": 804,
+                "customProductOptions": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 67050,
+              "totalPayloadBytes": 133955,
+              "maxPayloadKeys": [
+                "allHistories",
+                "monthOptions",
+                "monthValues",
+                "monthIndex",
+                "currentMemberId"
+              ],
+              "rootReads": 2,
+              "rootCloneBytes": 5585782,
+              "modelMs": 21.2365830000017,
+              "localInitializationMs": 38.230500000001484,
+              "rows": {
+                "allHistories": 200,
+                "histories": 200,
+                "monthOptions": 2,
+                "monthValues": 2
+              }
+            }
+          ],
+          "loading": {
+            "show": 7,
+            "hide": 7
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1765,
+              "totalPayloadBytes": 1765,
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 804,
+              "rootCloneBytes": 2245484364,
+              "modelMs": 5353.677125,
+              "localInitializationMs": 5373.009290999999,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 87668,
+              "totalPayloadBytes": 175294,
+              "maxPayloadKeys": [
+                "allClients",
+                "currentMemberId"
+              ],
+              "rootReads": 801,
+              "rootCloneBytes": 2237105691,
+              "modelMs": 5302.548083,
+              "localInitializationMs": 5318.981374999999,
+              "rows": {
+                "allClients": 200,
+                "clients": 200
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 430732,
+              "totalPayloadBytes": 430732,
+              "maxPayloadKeys": [
+                "clients",
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId",
+                "productOptions",
+                "standardProductOptions",
+                "customProductOptions"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 11171564,
+              "modelMs": 29.40124999999898,
+              "localInitializationMs": 45.97991699999693,
+              "rows": {
+                "clients": 200,
+                "clientNames": 200,
+                "rows": 0,
+                "productOptions": 804,
+                "standardProductOptions": 804,
+                "customProductOptions": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 67050,
+              "totalPayloadBytes": 133955,
+              "maxPayloadKeys": [
+                "allHistories",
+                "monthOptions",
+                "monthValues",
+                "monthIndex",
+                "currentMemberId"
+              ],
+              "rootReads": 2,
+              "rootCloneBytes": 5585782,
+              "modelMs": 21.622125000001688,
+              "localInitializationMs": 38.6450410000034,
+              "rows": {
+                "allHistories": 200,
+                "histories": 200,
+                "monthOptions": 2,
+                "monthValues": 2
+              }
+            }
+          ],
+          "loading": {
+            "show": 7,
+            "hide": 7
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1765,
+              "totalPayloadBytes": 1765,
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 804,
+              "rootCloneBytes": 2245484364,
+              "modelMs": 5314.64825,
+              "localInitializationMs": 5334.217583,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 87668,
+              "totalPayloadBytes": 175294,
+              "maxPayloadKeys": [
+                "allClients",
+                "currentMemberId"
+              ],
+              "rootReads": 801,
+              "rootCloneBytes": 2237105691,
+              "modelMs": 5292.741,
+              "localInitializationMs": 5309.085333999999,
+              "rows": {
+                "allClients": 200,
+                "clients": 200
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 430732,
+              "totalPayloadBytes": 430732,
+              "maxPayloadKeys": [
+                "clients",
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId",
+                "productOptions",
+                "standardProductOptions",
+                "customProductOptions"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 11171564,
+              "modelMs": 29.19066699999894,
+              "localInitializationMs": 50.73862499999814,
+              "rows": {
+                "clients": 200,
+                "clientNames": 200,
+                "rows": 0,
+                "productOptions": 804,
+                "standardProductOptions": 804,
+                "customProductOptions": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 67050,
+              "totalPayloadBytes": 133955,
+              "maxPayloadKeys": [
+                "allHistories",
+                "monthOptions",
+                "monthValues",
+                "monthIndex",
+                "currentMemberId"
+              ],
+              "rootReads": 2,
+              "rootCloneBytes": 5585782,
+              "modelMs": 23.47679199999766,
+              "localInitializationMs": 40.306957999997394,
+              "rows": {
+                "allHistories": 200,
+                "histories": 200,
+                "monthOptions": 2,
+                "monthValues": 2
+              }
+            }
+          ],
+          "loading": {
+            "show": 7,
+            "hide": 7
+          }
+        }
+      ],
+      "after": [
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1765,
+              "totalPayloadBytes": 1765,
+              "completeSetData": 1,
+              "completePayloadBytes": 1765,
+              "completeMaxPayloadBytes": 1765,
+              "completeRows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              },
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 120.777875,
+              "localInitializationMs": 140.434666,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 5114,
+              "totalPayloadBytes": 5114,
+              "completeSetData": 1,
+              "completePayloadBytes": 5114,
+              "completeMaxPayloadBytes": 5114,
+              "completeRows": {
+                "clients": 30
+              },
+              "maxPayloadKeys": [
+                "keyword",
+                "clientCount",
+                "clients"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 98.49579199999997,
+              "localInitializationMs": 114.43641600000001,
+              "rows": {
+                "clients": 30
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 3874,
+              "totalPayloadBytes": 3874,
+              "completeSetData": 1,
+              "completePayloadBytes": 3874,
+              "completeMaxPayloadBytes": 3874,
+              "completeRows": {
+                "clientNames": 200,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              },
+              "maxPayloadKeys": [
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 8.52633400000002,
+              "localInitializationMs": 24.464625000000012,
+              "rows": {
+                "clientNames": 200,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 10086,
+              "totalPayloadBytes": 10086,
+              "completeSetData": 1,
+              "completePayloadBytes": 10086,
+              "completeMaxPayloadBytes": 10086,
+              "completeRows": {
+                "histories": 30,
+                "monthOptions": 2
+              },
+              "maxPayloadKeys": [
+                "monthOptions",
+                "monthIndex",
+                "histories"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 13.515875000000051,
+              "localInitializationMs": 31.707874999999945,
+              "rows": {
+                "histories": 30,
+                "monthOptions": 2
+              }
+            }
+          ],
+          "loading": {
+            "show": 4,
+            "hide": 4
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1765,
+              "totalPayloadBytes": 1765,
+              "completeSetData": 1,
+              "completePayloadBytes": 1765,
+              "completeMaxPayloadBytes": 1765,
+              "completeRows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              },
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 123.73949999999999,
+              "localInitializationMs": 143.01879200000002,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 5114,
+              "totalPayloadBytes": 5114,
+              "completeSetData": 1,
+              "completePayloadBytes": 5114,
+              "completeMaxPayloadBytes": 5114,
+              "completeRows": {
+                "clients": 30
+              },
+              "maxPayloadKeys": [
+                "keyword",
+                "clientCount",
+                "clients"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 97.23000000000002,
+              "localInitializationMs": 113.54345899999998,
+              "rows": {
+                "clients": 30
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 3874,
+              "totalPayloadBytes": 3874,
+              "completeSetData": 1,
+              "completePayloadBytes": 3874,
+              "completeMaxPayloadBytes": 3874,
+              "completeRows": {
+                "clientNames": 200,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              },
+              "maxPayloadKeys": [
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 8.684208000000012,
+              "localInitializationMs": 25.157583000000045,
+              "rows": {
+                "clientNames": 200,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 10086,
+              "totalPayloadBytes": 10086,
+              "completeSetData": 1,
+              "completePayloadBytes": 10086,
+              "completeMaxPayloadBytes": 10086,
+              "completeRows": {
+                "histories": 30,
+                "monthOptions": 2
+              },
+              "maxPayloadKeys": [
+                "monthOptions",
+                "monthIndex",
+                "histories"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 13.972292000000039,
+              "localInitializationMs": 32.53895799999998,
+              "rows": {
+                "histories": 30,
+                "monthOptions": 2
+              }
+            }
+          ],
+          "loading": {
+            "show": 4,
+            "hide": 4
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1765,
+              "totalPayloadBytes": 1765,
+              "completeSetData": 1,
+              "completePayloadBytes": 1765,
+              "completeMaxPayloadBytes": 1765,
+              "completeRows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              },
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 119.856625,
+              "localInitializationMs": 139.164459,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 5114,
+              "totalPayloadBytes": 5114,
+              "completeSetData": 1,
+              "completePayloadBytes": 5114,
+              "completeMaxPayloadBytes": 5114,
+              "completeRows": {
+                "clients": 30
+              },
+              "maxPayloadKeys": [
+                "keyword",
+                "clientCount",
+                "clients"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 97.35558299999997,
+              "localInitializationMs": 113.20720800000004,
+              "rows": {
+                "clients": 30
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 3874,
+              "totalPayloadBytes": 3874,
+              "completeSetData": 1,
+              "completePayloadBytes": 3874,
+              "completeMaxPayloadBytes": 3874,
+              "completeRows": {
+                "clientNames": 200,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              },
+              "maxPayloadKeys": [
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 8.39920799999993,
+              "localInitializationMs": 24.71895900000004,
+              "rows": {
+                "clientNames": 200,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 10086,
+              "totalPayloadBytes": 10086,
+              "completeSetData": 1,
+              "completePayloadBytes": 10086,
+              "completeMaxPayloadBytes": 10086,
+              "completeRows": {
+                "histories": 30,
+                "monthOptions": 2
+              },
+              "maxPayloadKeys": [
+                "monthOptions",
+                "monthIndex",
+                "histories"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2792891,
+              "modelMs": 13.679458000000068,
+              "localInitializationMs": 31.68658300000004,
+              "rows": {
+                "histories": 30,
+                "monthOptions": 2
+              }
+            }
+          ],
+          "loading": {
+            "show": 4,
+            "hide": 4
+          }
+        }
+      ]
+    },
+    "small": {
+      "before": [
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1762,
+              "totalPayloadBytes": 1762,
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 44,
+              "rootCloneBytes": 4990524,
+              "modelMs": 18.617,
+              "localInitializationMs": 19.757208,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 4448,
+              "totalPayloadBytes": 8854,
+              "maxPayloadKeys": [
+                "allClients",
+                "currentMemberId"
+              ],
+              "rootReads": 41,
+              "rootCloneBytes": 4650261,
+              "modelMs": 11.995584000000004,
+              "localInitializationMs": 12.760707999999994,
+              "rows": {
+                "allClients": 10,
+                "clients": 10
+              }
+            },
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1766,
+              "totalPayloadBytes": 1766,
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 453684,
+              "modelMs": 1.4563749999999942,
+              "localInitializationMs": 2.3170420000000007,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 2803,
+              "totalPayloadBytes": 2831,
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 453684,
+              "modelMs": 1.6956659999999886,
+              "localInitializationMs": 2.503708000000003,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 1831,
+              "totalPayloadBytes": 1859,
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.34687499999999716,
+              "localInitializationMs": 1.349416000000005,
+              "rows": {
+                "shipments": 1,
+                "payments": 1
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 362902,
+              "totalPayloadBytes": 362902,
+              "maxPayloadKeys": [
+                "clients",
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId",
+                "productOptions",
+                "standardProductOptions",
+                "customProductOptions"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 453684,
+              "modelMs": 2.5114579999999904,
+              "localInitializationMs": 3.3897089999999963,
+              "rows": {
+                "clients": 10,
+                "clientNames": 10,
+                "rows": 0,
+                "productOptions": 804,
+                "standardProductOptions": 804,
+                "customProductOptions": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 3480,
+              "totalPayloadBytes": 6815,
+              "maxPayloadKeys": [
+                "allHistories",
+                "monthOptions",
+                "monthValues",
+                "monthIndex",
+                "currentMemberId"
+              ],
+              "rootReads": 2,
+              "rootCloneBytes": 226842,
+              "modelMs": 0.9119159999999908,
+              "localInitializationMs": 1.9125410000000045,
+              "rows": {
+                "allHistories": 10,
+                "histories": 10,
+                "monthOptions": 2,
+                "monthValues": 2
+              }
+            },
+            {
+              "name": "products",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 122794,
+              "totalPayloadBytes": 145841,
+              "maxPayloadKeys": [
+                "allProducts"
+              ],
+              "rootReads": 2,
+              "rootCloneBytes": 226842,
+              "modelMs": 1.4567499999999995,
+              "localInitializationMs": 2.1693750000000023,
+              "rows": {
+                "allProducts": 804,
+                "products": 150
+              }
+            }
+          ],
+          "loading": {
+            "show": 13,
+            "hide": 13
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1762,
+              "totalPayloadBytes": 1762,
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 44,
+              "rootCloneBytes": 4990524,
+              "modelMs": 18.394041,
+              "localInitializationMs": 19.5125,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 4448,
+              "totalPayloadBytes": 8854,
+              "maxPayloadKeys": [
+                "allClients",
+                "currentMemberId"
+              ],
+              "rootReads": 41,
+              "rootCloneBytes": 4650261,
+              "modelMs": 11.850875000000002,
+              "localInitializationMs": 12.588042000000002,
+              "rows": {
+                "allClients": 10,
+                "clients": 10
+              }
+            },
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1766,
+              "totalPayloadBytes": 1766,
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 453684,
+              "modelMs": 1.406084000000007,
+              "localInitializationMs": 2.238041999999993,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 2803,
+              "totalPayloadBytes": 2831,
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 453684,
+              "modelMs": 1.7320840000000004,
+              "localInitializationMs": 2.523207999999997,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 1831,
+              "totalPayloadBytes": 1859,
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.33962499999999807,
+              "localInitializationMs": 1.301833000000002,
+              "rows": {
+                "shipments": 1,
+                "payments": 1
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 362902,
+              "totalPayloadBytes": 362902,
+              "maxPayloadKeys": [
+                "clients",
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId",
+                "productOptions",
+                "standardProductOptions",
+                "customProductOptions"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 453684,
+              "modelMs": 2.501500000000007,
+              "localInitializationMs": 3.349249999999998,
+              "rows": {
+                "clients": 10,
+                "clientNames": 10,
+                "rows": 0,
+                "productOptions": 804,
+                "standardProductOptions": 804,
+                "customProductOptions": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 3480,
+              "totalPayloadBytes": 6815,
+              "maxPayloadKeys": [
+                "allHistories",
+                "monthOptions",
+                "monthValues",
+                "monthIndex",
+                "currentMemberId"
+              ],
+              "rootReads": 2,
+              "rootCloneBytes": 226842,
+              "modelMs": 0.9362080000000077,
+              "localInitializationMs": 1.941999999999993,
+              "rows": {
+                "allHistories": 10,
+                "histories": 10,
+                "monthOptions": 2,
+                "monthValues": 2
+              }
+            },
+            {
+              "name": "products",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 122794,
+              "totalPayloadBytes": 145841,
+              "maxPayloadKeys": [
+                "allProducts"
+              ],
+              "rootReads": 2,
+              "rootCloneBytes": 226842,
+              "modelMs": 1.4132499999999837,
+              "localInitializationMs": 2.102291000000008,
+              "rows": {
+                "allProducts": 804,
+                "products": 150
+              }
+            }
+          ],
+          "loading": {
+            "show": 13,
+            "hide": 13
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1762,
+              "totalPayloadBytes": 1762,
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 44,
+              "rootCloneBytes": 4990524,
+              "modelMs": 18.596584,
+              "localInitializationMs": 19.802332999999997,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 4448,
+              "totalPayloadBytes": 8854,
+              "maxPayloadKeys": [
+                "allClients",
+                "currentMemberId"
+              ],
+              "rootReads": 41,
+              "rootCloneBytes": 4650261,
+              "modelMs": 11.719458000000003,
+              "localInitializationMs": 12.488624999999999,
+              "rows": {
+                "allClients": 10,
+                "clients": 10
+              }
+            },
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1766,
+              "totalPayloadBytes": 1766,
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 453684,
+              "modelMs": 1.4789580000000058,
+              "localInitializationMs": 2.3109170000000034,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 2803,
+              "totalPayloadBytes": 2831,
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 453684,
+              "modelMs": 1.7871669999999966,
+              "localInitializationMs": 2.5605840000000057,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 1831,
+              "totalPayloadBytes": 1859,
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.3533339999999896,
+              "localInitializationMs": 1.3534159999999957,
+              "rows": {
+                "shipments": 1,
+                "payments": 1
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 362902,
+              "totalPayloadBytes": 362902,
+              "maxPayloadKeys": [
+                "clients",
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId",
+                "productOptions",
+                "standardProductOptions",
+                "customProductOptions"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 453684,
+              "modelMs": 2.474125000000001,
+              "localInitializationMs": 3.347417000000007,
+              "rows": {
+                "clients": 10,
+                "clientNames": 10,
+                "rows": 0,
+                "productOptions": 804,
+                "standardProductOptions": 804,
+                "customProductOptions": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 3480,
+              "totalPayloadBytes": 6815,
+              "maxPayloadKeys": [
+                "allHistories",
+                "monthOptions",
+                "monthValues",
+                "monthIndex",
+                "currentMemberId"
+              ],
+              "rootReads": 2,
+              "rootCloneBytes": 226842,
+              "modelMs": 0.9712079999999901,
+              "localInitializationMs": 1.953708000000006,
+              "rows": {
+                "allHistories": 10,
+                "histories": 10,
+                "monthOptions": 2,
+                "monthValues": 2
+              }
+            },
+            {
+              "name": "products",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 2,
+              "maxPayloadBytes": 122794,
+              "totalPayloadBytes": 145841,
+              "maxPayloadKeys": [
+                "allProducts"
+              ],
+              "rootReads": 2,
+              "rootCloneBytes": 226842,
+              "modelMs": 1.4585829999999973,
+              "localInitializationMs": 2.1797499999999985,
+              "rows": {
+                "allProducts": 804,
+                "products": 150
+              }
+            }
+          ],
+          "loading": {
+            "show": 13,
+            "hide": 13
+          }
+        }
+      ],
+      "after": [
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1762,
+              "totalPayloadBytes": 1762,
+              "completeSetData": 1,
+              "completePayloadBytes": 1762,
+              "completeMaxPayloadBytes": 1762,
+              "completeRows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              },
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 6.367415999999999,
+              "localInitializationMs": 7.595499999999998,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1733,
+              "totalPayloadBytes": 1733,
+              "completeSetData": 1,
+              "completePayloadBytes": 1733,
+              "completeMaxPayloadBytes": 1733,
+              "completeRows": {
+                "clients": 10
+              },
+              "maxPayloadKeys": [
+                "keyword",
+                "clientCount",
+                "clients"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.8140840000000011,
+              "localInitializationMs": 1.5319579999999995,
+              "rows": {
+                "clients": 10
+              }
+            },
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1766,
+              "totalPayloadBytes": 1766,
+              "completeSetData": 1,
+              "completePayloadBytes": 1766,
+              "completeMaxPayloadBytes": 1766,
+              "completeRows": {
+                "shipments": 3,
+                "payments": 3
+              },
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.43825000000000003,
+              "localInitializationMs": 1.209417000000002,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 2803,
+              "totalPayloadBytes": 2831,
+              "completeSetData": 2,
+              "completePayloadBytes": 2831,
+              "completeMaxPayloadBytes": 2803,
+              "completeRows": {
+                "shipments": 3,
+                "payments": 3
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.9382920000000041,
+              "localInitializationMs": 1.6969589999999997,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 1831,
+              "totalPayloadBytes": 1859,
+              "completeSetData": 2,
+              "completePayloadBytes": 1859,
+              "completeMaxPayloadBytes": 1831,
+              "completeRows": {
+                "shipments": 1,
+                "payments": 1
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.3536669999999944,
+              "localInitializationMs": 1.205999999999996,
+              "rows": {
+                "shipments": 1,
+                "payments": 1
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 264,
+              "totalPayloadBytes": 264,
+              "completeSetData": 1,
+              "completePayloadBytes": 264,
+              "completeMaxPayloadBytes": 264,
+              "completeRows": {
+                "clientNames": 10,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              },
+              "maxPayloadKeys": [
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 1.060292000000004,
+              "localInitializationMs": 2.4385420000000053,
+              "rows": {
+                "clientNames": 10,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 3396,
+              "totalPayloadBytes": 3396,
+              "completeSetData": 1,
+              "completePayloadBytes": 3396,
+              "completeMaxPayloadBytes": 3396,
+              "completeRows": {
+                "histories": 10,
+                "monthOptions": 2
+              },
+              "maxPayloadKeys": [
+                "monthOptions",
+                "monthIndex",
+                "histories"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.6444159999999997,
+              "localInitializationMs": 1.3915829999999971,
+              "rows": {
+                "histories": 10,
+                "monthOptions": 2
+              }
+            },
+            {
+              "name": "products",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 16003,
+              "totalPayloadBytes": 16003,
+              "completeSetData": 1,
+              "completePayloadBytes": 16003,
+              "completeMaxPayloadBytes": 16003,
+              "completeRows": {
+                "products": 150
+              },
+              "maxPayloadKeys": [
+                "products"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 1.1047080000000022,
+              "localInitializationMs": 1.8362920000000003,
+              "rows": {
+                "products": 150
+              }
+            }
+          ],
+          "loading": {
+            "show": 8,
+            "hide": 8
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1762,
+              "totalPayloadBytes": 1762,
+              "completeSetData": 1,
+              "completePayloadBytes": 1762,
+              "completeMaxPayloadBytes": 1762,
+              "completeRows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              },
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 6.455165999999998,
+              "localInitializationMs": 7.581333000000001,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1733,
+              "totalPayloadBytes": 1733,
+              "completeSetData": 1,
+              "completePayloadBytes": 1733,
+              "completeMaxPayloadBytes": 1733,
+              "completeRows": {
+                "clients": 10
+              },
+              "maxPayloadKeys": [
+                "keyword",
+                "clientCount",
+                "clients"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.7891250000000021,
+              "localInitializationMs": 1.5190410000000014,
+              "rows": {
+                "clients": 10
+              }
+            },
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1766,
+              "totalPayloadBytes": 1766,
+              "completeSetData": 1,
+              "completePayloadBytes": 1766,
+              "completeMaxPayloadBytes": 1766,
+              "completeRows": {
+                "shipments": 3,
+                "payments": 3
+              },
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.44920800000000227,
+              "localInitializationMs": 1.2168330000000012,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 2803,
+              "totalPayloadBytes": 2831,
+              "completeSetData": 2,
+              "completePayloadBytes": 2831,
+              "completeMaxPayloadBytes": 2803,
+              "completeRows": {
+                "shipments": 3,
+                "payments": 3
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.8292499999999947,
+              "localInitializationMs": 1.5527080000000026,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 1831,
+              "totalPayloadBytes": 1859,
+              "completeSetData": 2,
+              "completePayloadBytes": 1859,
+              "completeMaxPayloadBytes": 1831,
+              "completeRows": {
+                "shipments": 1,
+                "payments": 1
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.3504170000000002,
+              "localInitializationMs": 1.1592920000000007,
+              "rows": {
+                "shipments": 1,
+                "payments": 1
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 264,
+              "totalPayloadBytes": 264,
+              "completeSetData": 1,
+              "completePayloadBytes": 264,
+              "completeMaxPayloadBytes": 264,
+              "completeRows": {
+                "clientNames": 10,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              },
+              "maxPayloadKeys": [
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 1.1782089999999954,
+              "localInitializationMs": 2.8135409999999936,
+              "rows": {
+                "clientNames": 10,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 3396,
+              "totalPayloadBytes": 3396,
+              "completeSetData": 1,
+              "completePayloadBytes": 3396,
+              "completeMaxPayloadBytes": 3396,
+              "completeRows": {
+                "histories": 10,
+                "monthOptions": 2
+              },
+              "maxPayloadKeys": [
+                "monthOptions",
+                "monthIndex",
+                "histories"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.6041249999999962,
+              "localInitializationMs": 1.3329579999999979,
+              "rows": {
+                "histories": 10,
+                "monthOptions": 2
+              }
+            },
+            {
+              "name": "products",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 16003,
+              "totalPayloadBytes": 16003,
+              "completeSetData": 1,
+              "completePayloadBytes": 16003,
+              "completeMaxPayloadBytes": 16003,
+              "completeRows": {
+                "products": 150
+              },
+              "maxPayloadKeys": [
+                "products"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 1.0393329999999992,
+              "localInitializationMs": 1.730290999999994,
+              "rows": {
+                "products": 150
+              }
+            }
+          ],
+          "loading": {
+            "show": 8,
+            "hide": 8
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "index",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1762,
+              "totalPayloadBytes": 1762,
+              "completeSetData": 1,
+              "completePayloadBytes": 1762,
+              "completeMaxPayloadBytes": 1762,
+              "completeRows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              },
+              "maxPayloadKeys": [
+                "enterpriseName",
+                "totalOutstanding",
+                "unsettledClientCount",
+                "owingClients",
+                "recentShipments",
+                "recentPayments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 6.187291000000002,
+              "localInitializationMs": 7.401750000000002,
+              "rows": {
+                "owingClients": 4,
+                "recentShipments": 5,
+                "recentPayments": 5
+              }
+            },
+            {
+              "name": "clients",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1733,
+              "totalPayloadBytes": 1733,
+              "completeSetData": 1,
+              "completePayloadBytes": 1733,
+              "completeMaxPayloadBytes": 1733,
+              "completeRows": {
+                "clients": 10
+              },
+              "maxPayloadKeys": [
+                "keyword",
+                "clientCount",
+                "clients"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.7970839999999981,
+              "localInitializationMs": 1.5424170000000004,
+              "rows": {
+                "clients": 10
+              }
+            },
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 1766,
+              "totalPayloadBytes": 1766,
+              "completeSetData": 1,
+              "completePayloadBytes": 1766,
+              "completeMaxPayloadBytes": 1766,
+              "completeRows": {
+                "shipments": 3,
+                "payments": 3
+              },
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.45870800000000145,
+              "localInitializationMs": 1.2682090000000024,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 2803,
+              "totalPayloadBytes": 2831,
+              "completeSetData": 2,
+              "completePayloadBytes": 2831,
+              "completeMaxPayloadBytes": 2803,
+              "completeRows": {
+                "shipments": 3,
+                "payments": 3
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.9277080000000026,
+              "localInitializationMs": 1.7095829999999985,
+              "rows": {
+                "shipments": 3,
+                "payments": 3
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 1831,
+              "totalPayloadBytes": 1859,
+              "completeSetData": 2,
+              "completePayloadBytes": 1859,
+              "completeMaxPayloadBytes": 1831,
+              "completeRows": {
+                "shipments": 1,
+                "payments": 1
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.35479100000000585,
+              "localInitializationMs": 1.1646659999999969,
+              "rows": {
+                "shipments": 1,
+                "payments": 1
+              }
+            },
+            {
+              "name": "quick-entry",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 1,
+              "maxPayloadBytes": 264,
+              "totalPayloadBytes": 264,
+              "completeSetData": 1,
+              "completePayloadBytes": 264,
+              "completeMaxPayloadBytes": 264,
+              "completeRows": {
+                "clientNames": 10,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              },
+              "maxPayloadKeys": [
+                "clientNames",
+                "selectedClientIndex",
+                "selectedClientId"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 1.105209000000002,
+              "localInitializationMs": 2.4535839999999993,
+              "rows": {
+                "clientNames": 10,
+                "rows": 0,
+                "filteredProductOptions": 0,
+                "colorOptions": 5,
+                "toothOptions": 5,
+                "unitOptions": 3,
+                "unmatchedLines": 0
+              }
+            },
+            {
+              "name": "history",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 3396,
+              "totalPayloadBytes": 3396,
+              "completeSetData": 1,
+              "completePayloadBytes": 3396,
+              "completeMaxPayloadBytes": 3396,
+              "completeRows": {
+                "histories": 10,
+                "monthOptions": 2
+              },
+              "maxPayloadKeys": [
+                "monthOptions",
+                "monthIndex",
+                "histories"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 0.616375000000005,
+              "localInitializationMs": 1.3210419999999985,
+              "rows": {
+                "histories": 10,
+                "monthOptions": 2
+              }
+            },
+            {
+              "name": "products",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 16003,
+              "totalPayloadBytes": 16003,
+              "completeSetData": 1,
+              "completePayloadBytes": 16003,
+              "completeMaxPayloadBytes": 16003,
+              "completeRows": {
+                "products": 150
+              },
+              "maxPayloadKeys": [
+                "products"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 113421,
+              "modelMs": 1.073750000000004,
+              "localInitializationMs": 1.8136659999999978,
+              "rows": {
+                "products": 150
+              }
+            }
+          ],
+          "loading": {
+            "show": 8,
+            "hide": 8
+          }
+        }
+      ]
+    },
+    "longLedger": {
+      "before": [
+        {
+          "pages": [
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 224081,
+              "totalPayloadBytes": 224081,
+              "completeSetData": 1,
+              "completePayloadBytes": 224081,
+              "completeMaxPayloadBytes": 224081,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 10415252,
+              "modelMs": 35.337833,
+              "localInitializationMs": 55.194583,
+              "rows": {
+                "shipments": 667,
+                "payments": 667
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 335890,
+              "totalPayloadBytes": 335918,
+              "completeSetData": 2,
+              "completePayloadBytes": 335918,
+              "completeMaxPayloadBytes": 335890,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 10415252,
+              "modelMs": 32.648458000000005,
+              "localInitializationMs": 47.93729099999999,
+              "rows": {
+                "shipments": 667,
+                "payments": 667
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 168713,
+              "totalPayloadBytes": 168741,
+              "completeSetData": 2,
+              "completePayloadBytes": 168741,
+              "completeMaxPayloadBytes": 168713,
+              "completeRows": {
+                "shipments": 333,
+                "payments": 333
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 8.976375000000019,
+              "localInitializationMs": 25.139624999999995,
+              "rows": {
+                "shipments": 333,
+                "payments": 333
+              }
+            }
+          ],
+          "loading": {
+            "show": 4,
+            "hide": 4
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 224081,
+              "totalPayloadBytes": 224081,
+              "completeSetData": 1,
+              "completePayloadBytes": 224081,
+              "completeMaxPayloadBytes": 224081,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 10415252,
+              "modelMs": 35.54229099999999,
+              "localInitializationMs": 54.74475,
+              "rows": {
+                "shipments": 667,
+                "payments": 667
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 335890,
+              "totalPayloadBytes": 335918,
+              "completeSetData": 2,
+              "completePayloadBytes": 335918,
+              "completeMaxPayloadBytes": 335890,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 10415252,
+              "modelMs": 32.92345799999998,
+              "localInitializationMs": 48.07970900000001,
+              "rows": {
+                "shipments": 667,
+                "payments": 667
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 168713,
+              "totalPayloadBytes": 168741,
+              "completeSetData": 2,
+              "completePayloadBytes": 168741,
+              "completeMaxPayloadBytes": 168713,
+              "completeRows": {
+                "shipments": 333,
+                "payments": 333
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 8.861540999999988,
+              "localInitializationMs": 25.04808299999999,
+              "rows": {
+                "shipments": 333,
+                "payments": 333
+              }
+            }
+          ],
+          "loading": {
+            "show": 4,
+            "hide": 4
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 224081,
+              "totalPayloadBytes": 224081,
+              "completeSetData": 1,
+              "completePayloadBytes": 224081,
+              "completeMaxPayloadBytes": 224081,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 10415252,
+              "modelMs": 35.001208000000005,
+              "localInitializationMs": 53.96424999999999,
+              "rows": {
+                "shipments": 667,
+                "payments": 667
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 335890,
+              "totalPayloadBytes": 335918,
+              "completeSetData": 2,
+              "completePayloadBytes": 335918,
+              "completeMaxPayloadBytes": 335890,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 4,
+              "rootCloneBytes": 10415252,
+              "modelMs": 32.681083,
+              "localInitializationMs": 47.68758399999999,
+              "rows": {
+                "shipments": 667,
+                "payments": 667
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 168713,
+              "totalPayloadBytes": 168741,
+              "completeSetData": 2,
+              "completePayloadBytes": 168741,
+              "completeMaxPayloadBytes": 168713,
+              "completeRows": {
+                "shipments": 333,
+                "payments": 333
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 9.103417000000007,
+              "localInitializationMs": 25.262665999999996,
+              "rows": {
+                "shipments": 333,
+                "payments": 333
+              }
+            }
+          ],
+          "loading": {
+            "show": 4,
+            "hide": 4
+          }
+        }
+      ],
+      "after": [
+        {
+          "pages": [
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 10760,
+              "totalPayloadBytes": 10760,
+              "completeSetData": 23,
+              "completePayloadBytes": 244984,
+              "completeMaxPayloadBytes": 11041,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 16.677166999999997,
+              "localInitializationMs": 34.851,
+              "rows": {
+                "shipments": 30,
+                "payments": 30
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 16264,
+              "totalPayloadBytes": 16292,
+              "completeSetData": 24,
+              "completePayloadBytes": 356821,
+              "completeMaxPayloadBytes": 16264,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 13.420791999999992,
+              "localInitializationMs": 30.07008400000001,
+              "rows": {
+                "shipments": 30,
+                "payments": 30
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 16316,
+              "totalPayloadBytes": 16344,
+              "completeSetData": 13,
+              "completePayloadBytes": 178611,
+              "completeMaxPayloadBytes": 16316,
+              "completeRows": {
+                "shipments": 333,
+                "payments": 333
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 8.902333999999996,
+              "localInitializationMs": 25.419917000000027,
+              "rows": {
+                "shipments": 30,
+                "payments": 30
+              }
+            }
+          ],
+          "loading": {
+            "show": 3,
+            "hide": 3
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 10760,
+              "totalPayloadBytes": 10760,
+              "completeSetData": 23,
+              "completePayloadBytes": 244984,
+              "completeMaxPayloadBytes": 11041,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 16.455917,
+              "localInitializationMs": 34.806083,
+              "rows": {
+                "shipments": 30,
+                "payments": 30
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 16264,
+              "totalPayloadBytes": 16292,
+              "completeSetData": 24,
+              "completePayloadBytes": 356821,
+              "completeMaxPayloadBytes": 16264,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 13.721790999999996,
+              "localInitializationMs": 30.225666999999987,
+              "rows": {
+                "shipments": 30,
+                "payments": 30
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 16316,
+              "totalPayloadBytes": 16344,
+              "completeSetData": 13,
+              "completePayloadBytes": 178611,
+              "completeMaxPayloadBytes": 16316,
+              "completeRows": {
+                "shipments": 333,
+                "payments": 333
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 8.742833000000019,
+              "localInitializationMs": 25.444625000000002,
+              "rows": {
+                "shipments": 30,
+                "payments": 30
+              }
+            }
+          ],
+          "loading": {
+            "show": 3,
+            "hide": 3
+          }
+        },
+        {
+          "pages": [
+            {
+              "name": "client-ledger",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 1,
+              "initSetData": 1,
+              "maxPayloadBytes": 10760,
+              "totalPayloadBytes": 10760,
+              "completeSetData": 23,
+              "completePayloadBytes": 244984,
+              "completeMaxPayloadBytes": 11041,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "clientId",
+                "client",
+                "periodId",
+                "periodTitle",
+                "periodRange",
+                "itemsSubtotal",
+                "freightTotal",
+                "shipmentTotal",
+                "received",
+                "outstanding",
+                "shipmentCount",
+                "canReceivePayment",
+                "canSettle",
+                "isAdmin",
+                "clientOwnerText",
+                "periodOwnerText",
+                "shipments",
+                "payments"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 16.326332999999998,
+              "localInitializationMs": 34.804833,
+              "rows": {
+                "shipments": 30,
+                "payments": 30
+              }
+            },
+            {
+              "name": "statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 16264,
+              "totalPayloadBytes": 16292,
+              "completeSetData": 24,
+              "completePayloadBytes": 356821,
+              "completeMaxPayloadBytes": 16264,
+              "completeRows": {
+                "shipments": 667,
+                "payments": 667
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 13.520333000000008,
+              "localInitializationMs": 29.856542000000005,
+              "rows": {
+                "shipments": 30,
+                "payments": 30
+              }
+            },
+            {
+              "name": "historical-statement",
+              "initCloudCalls": 1,
+              "returnCloudCalls": 0,
+              "initSetData": 2,
+              "maxPayloadBytes": 16316,
+              "totalPayloadBytes": 16344,
+              "completeSetData": 13,
+              "completePayloadBytes": 178611,
+              "completeMaxPayloadBytes": 16316,
+              "completeRows": {
+                "shipments": 333,
+                "payments": 333
+              },
+              "maxPayloadKeys": [
+                "client",
+                "period",
+                "periodTitle",
+                "periodLabel",
+                "periodOwnerText",
+                "isClosed",
+                "canExport",
+                "shipments",
+                "payments",
+                "itemsSubtotal",
+                "freightTotal",
+                "total",
+                "received",
+                "outstanding"
+              ],
+              "rootReads": 1,
+              "rootCloneBytes": 2603813,
+              "modelMs": 8.698916999999994,
+              "localInitializationMs": 26.100749999999977,
+              "rows": {
+                "shipments": 30,
+                "payments": 30
+              }
+            }
+          ],
+          "loading": {
+            "show": 3,
+            "hide": 3
+          }
+        }
+      ]
+    }
+  }
+}

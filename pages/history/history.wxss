@@ -1,3 +1,21 @@
-.history-top,.history-bottom{display:flex;align-items:center;justify-content:space-between}.period{margin-top:8rpx;color:#687887;font-size:26rpx}.amount{font-size:36rpx;font-weight:700;color:#203b58}.history-bottom{margin-top:24rpx;padding-top:18rpx;border-top:1rpx solid #edf0f3;color:#748290;font-size:24rpx}.settled{color:#21865a;font-weight:650}
-.month-filter{margin:18rpx 0 24rpx;padding:20rpx 24rpx;border:1rpx solid #dce3e9;border-radius:14rpx;background:#fff;color:#36516a;font-size:26rpx}
-.scope-tabs{display:flex;gap:12rpx;margin:-8rpx 0 24rpx}.scope-tab{padding:13rpx 26rpx;border:1rpx solid #dce3e9;border-radius:28rpx;background:#fff;color:#647485;font-size:25rpx}.scope-tab.active{border-color:#123b67;background:#123b67;color:#fff}.history-owner{margin-top:14rpx;color:#7d8a96;font-size:23rpx}
+.history-card { padding:26rpx; }
+.history-top,.history-bottom { display:flex;align-items:center;justify-content:space-between;gap:20rpx; }
+.history-copy { min-width:0;flex:1; }
+.history-sequence { margin-bottom:7rpx;color:var(--ledger-primary);font-size:24rpx;font-weight:700; }
+.period { margin-top:7rpx;color:var(--ledger-text-secondary);font-size:25rpx;line-height:1.5; }
+.history-amount { flex-shrink:0;text-align:right; }
+.amount-label { margin-bottom:6rpx;color:var(--ledger-text-muted);font-size:21rpx; }
+.amount { color:var(--ledger-amount);font-size:34rpx;font-weight:700;white-space:nowrap; }
+.history-bottom { margin-top:22rpx;padding-top:17rpx;border-top:1rpx solid var(--ledger-divider);color:var(--ledger-text-muted);font-size:23rpx; }
+.history-bottom text:first-child { min-width:0;overflow-wrap:anywhere;word-break:break-word; }
+.settled { flex-shrink:0;color:var(--ledger-success);font-weight:650; }
+.month-filter { margin:16rpx 0 22rpx;padding:20rpx 24rpx;border:2rpx solid var(--ledger-border);border-radius:var(--ledger-control-radius);background:var(--ledger-surface);color:var(--ledger-text-secondary);font-size:26rpx; }
+.scope-tabs { display:flex;gap:12rpx;margin:-6rpx 0 22rpx; }
+.scope-tab { padding:13rpx 26rpx;border:1rpx solid var(--ledger-border);border-radius:28rpx;background:var(--ledger-surface);color:var(--ledger-text-secondary);font-size:25rpx; }
+.scope-tab.active { border-color:var(--ledger-primary);background:var(--ledger-primary);color:#fff;font-weight:600; }
+.history-owner { margin-top:13rpx;color:var(--ledger-text-muted);font-size:23rpx; }
+
+@media (max-width: 340px) {
+  .history-top { align-items:flex-start; }
+  .amount { font-size:31rpx; }
+}

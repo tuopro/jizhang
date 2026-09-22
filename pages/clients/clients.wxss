@@ -1,2 +1,15 @@
-.client-list { padding-top: 4rpx; padding-bottom: 4rpx; }
-.scope-tabs{display:flex;gap:12rpx;margin-top:18rpx}.scope-tab{padding:13rpx 26rpx;border:1rpx solid #dce3e9;border-radius:28rpx;background:#fff;color:#647485;font-size:25rpx}.scope-tab.active{border-color:#123b67;background:#123b67;color:#fff}.owner-note{margin-top:4rpx;color:#8995a0}
+.client-list { padding-top: 2rpx; padding-bottom: 2rpx; }
+.client-list .list-row { align-items: flex-start; padding: 22rpx 0; }
+.client-main { min-width: 0; flex: 1; }
+.period-note { color: var(--ledger-text-secondary); font-weight: 600; }
+.owner-note { margin-top: 4rpx; color: var(--ledger-text-muted); }
+.client-balance { flex-shrink: 0; padding-top: 2rpx; text-align: right; }
+.balance-label { margin-bottom: 7rpx; color: var(--ledger-text-muted); font-size: 21rpx; }
+.scope-tabs { display: flex; gap: 12rpx; margin-top: 16rpx; }
+.scope-tab { padding: 13rpx 26rpx; border: 1rpx solid var(--ledger-border); border-radius: 28rpx; background: var(--ledger-surface); color: var(--ledger-text-secondary); font-size: 25rpx; }
+.scope-tab.active { border-color: var(--ledger-primary); background: var(--ledger-primary); color: #fff; font-weight: 600; }
+
+@media (max-width: 340px) {
+  .client-list .list-row { gap: 12rpx; }
+  .client-balance { max-width: 210rpx; }
+}

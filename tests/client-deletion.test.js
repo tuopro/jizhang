@@ -161,7 +161,8 @@ test('管理员彻底删除客户及全部专属账务，但保留旧审计和�
   assert.equal(context.admin.getShipment('tenant_a', shipment.id), null)
   assert.equal(context.admin.listPayments('tenant_a', client.id).length, 0)
   assert.equal(context.admin.listBillingPeriods('tenant_a', client.id).length, 0)
-  assert.equal(context.admin.listCustomerPrices('tenant_a', client.id).length, 0)
+  assert.throws(() => context.admin.listCustomerPrices('tenant_a', client.id), /无权管理该客户价格/)
+  assert.equal(context.storage.read().tenants.tenant_a.customerPrices.filter(price => price.clientId === client.id).length, 0)
   const logs = context.admin.getAuditLogs('tenant_a', client.id)
   assert.ok(logs.some(item => item.action === 'CREATE_CLIENT'))
   const audit = logs.find(item => item.action === 'DELETE_CLIENT_WITH_LEDGER')
@@ -241,7 +242,7 @@ test('删除后旧clientId、periodId和shipmentId读取安全返回不存在', 
 test('云函数删除由服务端身份和事务控制，前端不能提交tenantId、memberId或role决定权限', () => {
   const cloudIndex = fs.readFileSync(path.join(projectRoot, 'cloudfunctions/ledger/index.js'), 'utf8')
   const security = fs.readFileSync(path.join(projectRoot, 'cloudfunctions/ledger/services/member-security.js'), 'utf8')
-  assert.match(cloudIndex, /READ_ACTIONS = new Set\(\['getClientDeletePreview'\]\)/)
+  assert.match(cloudIndex, /READ_ACTIONS = new Set\(\['getClientDeletePreview'/)
   assert.match(cloudIndex, /transaction\.collection\(collectionName\)\.doc\(item\.id\)\.remove\(\)/)
   assert.match(cloudIndex, /await persistChanges\(transaction, tenantId, before, finalSnapshot\)/)
   assert.match(security, /'deleteClient'/)

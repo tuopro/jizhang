@@ -1,0 +1,7 @@
+
+> monthly-credit-ledger-miniprogram@0.1.0 check
+> node scripts/check-project.js
+
+wcc get compile 6
+wcc get output 7
+项目检查通过：24个页面，92个JS文件，24个WXML和25个WXSS完成微信原生编译。

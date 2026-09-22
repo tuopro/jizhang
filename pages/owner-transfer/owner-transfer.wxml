@@ -9,7 +9,7 @@
         <view class="picker-box">改为：{{memberNames[clientOwnerIndex] || '暂无有效成员'}} ›</view>
       </picker>
       <view class="owner-help">客户负责人用于长期业务归属，不影响企业成员查看全部账目。</view>
-      <view class="owner-actions">
+      <view class="owner-actions action-row action-row--responsive">
         <button class="secondary-button" bindtap="transferClientOnly" disabled="{{members.length === 0}}">只改客户</button>
         <button class="primary-button" bindtap="transferClientAndPeriod" disabled="{{members.length === 0}}">一起转移</button>
       </view>

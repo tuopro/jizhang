@@ -1,0 +1,26 @@
+.export-preview-page { position:relative; }
+.render-canvas { position:fixed;left:-2200px;top:0;width:621px;height:878px;pointer-events:none; }
+.generation-card { margin-top:90rpx;padding:72rpx 32rpx;text-align:center; }
+.generation-spinner { width:50rpx;height:50rpx;margin:0 auto 26rpx;border:5rpx solid var(--ledger-primary-soft);border-top-color:var(--ledger-primary);border-radius:50%;animation:spin .9s linear infinite; }
+.generation-title { color:var(--ledger-text);font-size:32rpx;font-weight:700; }
+.error-message { margin-top:18rpx;color:var(--ledger-danger);font-size:25rpx;line-height:1.65; }
+.retry-button { margin-top:28rpx; }
+.preview-head { display:flex;align-items:flex-start;justify-content:space-between;gap:20rpx;margin-bottom:20rpx; }
+.preview-copy { min-width:0; }
+.preview-copy .row-note { overflow-wrap:anywhere;word-break:break-word; }
+.preview-title { margin-bottom:4rpx; }
+.page-chip { flex-shrink:0;padding:9rpx 16rpx;border-radius:18rpx;background:var(--ledger-primary-soft);color:var(--ledger-primary);font-size:23rpx;font-weight:600; }
+.image-shell { overflow:hidden;border:1rpx solid var(--ledger-border);border-radius:var(--ledger-card-radius);background:#dfe5ea;box-shadow:var(--ledger-card-shadow); }
+.statement-image { display:block;width:100%;background:#fff; }
+.preview-hint { padding:14rpx;background:var(--ledger-surface);color:var(--ledger-text-muted);font-size:23rpx;text-align:center; }
+.page-switcher { display:flex;align-items:center;justify-content:space-between;gap:16rpx;margin-top:20rpx;color:var(--ledger-text-secondary);font-size:25rpx; }
+.switch-button { flex:1 1 0;width:auto;min-width:0;min-height:72rpx;margin:0;padding:0 20rpx;font-size:26rpx; }
+.page-switcher > text { flex-shrink:0;white-space:nowrap; }
+.switch-button[disabled] { border-color:var(--ledger-border);color:var(--ledger-text-muted); }
+.preview-actions { display:grid;gap:16rpx;margin-top:24rpx; }
+.save-button { margin:0; }
+.share-note { margin:18rpx 8rpx 0;color:var(--ledger-text-muted);font-size:23rpx;line-height:1.65; }
+@keyframes spin { to { transform:rotate(360deg); } }
+@media (max-width:340px) {
+  .switch-button { padding-right:14rpx;padding-left:14rpx; }
+}

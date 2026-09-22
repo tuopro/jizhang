@@ -1,0 +1,1335 @@
+--- a/PREFERENCES.md
++++ b/PREFERENCES.md
+@@ -1,4 +1,9 @@
+ # 月结客户记账小程序：项目偏好与进度
++
++## 最新状态索引（2026-09-21）
++
++- 最新本地结果是“上线前性能收尾”，见文末同名记录及 `docs/上线前性能优化完成报告.md`；245/245 测试、24 页原生编译通过。性能数字来自合成数据和本机 Node，不是真机 timing。
++- 本轮没有部署 ledger、上传体验版、提交审核或修改正式数据。下一轮需由用户安排新版本并做 iPhone 16 Pro 真机验收；下文较早日期的部署/待办描述属于历史记录。
+ 
+ ## 项目背景
+ 
+@@ -279,3 +284,17 @@
+ - 长企业/客户/产品/成员/文件名使用可收缩 flex 子项、换行或省略号；金额区域保留不换行并禁止被左侧长文字推出屏幕。页面级底部安全区继续只由公共 `.page` 和 `.fixed-action` 使用 `env(safe-area-inset-bottom)`，没有重复叠加。
+ - `scripts/check-project.js` 新增响应式静态回归：校验统一 action row 的收缩规则和窄屏纵向降级，阻止 action 网格重新出现未受保护的 `1fr` 轨道，并要求关键按钮组继续复用公共 class。
+ - 最终本地回归：`npm test` 230/230 通过；`npm run check` 通过 24 个页面、86 个 JavaScript、24 个 WXML 和 25 个 WXSS 的微信原生编译；`git diff --check` 通过。未部署云函数、未上传体验版、未提交微信审核。
++
++## 2026-09-21 上线前性能收尾（本地完成，待真机验收）
++
++- 先保存本轮开始时的全部源码（含已有未提交工作）、Git 状态和 SHA-256，并完成 230/230 原测试与性能基线；原始副本在 `/private/tmp/ledger-performance-20260921-baseline/`。最终报告、原始数字、WXML 扫描、保护文件哈希和仅本轮补丁在 `docs/上线前性能优化完成报告.md`、`docs/performance/`。
++- 实测主要瓶颈是首页/客户页循环读取时反复深拷贝完整企业快照。新增仅限一次同步读取/模型计算的脱离原缓存的工作副本，成功、异常、跨 await 均结束；没有持久化业务缓存、TTL 或角色授权缓存，云端写入和全部领域公式未改。
++- 200 客户/1000 发货的合成压力样本中，首页/客户页整库复制 804/801 次降到各 1 次；固定方法三轮本机模型中位数约 5333→121 ms、5293→97 ms。不能解释为 iPhone 页面耗时。
++- `ledger` 普通 action 和临时文件清理不再 require ExcelJS；只有通过原权限与范围校验后真正生成 Excel 时加载工作簿。已用 require instrumentation 与真实 xlsx 生成测试保护，三 Sheet、样式、导出数据和临时清理流程不变。
++- bootstrap 在真实 OPENID/membership 与企业读取后并行八个独立集合；常规读取仍 10 次查询、相同条件/字段/1000条上限，事务内仍保持原先串行与二次身份校验。`prepareRepository` 原本已有并发去重，保留且补成功/失败测试；顺序页面进入/返回继续重新授权，不盲目删除刷新请求。
++- 快速记账的完整客户/产品选项、客户/历史/产品/客户价的筛选源留在页面逻辑层，仅把可见字段送进 setData；压力样本快速记账初始 payload 430732→3874 B。所有搜索仍查完整集合。
++- 客户/历史首批30条并在滚动时追加，保留完整总数、排序、筛选与返回时展开范围。客户账本/当前及历史对账单长明细分批发送，完整汇总一次给全；批次可在新模型/卸载时取消，导出不使用首批数据。长对账单最大单次335890→16264 B，代价是更多小批次；最终完整DOM和真机内存仍需验收。
++- 同一已成功加载页面返回时保留内容并使用导航栏加载提示；首次加载、保存、Excel及图片原安全/防重复操作流程保留。没有改变 UI 风格、业务文案、WXSS、隐私版本、依赖或数据库结构，也没有分包。
++- 原始源码对比：21个完整页面/解析/选择/价格表单场景的渲染字段一致；原业务/权限/隐私/脱敏/导出核心文件逐字节相同。只调整已有快速记账测试的3处内部选项存放位置引用，没有降低原断言。
++- 最终 `npm test` 245/245通过（新增15项结构性回归，无毫秒阈值）；`npm run check` 通过24页面、92个JavaScript语法检查、24 WXML与25 WXSS微信原生编译；`git diff --check` 和关键文件 `node --check` 通过。
++- 本轮严格停在本地：未部署、未上传体验版、未提交审核、未修改正式数据库。下一版需要重新部署 ledger、上传体验版；不需要数据库迁移、新索引、隐私指引修改或新增依赖。iPhone 16 Pro 验收重点与未测指标见完成报告。
+--- a/cloudfunctions/ledger/index.js
++++ b/cloudfunctions/ledger/index.js
+@@ -26,10 +26,6 @@
+   getStatementExportMeta,
+   getStatementExportPage
+ } = require('./services/statement-export-cloud')
+-const {
+-  createStatementExcel,
+-  cleanupStatementExportFile
+-} = require('./services/statement-export-file')
+ 
+ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
+ const db = cloud.database()
+@@ -137,8 +133,15 @@
+   const enterpriseResponse = await provider.collection('enterprises').doc(tenantId).get()
+   const enterprise = clean(enterpriseResponse.data)
+   const snapshot = { enterprise }
+-  for (const [field, collectionName] of Object.entries(COLLECTIONS)) {
+-    snapshot[field] = await listTenant(provider, collectionName, tenantId)
++  const entries = Object.entries(COLLECTIONS)
++  if (source) {
++    // Keep transaction reads ordered; parallelize only independent, authorized reads.
++    for (const [field, collectionName] of entries) {
++      snapshot[field] = await listTenant(provider, collectionName, tenantId)
++    }
++  } else {
++    const lists = await Promise.all(entries.map(([, collectionName]) => listTenant(provider, collectionName, tenantId)))
++    entries.forEach(([field], index) => { snapshot[field] = lists[index] })
+   }
+   return snapshot
+ }
+@@ -421,9 +424,11 @@
+     if (action === 'revokeMemberInvite') return await revokeMemberInvite(context.OPENID, membership, event.payload || {})
+     if (STATEMENT_EXPORT_READ_ACTIONS.has(action)) return await statementExportReadAction(membership, action, event.payload || {})
+     if (action === 'createStatementExcel') {
++      const { createStatementExcel } = require('./services/statement-export-file')
+       return { ok: true, result: await createStatementExcel(db, cloud, membership, event.payload || {}) }
+     }
+     if (action === 'cleanupStatementExportFile') {
++      const { cleanupStatementExportFile } = require('./services/statement-export-file')
+       return { ok: true, result: await cleanupStatementExportFile(cloud, membership, event.payload || {}) }
+     }
+     if (READ_ACTIONS.has(action)) return await readAction(membership, action, event.payload || {})
+--- a/cloudfunctions/ledger/services/statement-export-file.js
++++ b/cloudfunctions/ledger/services/statement-export-file.js
+@@ -4,7 +4,6 @@
+ const path = require('path')
+ const { readStatementExportSource } = require('./statement-export-cloud')
+ const { buildStatementExportDocument } = require('./statement-export')
+-const { writeStatementWorkbook } = require('./statement-excel')
+ 
+ function scopeHash(value) {
+   return crypto.createHash('sha256').update(String(value || '')).digest('hex').slice(0, 24)
+@@ -41,7 +40,8 @@
+   const localPath = path.join(settings.tempDirectory || os.tmpdir(), `ledger-${crypto.randomBytes(12).toString('hex')}.xlsx`)
+   let fileID = ''
+   try {
+-    await (settings.writeWorkbook || writeStatementWorkbook)(document, localPath)
++    const writeWorkbook = settings.writeWorkbook || require('./statement-excel').writeStatementWorkbook
++    await writeWorkbook(document, localPath)
+     const cloudPath = `${cloudPrefix(membership)}${randomName()}`
+     const response = await cloud.uploadFile({ cloudPath, fileContent: fs.readFileSync(localPath) })
+     fileID = response && response.fileID || ''
+--- a/tests/quick-entry-page.test.js
++++ b/tests/quick-entry-page.test.js
+@@ -148,9 +148,9 @@
+   assert.equal(correctionPage.data.rows[0].productId, '')
+   correctionPage.openProductSelector({ currentTarget: { dataset: { index: 0 } } })
+   assert.equal(correctionPage.data.selectorOpen, true)
+-  assert.ok(correctionPage.data.standardProductOptions.length > 0)
+-  assert.ok(correctionPage.data.customProductOptions.length > 0)
+-  const standardOption = correctionPage.data.productOptions.find(option =>
++  assert.ok(correctionPage.standardProductOptions.length > 0)
++  assert.ok(correctionPage.customProductOptions.length > 0)
++  const standardOption = correctionPage.productOptions.find(option =>
+     option.label === '40×40 / 粗齿 / 白色'
+   )
+   correctionPage.selectProduct({ currentTarget: { dataset: { productId: standardOption.id } } })
+--- a/pages/clients/clients.wxml
++++ b/pages/clients/clients.wxml
+@@ -4,7 +4,7 @@
+     <view class="scope-tab {{scope === 'all' ? 'active' : ''}}" data-scope="all" bindtap="setScope">全部</view>
+     <view class="scope-tab {{scope === 'mine' ? 'active' : ''}}" data-scope="mine" bindtap="setScope">我负责的</view>
+   </view>
+-  <view class="section-head"><text class="section-title">客户（{{clients.length}}）</text></view>
++  <view class="section-head"><text class="section-title">客户（{{clientCount}}）</text></view>
+   <view wx:if="{{clients.length === 0}}" class="card empty-state">还没有客户，先新增一个往来客户。</view>
+   <view wx:else class="card client-list">
+     <view wx:for="{{clients}}" wx:key="id" class="list-row" data-id="{{item.id}}" bindtap="openClient">
+--- a/pages/clients/clients.js
++++ b/pages/clients/clients.js
+@@ -1,8 +1,9 @@
+ const { loadPage } = require('../../services/page-context')
+ const { formatCurrency } = require('../../utils/money')
++const { setProgressiveList, appendProgressiveList } = require('../../services/progressive-list')
+ 
+ Page({
+-  data: { keyword: '', allClients: [], clients: [], scope: 'all', currentMemberId: '' },
++  data: { keyword: '', clients: [], clientCount: 0, scope: 'all' },
+   onShow() { this.loadClients() },
+   loadClients() {
+     loadPage(this, (repository, tenantId) => {
+@@ -16,22 +17,26 @@
+           ownerText: client.ownerDisplayName || client.ownerNameSnapshot || '未设置'
+         })
+       })
+-      this.setData({ allClients, currentMemberId: identity.memberId }, () => this.filterClients(this.data.keyword))
++      this.allClients = allClients
++      this.currentMemberId = identity.memberId
++      this.filterClients(this.data.keyword)
+     })
+   },
+   onSearch(event) { this.filterClients(event.detail.value) },
+-  filterClients(keyword) {
++  filterClients(keyword, patch) {
+     const value = String(keyword || '').trim().toLowerCase()
+-    const mineOnly = this.data.scope === 'mine'
+-    this.setData({
+-      keyword: keyword || '',
+-      clients: this.data.allClients.filter(item =>
+-        (!mineOnly || item.ownerMemberId === this.data.currentMemberId) &&
++    const mineOnly = (patch && patch.scope || this.data.scope) === 'mine'
++    const clients = (this.allClients || []).filter(item =>
++        (!mineOnly || item.ownerMemberId === this.currentMemberId) &&
+         (!value || [item.name, item.contact, item.phone, item.ownerText].join(' ').toLowerCase().includes(value)))
+-    })
++        .map(({ id, name, contact, outstandingText, owing, periodText, ownerText }) =>
++          ({ id, name, contact, outstandingText, owing, periodText, ownerText }))
++    const reset = keyword !== this.data.keyword || Boolean(patch && patch.scope !== this.data.scope)
++    setProgressiveList(this, 'clients', clients, Object.assign({ keyword: keyword || '', clientCount: clients.length }, patch), reset)
+   },
++  onReachBottom() { appendProgressiveList(this, 'clients') },
+   setScope(event) {
+-    this.setData({ scope: event.currentTarget.dataset.scope }, () => this.filterClients(this.data.keyword))
++    this.filterClients(this.data.keyword, { scope: event.currentTarget.dataset.scope })
+   },
+   addClient() { wx.navigateTo({ url: '/pages/client-form/client-form' }) },
+   openClient(event) { wx.navigateTo({ url: `/pages/client-ledger/client-ledger?id=${event.currentTarget.dataset.id}` }) }
+--- a/pages/products/products.js
++++ b/pages/products/products.js
+@@ -2,30 +2,34 @@
+ const { formatProductLabel } = require('../../data/product-specs')
+ 
+ Page({
+-  data: { tab: 'standard', keyword: '', allProducts: [], products: [] },
++  data: { tab: 'standard', keyword: '', products: [] },
+   onShow() { this.load() },
+   load() {
+     loadPage(this, (repository, tenantId) => {
+-      const allProducts = repository.listProducts(tenantId, { includeInactive: true }).map(item => ({
+-        id: item.id, label: formatProductLabel(item), isStandard: item.isStandard !== false,
+-        active: item.active !== false, note: item.note || '', search: [formatProductLabel(item)].concat(item.aliases || []).join(' ').toLowerCase()
+-      }))
+-      this.setData({ allProducts }, () => this.filter())
++      this.allProducts = repository.listProducts(tenantId, { includeInactive: true }).map(item => {
++        const label = formatProductLabel(item)
++        return {
++          id: item.id, label, isStandard: item.isStandard !== false,
++          active: item.active !== false, search: [label].concat(item.aliases || []).join(' ').toLowerCase()
++        }
++      })
++      this.filter()
+     })
+   },
+-  changeTab(event) { this.setData({ tab: event.currentTarget.dataset.tab }, () => this.filter()) },
+-  onSearch(event) { this.setData({ keyword: event.detail.value }, () => this.filter()) },
+-  filter() {
+-    const keyword = String(this.data.keyword || '').trim().toLowerCase()
+-    this.setData({ products: this.data.allProducts.filter(item =>
+-      (this.data.tab === 'standard' ? item.isStandard : !item.isStandard) && (!keyword || item.search.includes(keyword))
+-    ).slice(0, 150) })
++  changeTab(event) { this.filter({ tab: event.currentTarget.dataset.tab }) },
++  onSearch(event) { this.filter({ keyword: event.detail.value }) },
++  filter(patch) {
++    const state = Object.assign({}, this.data, patch)
++    const keyword = String(state.keyword || '').trim().toLowerCase()
++    this.setData(Object.assign({ products: (this.allProducts || []).filter(item =>
++      (state.tab === 'standard' ? item.isStandard : !item.isStandard) && (!keyword || item.search.includes(keyword))
++    ).slice(0, 150).map(({ id, label, isStandard, active }) => ({ id, label, isStandard, active })) }, patch))
+   },
+   add() { wx.navigateTo({ url: '/pages/product-form/product-form' }) },
+   edit(event) { if (this.data.tab === 'custom') wx.navigateTo({ url: `/pages/product-form/product-form?id=${event.currentTarget.dataset.id}` }) },
+   toggle(event) {
+     const id = event.currentTarget.dataset.id
+-    const product = this.data.allProducts.find(item => item.id === id)
++    const product = this.allProducts.find(item => item.id === id)
+     if (!product) return
+     wx.showModal({
+       title: product.active ? '停用产品' : '启用产品',
+--- a/pages/statement/statement.js
++++ b/pages/statement/statement.js
+@@ -1,5 +1,6 @@
+ const { loadPage, handleAccessError } = require('../../services/page-context')
+ const { formatCurrency } = require('../../utils/money')
++const { setProgressiveModel, cancelProgressiveModel } = require('../../services/progressive-list')
+ const {
+   createAndDownloadExcel,
+   openExcelFile,
+@@ -10,6 +11,7 @@
+   data: { client: null, period: null, periodTitle: '', periodLabel: '', periodOwnerText: '未设置', isClosed: false, canExport: false, openingImageExport: false, exportingExcel: false, excelProgress: '', excelReady: false, excelFileName: '', shipments: [], payments: [], itemsSubtotal: '¥0.00', freightTotal: '¥0.00', total: '¥0.00', received: '¥0.00', outstanding: '¥0.00' },
+   onLoad(options) { this.clientId = options.clientId || ''; this.periodId = options.periodId || ''; this.load() },
+   onShow() { this.setData({ openingImageExport: false }) },
++  onUnload() { cancelProgressiveModel(this) },
+   load() {
+     loadPage(this, (repository, tenantId) => {
+       this.repository = repository
+@@ -22,7 +24,7 @@
+         })
+         return
+       }
+-      this.setData({
++      setProgressiveModel(this, {
+         client: statement.client, period: statement.period,
+         periodTitle: statement.period ? `第${statement.period.sequenceNo}期` : '暂无进行中账期',
+         periodLabel: statement.periodLabel,
+@@ -46,7 +48,7 @@
+         itemsSubtotal: formatCurrency(statement.totals.itemsSubtotalCents),
+         freightTotal: formatCurrency(statement.totals.freightCents),
+         total: formatCurrency(statement.totals.shipmentTotalCents), received: formatCurrency(statement.totals.receivedCents), outstanding: formatCurrency(statement.totals.outstandingCents)
+-      })
++      }, ['shipments', 'payments'])
+       wx.setNavigationBarTitle({ title: statement.period && statement.period.isClosed ? '历史账单' : '对账单' })
+     })
+   },
+--- a/pages/quick-entry/quick-entry.js
++++ b/pages/quick-entry/quick-entry.js
+@@ -73,7 +73,6 @@
+ 
+ Page({
+   data: {
+-    clients: [],
+     clientNames: [],
+     selectedClientIndex: 0,
+     selectedClientId: '',
+@@ -81,9 +80,6 @@
+     orderText: '',
+     hasParsed: false,
+     rows: [],
+-    productOptions: [],
+-    standardProductOptions: [],
+-    customProductOptions: [],
+     filteredProductOptions: [],
+     selectorOpen: false,
+     selectorRowIndex: -1,
+@@ -122,7 +118,7 @@
+       wx.showLoading({ title: '加载账本' })
+       prepareRepository().then(() => {
+         wx.hideLoading()
+-        this.initializePage()
++        getRepository().withReadSnapshot(() => this.initializePage())
+       }).catch(error => {
+         wx.hideLoading()
+         if (handleAccessError(error)) return
+@@ -138,14 +134,14 @@
+     repository.initializeDemoTenant()
+     const clients = repository.listClients(getActiveTenantId())
+     const productOptions = buildProductOptions(repository)
++    this.productOptions = productOptions
++    this.standardProductOptions = productOptions.filter(option => option.isStandard)
++    this.customProductOptions = productOptions.filter(option => !option.isStandard)
++    this.clients = clients
+     this.setData({
+-      clients,
+       clientNames: clients.map(client => client.name),
+       selectedClientIndex: Math.max(0, clients.findIndex(client => client.id === this.loadOptions.clientId)),
+-      selectedClientId: this.loadOptions.clientId || (clients.length ? clients[0].id : ''),
+-      productOptions,
+-      standardProductOptions: productOptions.filter(option => option.isStandard),
+-      customProductOptions: productOptions.filter(option => !option.isStandard)
++      selectedClientId: this.loadOptions.clientId || (clients.length ? clients[0].id : '')
+     }, () => {
+       if (this.loadOptions.shipmentId) this.loadShipmentForEdit(this.loadOptions.shipmentId)
+     })
+@@ -160,7 +156,7 @@
+       })
+       return
+     }
+-    const selectedClientIndex = Math.max(0, this.data.clients.findIndex(client => client.id === shipment.clientId))
++    const selectedClientIndex = Math.max(0, this.clients.findIndex(client => client.id === shipment.clientId))
+     this.setData({
+       editing: true,
+       selectedClientIndex,
+@@ -192,7 +188,7 @@
+ 
+   onClientChange(event) {
+     const index = Number(event.detail.value)
+-    const client = this.data.clients[index]
++    const client = this.clients[index]
+     this.setData({ selectedClientIndex: index, selectedClientId: client ? client.id : '' })
+     if (this.data.rows.length) this.reloadPricesForClient()
+   },
+@@ -238,8 +234,8 @@
+   },
+ 
+   buildRow(item, index) {
+-    const productIndex = this.data.productOptions.findIndex(option => option.id === item.productId)
+-    const productOption = productIndex >= 0 ? this.data.productOptions[productIndex] : null
++    const productIndex = this.productOptions.findIndex(option => option.id === item.productId)
++    const productOption = productIndex >= 0 ? this.productOptions[productIndex] : null
+     const effectiveProductId = item.productId && productOption ? item.productId : ''
+     const price = effectiveProductId
+       ? getRepository().getCustomerPriceForProduct(
+@@ -367,18 +363,16 @@
+ 
+   refreshProductOptions() {
+     const productOptions = buildProductOptions(getRepository())
+-    this.setData({
+-      productOptions,
+-      standardProductOptions: productOptions.filter(option => option.isStandard),
+-      customProductOptions: productOptions.filter(option => !option.isStandard)
+-    })
++    this.productOptions = productOptions
++    this.standardProductOptions = productOptions.filter(option => option.isStandard)
++    this.customProductOptions = productOptions.filter(option => !option.isStandard)
+     return productOptions
+   },
+ 
+   updateProductFilter(tab, search) {
+     const source = tab === 'custom'
+-      ? this.data.customProductOptions
+-      : this.data.standardProductOptions
++      ? this.customProductOptions
++      : this.standardProductOptions
+     const keyword = String(search || '').trim().toLowerCase()
+     const filtered = source.filter(option =>
+       !keyword || option.searchText.includes(keyword)
+@@ -390,7 +384,7 @@
+     const rowIndex = Number(event.currentTarget.dataset.index)
+     const row = this.data.rows[rowIndex]
+     if (!row) return
+-    const current = this.data.productOptions.find(option => option.id === row.productId)
++    const current = this.productOptions.find(option => option.id === row.productId)
+     const tab = current && !current.isStandard ? 'custom' : 'standard'
+     this.setData({
+       selectorOpen: true,
+@@ -433,7 +427,7 @@
+     )
+     rows[rowIndex] = Object.assign({}, rows[rowIndex], {
+       productId: option.id,
+-      productIndex: this.data.productOptions.findIndex(item => item.id === option.id),
++      productIndex: this.productOptions.findIndex(item => item.id === option.id),
+       productLabel: option.label,
+       needsProductConfirmation: false,
+       canCreateCustomProduct: false,
+@@ -455,12 +449,12 @@
+   onProductChange(event) {
+     const rowIndex = Number(event.currentTarget.dataset.index)
+     const productIndex = Number(event.detail.value)
+-    const option = this.data.productOptions[productIndex]
++    const option = this.productOptions[productIndex]
+     this.applyProductSelection(rowIndex, option, false)
+   },
+ 
+   selectProduct(event) {
+-    const option = this.data.productOptions.find(item => item.id === event.currentTarget.dataset.productId)
++    const option = this.productOptions.find(item => item.id === event.currentTarget.dataset.productId)
+     if (!option) return
+     this.applyProductSelection(this.data.selectorRowIndex, option, false)
+     this.closeProductSelector()
+@@ -672,7 +666,7 @@
+       wx.showToast({ title: '请填写修正原因', icon: 'none' })
+       return
+     }
+-    const client = this.data.clients[this.data.selectedClientIndex]
++    const client = this.clients[this.data.selectedClientIndex]
+     wx.showModal({
+       title: this.data.editing ? '确认修正账目' : '确认正式入账',
+       content: `${client.name}\n${this.data.rows.length}项商品\n商品合计 ${this.data.itemsSubtotalText}\n运费 ${this.data.freightText}\n本次合计 ${this.data.totalText}\n\n${this.data.editing ? '原记录和修正原因将保留在审计记录中。' : '确认后将加入该客户本期账款。'}`,
+--- a/pages/history/history.js
++++ b/pages/history/history.js
+@@ -1,5 +1,6 @@
+ const { loadPage } = require('../../services/page-context')
+ const { formatCurrency } = require('../../utils/money')
++const { setProgressiveList, appendProgressiveList } = require('../../services/progressive-list')
+ 
+ function monthsInRange(startDate, endDate) {
+   if (!/^\d{4}-\d{2}/.test(startDate || '') || !/^\d{4}-\d{2}/.test(endDate || '')) return []
+@@ -17,7 +18,7 @@
+ }
+ 
+ Page({
+-  data: { allHistories: [], histories: [], monthOptions: ['全部月份'], monthValues: [''], monthIndex: 0, scope: 'all', currentMemberId: '' },
++  data: { histories: [], monthOptions: ['全部月份'], monthIndex: 0, scope: 'all' },
+   onShow() {
+     loadPage(this, (repository, tenantId) => {
+       const identity = repository.isCloudRepository ? repository.getIdentity() : { memberId: 'member_local_admin' }
+@@ -36,27 +37,33 @@
+       })
+       const months = Array.from(new Set(histories.reduce((result, item) =>
+         result.concat(monthsInRange(item.startDate, item.closedDate)), []))).sort().reverse()
+-      const selectedMonth = this.data.monthValues[this.data.monthIndex] || ''
++      const selectedMonth = (this.monthValues || [''])[this.data.monthIndex] || ''
+       const monthValues = [''].concat(months)
+       const monthOptions = ['全部月份'].concat(months.map(item => `${item.slice(0, 4)}年${Number(item.slice(5))}月`))
+       const monthIndex = Math.max(0, monthValues.indexOf(selectedMonth))
+-      this.setData({ allHistories: histories, monthOptions, monthValues, monthIndex, currentMemberId: identity.memberId }, () => this.applyFilters())
++      this.allHistories = histories
++      this.monthValues = monthValues
++      this.currentMemberId = identity.memberId
++      this.applyFilters({ monthOptions, monthIndex })
+     })
+   },
+   onMonthChange(event) {
+     const monthIndex = Number(event.detail.value)
+-    this.setData({ monthIndex }, () => this.applyFilters())
++    this.applyFilters({ monthIndex })
+   },
+   setScope(event) {
+-    this.setData({ scope: event.currentTarget.dataset.scope }, () => this.applyFilters())
++    this.applyFilters({ scope: event.currentTarget.dataset.scope })
+   },
+-  applyFilters() {
+-    const month = this.data.monthValues[this.data.monthIndex] || ''
+-    const mineOnly = this.data.scope === 'mine'
+-    const histories = this.data.allHistories.filter(item =>
+-      (!mineOnly || item.ownerMemberId === this.data.currentMemberId) &&
++  applyFilters(patch) {
++    const state = Object.assign({}, this.data, patch)
++    const month = (this.monthValues || [''])[state.monthIndex] || ''
++    const mineOnly = state.scope === 'mine'
++    const histories = (this.allHistories || []).filter(item =>
++      (!mineOnly || item.ownerMemberId === this.currentMemberId) &&
+       (!month || (item.startDate.slice(0, 7) <= month && item.closedDate.slice(0, 7) >= month)))
+-    this.setData({ histories })
++    const reset = state.scope !== this.data.scope || state.monthIndex !== this.data.monthIndex
++    setProgressiveList(this, 'histories', histories, patch, reset)
+   },
++  onReachBottom() { appendProgressiveList(this, 'histories') },
+   openHistory(event) { wx.navigateTo({ url: `/pages/statement/statement?periodId=${event.currentTarget.dataset.id}` }) }
+ })
+--- a/pages/client-ledger/client-ledger.js
++++ b/pages/client-ledger/client-ledger.js
+@@ -1,6 +1,7 @@
+ const { loadPage, handleMutation, handleAccessError } = require('../../services/page-context')
+ const { canCloseBillingPeriod } = require('../../services/ledger-repository')
+ const { formatCurrency } = require('../../utils/money')
++const { setProgressiveModel, cancelProgressiveModel } = require('../../services/progressive-list')
+ 
+ function localDateText(date) {
+   const value = date || new Date()
+@@ -31,7 +32,7 @@
+       const period = ledger.period
+       const identity = repository.isCloudRepository ? repository.getIdentity() : { role: 'admin' }
+       const isAdmin = identity.role === 'admin'
+-      this.setData({
++      setProgressiveModel(this, {
+         clientId: this.clientId, client: ledger.client, periodId: period ? period.id : '',
+         periodTitle: period ? `第${period.sequenceNo}期 · 进行中` : '暂无进行中账期',
+         periodRange: period ? `${period.startDate} ～ 进行中` : '',
+@@ -53,10 +54,11 @@
+           id: item.id, date: item.paymentDate, method: item.method, amount: formatCurrency(item.amountCents), note: item.note,
+           createdByText: item.createdByNameSnapshot || '未记录'
+         }))
+-      })
++      }, ['shipments', 'payments'])
+       wx.setNavigationBarTitle({ title: ledger.client.name })
+     })
+   },
++  onUnload() { cancelProgressiveModel(this) },
+   quickEntry() { wx.navigateTo({ url: `/pages/quick-entry/quick-entry?clientId=${this.clientId}` }) },
+   statement() { wx.navigateTo({ url: `/pages/statement/statement?clientId=${this.clientId}` }) },
+   payment() { wx.navigateTo({ url: `/pages/payment-form/payment-form?clientId=${this.clientId}` }) },
+--- a/pages/customer-prices/customer-prices.js
++++ b/pages/customer-prices/customer-prices.js
+@@ -4,8 +4,8 @@
+ 
+ Page({
+   data: {
+-    client: null, prices: [], allPrices: [], keyword: '', formOpen: false,
+-    products: [], filteredProducts: [], productSearch: '', selectedProductId: '', selectedProductLabel: '',
++    client: null, prices: [], keyword: '', formOpen: false,
++    filteredProducts: [], productSearch: '', selectedProductId: '', selectedProductLabel: '',
+     units: ['米', '根', '箱'], unitIndex: 0, unitPriceYuan: ''
+   },
+   onLoad(options) { this.clientId = options.clientId || '' },
+@@ -25,17 +25,21 @@
+         search: item.productLabel.toLowerCase()
+       }))
+       const products = repository.listProducts(tenantId).map(item => ({ id: item.id, label: formatProductLabel(item), search: [formatProductLabel(item)].concat(item.aliases || []).join(' ').toLowerCase() }))
+-      this.setData({ client, allPrices, products }, () => this.filterPrices())
++      this.allPrices = allPrices
++      this.products = products
++      this.filterPrices({ client })
+     })
+   },
+-  onSearch(event) { this.setData({ keyword: event.detail.value }, () => this.filterPrices()) },
+-  filterPrices() {
+-    const value = String(this.data.keyword || '').trim().toLowerCase()
+-    this.setData({ prices: this.data.allPrices.filter(item => !value || item.search.includes(value)) })
++  onSearch(event) { this.filterPrices({ keyword: event.detail.value }) },
++  filterPrices(patch) {
++    const keyword = patch && patch.keyword !== undefined ? patch.keyword : this.data.keyword
++    const value = String(keyword || '').trim().toLowerCase()
++    this.setData(Object.assign({ prices: (this.allPrices || []).filter(item => !value || item.search.includes(value))
++      .map(({ id, productLabel, priceText }) => ({ id, productLabel, priceText })) }, patch))
+   },
+-  openAdd() { this.setData({ formOpen: true, selectedProductId: '', selectedProductLabel: '', unitIndex: 0, unitPriceYuan: '', productSearch: '', filteredProducts: this.data.products.slice(0, 80) }) },
++  openAdd() { this.setData({ formOpen: true, selectedProductId: '', selectedProductLabel: '', unitIndex: 0, unitPriceYuan: '', productSearch: '', filteredProducts: this.products.slice(0, 80) }) },
+   openEdit(event) {
+-    const price = this.data.allPrices.find(item => item.id === event.currentTarget.dataset.id)
++    const price = this.allPrices.find(item => item.id === event.currentTarget.dataset.id)
+     if (!price) return
+     this.setData({ formOpen: true, selectedProductId: price.productId, selectedProductLabel: price.productLabel, unitIndex: Math.max(0, this.data.units.indexOf(price.unit)), unitPriceYuan: centsToYuan(price.unitPriceCents), productSearch: '', filteredProducts: [] })
+   },
+@@ -43,10 +47,10 @@
+   stop() {},
+   onProductSearch(event) {
+     const value = String(event.detail.value || '').trim().toLowerCase()
+-    this.setData({ productSearch: event.detail.value, filteredProducts: this.data.products.filter(item => !value || item.search.includes(value)).slice(0, 80) })
++    this.setData({ productSearch: event.detail.value, filteredProducts: this.products.filter(item => !value || item.search.includes(value)).slice(0, 80) })
+   },
+   selectProduct(event) {
+-    const product = this.data.products.find(item => item.id === event.currentTarget.dataset.id)
++    const product = this.products.find(item => item.id === event.currentTarget.dataset.id)
+     if (product) this.setData({ selectedProductId: product.id, selectedProductLabel: product.label, filteredProducts: [] })
+   },
+   onUnit(event) { this.setData({ unitIndex: Number(event.detail.value) }) },
+--- a/services/cloud-repository.js
++++ b/services/cloud-repository.js
+@@ -3,9 +3,31 @@
+ 
+ function createCloudRepository() {
+   const storage = createMemoryStorage()
++  let readingSnapshot = false
++  let readSnapshot = null
+   let cache = null
+   let tenantId = ''
+   let identity = null
++
++  // A detached working copy exists only during synchronous read/model construction.
++  // Domain getters still clone their results; writes always go through the cloud.
++  function withReadSnapshot(callback) {
++    if (readingSnapshot) return callback()
++    readingSnapshot = true
++    try { return callback() } finally {
++      readingSnapshot = false
++      readSnapshot = null
++    }
++  }
++
++  const viewStorage = {
++    read() {
++      if (!readingSnapshot) return storage.read()
++      if (!readSnapshot) readSnapshot = storage.read()
++      return readSnapshot
++    },
++    write() { throw new Error('云端快照只能通过服务端操作更新') }
++  }
+ 
+   function requireReady() {
+     if (!cache || !tenantId) throw new Error('企业数据尚未加载，请稍后重试')
+@@ -15,7 +37,7 @@
+   function installSnapshot(snapshot) {
+     tenantId = snapshot.enterprise.id
+     storage.write({ schemaVersion: 1, tenants: { [tenantId]: snapshot } })
+-    cache = createLedgerRepository(storage)
++    cache = createLedgerRepository(viewStorage)
+   }
+ 
+   function call(action, payload) {
+@@ -46,6 +68,7 @@
+ 
+   const api = {
+     bootstrap,
++    withReadSnapshot,
+     isCloudRepository: true,
+     getIdentity: () => identity,
+     inspectInvite: inviteToken => call('inspectInvite', { inviteToken }),
+@@ -81,10 +104,10 @@
+     api[method] = function () {
+       const args = Array.from(arguments)
+       args[0] = tenantId
+-      return requireReady()[method].apply(null, args)
++      return withReadSnapshot(() => requireReady()[method].apply(null, args))
+     }
+   })
+-  api.initializeDemoTenant = () => requireReady().getEnterprise(tenantId)
++  api.initializeDemoTenant = () => api.getEnterprise(tenantId)
+   api.initializeTenant = () => { throw new Error('云端企业只能由登录身份初始化') }
+   ;[
+     'updateEnterprise', 'saveClient', 'saveCustomerPrice', 'createCustomProduct',
+--- a/services/page-context.js
++++ b/services/page-context.js
+@@ -30,12 +30,21 @@
+       callback(getRepository(), getActiveTenantId())
+       return
+     }
+-    wx.showLoading({ title: '加载中' })
++    const repository = getRepository()
++    const refreshing = page && page._loadedRepository === repository
++    if (!refreshing) wx.showLoading({ title: '加载中' })
++    else if (wx.showNavigationBarLoading) wx.showNavigationBarLoading()
++    const finishLoading = () => {
++      if (!refreshing) wx.hideLoading()
++      else if (wx.hideNavigationBarLoading) wx.hideNavigationBarLoading()
++    }
+     prepareRepository().then(() => {
+-      wx.hideLoading()
+-      callback(getRepository(), getActiveTenantId())
++      finishLoading()
++      const current = getRepository()
++      current.withReadSnapshot(() => callback(current, getActiveTenantId()))
++      if (page) page._loadedRepository = current
+     }).catch(error => {
+-      wx.hideLoading()
++      finishLoading()
+       if (handleAccessError(error)) {
+         if (onError) onError(error)
+         return
+--- /dev/null
++++ b/services/progressive-list.js
+@@ -0,0 +1,66 @@
++const PAGE_SIZE = 30
++
++// Full filtered data stays on the page instance; only visible rows cross setData.
++// Keep the displayed extent on refresh so returning to a list does not collapse it.
++function setProgressiveList(page, key, items, patch, reset) {
++  if (!page._renderLists) page._renderLists = {}
++  const previous = page._renderLists[key]
++  const limit = Math.min(items.length, reset || !previous ? PAGE_SIZE : Math.max(PAGE_SIZE, previous.limit))
++  page._renderLists[key] = { items, limit }
++  page.setData(Object.assign({}, patch, { [key]: items.slice(0, limit) }))
++}
++
++function appendProgressiveList(page, key) {
++  const state = page._renderLists && page._renderLists[key]
++  if (!state || state.limit >= state.items.length) return
++  const nextLimit = Math.min(state.items.length, state.limit + PAGE_SIZE)
++  const patch = {}
++  for (let index = state.limit; index < nextLimit; index += 1) {
++    patch[`${key}[${index}]`] = state.items[index]
++  }
++  state.limit = nextLimit
++  page.setData(patch)
++}
++
++function cancelProgressiveModel(page) {
++  const task = page._progressiveModel
++  if (task && task.timer) clearTimeout(task.timer)
++  page._progressiveModel = null
++}
++
++// Multi-section statements must keep every section and their full totals. Yield
++// between bridge updates instead of requiring a scroll past later sections.
++function setProgressiveModel(page, model, fields) {
++  cancelProgressiveModel(page)
++  const initial = Object.assign({}, model)
++  const offsets = {}
++  fields.forEach(key => {
++    const previous = page.data[key] || []
++    const visible = model[key].slice(0, Math.max(PAGE_SIZE, previous.length))
++    offsets[key] = visible.length
++    // Preserve scroll position and avoid resending an unchanged rendered section.
++    if (JSON.stringify(previous) === JSON.stringify(visible)) delete initial[key]
++    else initial[key] = visible
++  })
++  const task = { timer: null }
++  page._progressiveModel = task
++  function append() {
++    if (page._progressiveModel !== task) return
++    const patch = {}
++    fields.forEach(key => {
++      const limit = Math.min(model[key].length, offsets[key] + PAGE_SIZE)
++      for (let index = offsets[key]; index < limit; index += 1) patch[`${key}[${index}]`] = model[key][index]
++      offsets[key] = limit
++    })
++    if (!Object.keys(patch).length) { page._progressiveModel = null; return }
++    page.setData(patch, schedule)
++  }
++  function schedule() {
++    if (page._progressiveModel !== task) return
++    if (fields.every(key => offsets[key] >= model[key].length)) { page._progressiveModel = null; return }
++    task.timer = setTimeout(append, 0)
++  }
++  page.setData(initial, schedule)
++}
++
++module.exports = { PAGE_SIZE, setProgressiveList, appendProgressiveList, setProgressiveModel, cancelProgressiveModel }
+--- /dev/null
++++ b/scripts/performance-fixture.js
+@@ -0,0 +1,73 @@
++// Synthetic data only: never reads the deployed database or a user's local storage.
++const crypto = require('node:crypto')
++
++function createFixture(clientCount = 200, shipmentCount = 1000) {
++  const tenantId = 'tenant_performance_fixture'
++  const openid = 'synthetic_performance_identity'
++  const memberId = `member_${crypto.createHash('sha256').update(openid).digest('hex').slice(0, 24)}`
++  const timestamp = '2026-09-20T08:00:00.000Z'
++  const identity = { tenantId, memberId, displayName: '测量成员', role: 'admin', status: 'active', enterpriseName: '合成性能样本' }
++  const snapshot = {
++    enterprise: { id: tenantId, tenantId, name: identity.enterpriseName, defaultUnit: '米' },
++    memberships: [{ id: memberId, tenantId, openid, displayName: identity.displayName, role: 'admin', status: 'active', createdAt: timestamp }],
++    clients: [], customProducts: [], customerPrices: [], shipments: [], payments: [], billingPeriods: [], auditLogs: []
++  }
++  for (let i = 0; i < clientCount; i += 1) {
++    const id = `client_${String(i).padStart(4, '0')}`
++    snapshot.clients.push({ id, tenantId, name: `合成客户${String(i).padStart(4, '0')}`, contact: '联系人', phone: '', note: '自动性能测量，非正式客户', active: true, ownerMemberId: memberId, ownerNameSnapshot: identity.displayName, createdAt: timestamp })
++    ;['open', 'settled'].forEach((status, n) => {
++      snapshot.billingPeriods.push({ id: `period_${i}_${status}`, tenantId, clientId: id, sequenceNo: n === 0 ? 2 : 1, status, startAt: n === 0 ? timestamp : '2026-08-01T08:00:00.000Z', closedAt: n === 0 ? '' : '2026-08-31T08:00:00.000Z', ownerMemberId: memberId, ownerNameSnapshot: identity.displayName, createdAt: timestamp })
++    })
++  }
++  for (let i = 0; i < shipmentCount; i += 1) {
++    const client = snapshot.clients[i % clientCount]
++    const periodId = `period_${i % clientCount}_${Math.floor(i / clientCount) % 3 === 1 ? 'settled' : 'open'}`
++    const shipment = {
++      id: `shipment_${i}`, tenantId, clientId: client.id, clientNameSnapshot: client.name, periodId,
++      shipmentDate: periodId.endsWith('settled') ? '2026-08-20' : '2026-09-20', status: 'posted',
++      itemsSubtotalCents: 2500, freightCents: 500, totalAmountCents: 3000,
++      createdByNameSnapshot: identity.displayName, createdAt: timestamp, logistics: { provider: '自提', raw: '自提' }, note: '',
++      lines: [0, 1].map(j => ({ id: `line_${i}_${j}`, productId: 'standard_40_40_coarse_gray', productSnapshot: { label: '40×40 / 粗齿 / 灰色', name: '线槽', height: 40, width: 40, color: '灰色', toothType: '粗齿' }, originalQuantity: 1, originalUnit: '米', pricingQuantity: 1, pricingUnit: '米', unitPriceCents: 1250, lineAmountCents: 1250 }))
++    }
++    snapshot.shipments.push(shipment)
++    snapshot.payments.push({ id: `payment_${i}`, tenantId, clientId: client.id, periodId, paymentDate: shipment.shipmentDate, amountCents: periodId.endsWith('settled') ? 3000 : 500, method: '银行转账', status: 'posted', createdAt: timestamp, createdByNameSnapshot: identity.displayName, note: '' })
++    snapshot.auditLogs.push({ id: `audit_${i}`, tenantId, action: 'CREATE_SHIPMENT', entityId: shipment.id, createdAt: timestamp, performedByNameSnapshot: identity.displayName, after: shipment })
++  }
++  return { tenantId, openid, identity, snapshot }
++}
++
++function fakeDatabase(fixture, delayMs = 0) {
++  const s = fixture.snapshot
++  const rows = { enterprises: [s.enterprise], memberships: s.memberships, clients: s.clients, products: s.customProducts, customer_prices: s.customerPrices, shipments: s.shipments, payments: s.payments, billing_periods: s.billingPeriods, audit_logs: s.auditLogs }
++  const queries = []
++  let active = 0
++  let maxActive = 0
++  async function read(name, criteria, documentId, offset, limit) {
++    queries.push({ name, criteria, documentId })
++    active += 1
++    maxActive = Math.max(maxActive, active)
++    if (delayMs) await new Promise(resolve => setTimeout(resolve, delayMs))
++    else await Promise.resolve()
++    active -= 1
++    const found = (rows[name] || []).filter(row => documentId ? row.id === documentId : Object.keys(criteria || {}).every(key => row[key] === criteria[key]))
++    if (documentId && !found.length) throw new Error('not found')
++    return { data: JSON.parse(JSON.stringify(documentId ? found[0] : found.slice(offset, offset + limit))) }
++  }
++  return {
++    queries, rows, maxActive: () => maxActive,
++    collection(name) {
++      return {
++        doc(id) { return { get: () => read(name, null, id, 0, 1) } },
++        where(criteria) {
++          let offset = 0; let limit = 20
++          const query = { skip(value) { offset = value; return query }, limit(value) { limit = value; return query }, get: () => read(name, criteria, null, offset, limit) }
++          return query
++        }
++      }
++    },
++    // No writes in this harness. Any accidental mutation fails immediately.
++    runTransaction() { throw new Error('Performance fixture does not permit writes') }
++  }
++}
++
++module.exports = { createFixture, fakeDatabase }
+--- /dev/null
++++ b/scripts/benchmark-performance.js
+@@ -0,0 +1,189 @@
++// Run: node scripts/benchmark-performance.js [output.json]
++// Local Node timing, NOT WeChat/iPhone/cloud timing. No real network requests.
++const fs = require('node:fs')
++const path = require('node:path')
++const Module = require('node:module')
++const { performance } = require('node:perf_hooks')
++const { spawnSync } = require('node:child_process')
++const { createFixture, fakeDatabase } = require('./performance-fixture')
++const root = path.resolve(__dirname, '..')
++const bytes = value => Buffer.byteLength(JSON.stringify(value))
++
++function installWx(fixture) {
++  let calls = 0
++  const loading = { show: 0, hide: 0 }
++  global.getApp = () => ({ globalData: { dataAccessMode: 'cloud' } })
++  global.wx = {
++    getStorageSync: () => ({ version: '2026-09-v2', agreedAt: '2026-09-21T00:00:00.000Z' }),
++    cloud: { callFunction: async ({ data }) => {
++      calls += 1
++      if (data.action === 'getActiveMemberInvite') return { result: { ok: true, result: null } }
++      if (data.action !== 'bootstrap') throw new Error(`Unexpected action: ${data.action}`)
++      await Promise.resolve()
++      return { result: { ok: true, result: fixture.identity, snapshot: JSON.parse(JSON.stringify(fixture.snapshot)) } }
++    } },
++    showLoading() { loading.show += 1 }, hideLoading() { loading.hide += 1 },
++    showModal() {}, showToast() {}, reLaunch() {}, switchTab() {}, navigateBack() {},
++    setNavigationBarTitle() {}, showShareMenu() {},
++    getAccountInfoSync: () => ({ miniProgram: { envVersion: 'release' } })
++  }
++  return { calls: () => calls, loading }
++}
++
++function instantiatePage(pagePath) {
++  let definition
++  global.Page = value => { definition = value }
++  delete require.cache[require.resolve(path.join(root, `${pagePath}.js`))]
++  require(path.join(root, `${pagePath}.js`))
++  const payloads = []
++  const page = Object.assign({}, definition, { route: pagePath, data: JSON.parse(JSON.stringify(definition.data || {})) })
++  page.setData = (patch, callback) => {
++    payloads.push({ bytes: bytes(patch), keys: Object.keys(patch) })
++    Object.entries(patch).forEach(([key, value]) => {
++      const parts = key.replace(/\[(\d+)\]/g, '.$1').split('.')
++      let target = page.data
++      parts.slice(0, -1).forEach(part => { target = target[part] })
++      target[parts[parts.length - 1]] = value
++    })
++    if (callback) callback()
++  }
++  return { page, payloads }
++}
++
++async function measurePages(fixture, selectedPages) {
++  const api = installWx(fixture)
++  const instance = require('../services/repository-instance')
++  instance.resetRepository()
++  const storage = require('../services/storage')
++  const originalStorage = storage.createMemoryStorage
++  let reads = 0
++  let clonedBytes = 0
++  storage.createMemoryStorage = (...args) => {
++    const current = originalStorage(...args)
++    let size = bytes(args[0] || null)
++    return { read() { const value = current.read(); reads += 1; clonedBytes += size; return value }, write(value) { size = bytes(value); current.write(value) } }
++  }
++  // cloud-repository captures storage imports, so reload it and the instance/context.
++  ;['cloud-repository', 'repository-instance', 'page-context'].forEach(name => delete require.cache[require.resolve(`../services/${name}`)])
++  const context = require('../services/page-context')
++  const loadPage = context.loadPage
++  let modelMs = 0
++  context.loadPage = (page, callback, ...args) => loadPage(page, (...values) => {
++    const start = performance.now()
++    try { return callback(...values) } finally { modelMs += performance.now() - start }
++  }, ...args)
++  const pages = selectedPages || ['index', 'clients', 'client-ledger', 'statement', 'history', 'quick-entry', 'shipment-detail', 'payment-form', 'products', 'customer-prices', 'members', 'mine', 'audit-logs', 'client-form', 'product-form', 'enterprise', 'owner-transfer', 'help', 'data-settings', 'parser-test', 'unauthorized', 'join-enterprise', 'privacy-consent']
++  const results = []
++  for (const name of pages) {
++    const pageName = name === 'historical-statement' ? 'statement' : name
++    const { page, payloads } = instantiatePage(`pages/${pageName}/${pageName}`)
++    if (page.initializePage) {
++      const initialize = page.initializePage
++      page.initializePage = function () { const start = performance.now(); try { return initialize.call(this) } finally { modelMs += performance.now() - start } }
++    }
++    const before = { calls: api.calls(), reads, clonedBytes, modelMs }
++    const start = performance.now()
++    const options = { id: name === 'shipment-detail' ? 'shipment_0' : 'client_0000', clientId: 'client_0000', inviteToken: '' }
++    if (name === 'historical-statement') options.periodId = 'period_0_settled'
++    if (page.onLoad) await page.onLoad(options)
++    if (page.onShow) await page.onShow()
++    await new Promise(resolve => setImmediate(resolve))
++    const initialization = payloads.slice()
++    const totalMs = performance.now() - start
++    const initModelMs = modelMs - before.modelMs
++    const initCalls = api.calls() - before.calls
++    const initReads = reads - before.reads
++    const initCloneBytes = clonedBytes - before.clonedBytes
++    const rows = Object.fromEntries(Object.entries(page.data).filter(([, value]) => Array.isArray(value)).map(([key, value]) => [key, value.length]))
++    while (page._progressiveModel) await new Promise(resolve => setTimeout(resolve, 1))
++    const completeSetData = payloads.length
++    const completePayloadBytes = payloads.reduce((sum, item) => sum + item.bytes, 0)
++    const completeMaxPayloadBytes = Math.max(0, ...payloads.map(item => item.bytes))
++    const completeRows = Object.fromEntries(Object.entries(page.data).filter(([, value]) => Array.isArray(value)).map(([key, value]) => [key, value.length]))
++    const returnCalls = api.calls()
++    if (page.onShow) await page.onShow()
++    await new Promise(resolve => setImmediate(resolve))
++    results.push({ name, initCloudCalls: initCalls, returnCloudCalls: api.calls() - returnCalls, initSetData: initialization.length, maxPayloadBytes: Math.max(0, ...initialization.map(item => item.bytes)), totalPayloadBytes: initialization.reduce((sum, item) => sum + item.bytes, 0), completeSetData, completePayloadBytes, completeMaxPayloadBytes, completeRows, maxPayloadKeys: initialization.sort((a, b) => b.bytes - a.bytes)[0]?.keys || [], rootReads: initReads, rootCloneBytes: initCloneBytes, modelMs: initModelMs, localInitializationMs: totalMs, rows })
++  }
++  storage.createMemoryStorage = originalStorage
++  context.loadPage = loadPage
++  return { pages: results, loading: api.loading }
++}
++
++async function cloudWorker() {
++  const fixture = createFixture(20, 40)
++  const database = fakeDatabase(fixture, 3)
++  const originalLoad = Module._load
++  let excelLoads = 0
++  Module._load = function (request, ...args) {
++    if (request === 'wx-server-sdk') return { init() {}, database: () => database, getWXContext: () => ({ OPENID: fixture.openid }) }
++    if (request === 'exceljs') excelLoads += 1
++    return originalLoad.call(this, request, ...args)
++  }
++  const start = performance.now()
++  const ledger = require('../cloudfunctions/ledger')
++  const requireMs = performance.now() - start
++  const moduleCount = Object.keys(require.cache).length
++  const actionStart = performance.now()
++  const response = await ledger.main({ action: 'bootstrap' })
++  if (!response.ok) throw new Error(response.error)
++  const result = { requireMs, moduleCount, excelLoads, bootstrapMs: performance.now() - actionStart, queries: database.queries, maxConcurrentQueries: database.maxActive(), responseBytes: bytes(response), snapshotBytes: bytes(response.snapshot), injectedQueryDelayMs: 3 }
++  Module._load = originalLoad
++  return result
++}
++
++function inventory() {
++  const app = require('../app.json')
++  const files = []
++  function walk(directory) {
++    for (const entry of fs.readdirSync(path.join(root, directory), { withFileTypes: true })) {
++      const name = path.join(directory, entry.name)
++      if (entry.isDirectory()) walk(name)
++      else files.push({ name, bytes: fs.statSync(path.join(root, name)).size })
++    }
++  }
++  ;['pages', 'services', 'data', 'utils'].forEach(walk)
++  ;['app.js', 'app.json', 'app.wxss', 'sitemap.json'].forEach(name => files.push({ name, bytes: fs.statSync(path.join(root, name)).size }))
++  const pageScan = app.pages.map(name => {
++    const source = fs.readFileSync(path.join(root, `${name}.js`), 'utf8')
++    const wxml = fs.readFileSync(path.join(root, `${name}.wxml`), 'utf8')
++    return { name, setDataSites: (source.match(/\.setData\(/g) || []).length, loops: [...wxml.matchAll(/<[^>]*wx:for=[\s\S]*?>/g)].map(item => item[0].replace(/\s+/g, ' ')), hiddenSites: (wxml.match(/\bhidden=/g) || []).length }
++  })
++  return { pageCount: app.pages.length, sourceBytes: files.reduce((sum, file) => sum + file.bytes, 0), bytesByExtension: Object.fromEntries(['.js', '.wxml', '.wxss', '.json'].map(ext => [ext, files.filter(file => file.name.endsWith(ext)).reduce((sum, file) => sum + file.bytes, 0)])), largestFiles: files.sort((a, b) => b.bytes - a.bytes).slice(0, 12), pageScan }
++}
++
++async function main() {
++  if (process.argv[2] === '--cloud-worker') { console.log(JSON.stringify(await cloudWorker())); return }
++  if (process.argv[2] === '--module-worker') {
++    const targets = { sdk: './cloudfunctions/ledger/node_modules/wx-server-sdk', excel: './cloudfunctions/ledger/node_modules/exceljs', frontend: './services/repository-instance' }
++    const start = performance.now()
++    require(path.join(root, targets[process.argv[3]]))
++    const coldMs = performance.now() - start
++    const warmStart = performance.now()
++    require(path.join(root, targets[process.argv[3]]))
++    console.log(JSON.stringify({ coldMs, warmMs: performance.now() - warmStart, modules: Object.keys(require.cache).length }))
++    return
++  }
++  if (process.argv[2] === '--pages-worker') {
++    console.log(JSON.stringify(await measurePages(createFixture(Number(process.argv[3]), Number(process.argv[4])), process.argv[5] ? process.argv[5].split(',') : undefined)))
++    return
++  }
++  const cloud = Array.from({ length: 5 }, () => {
++    const child = spawnSync(process.execPath, [__filename, '--cloud-worker'], { encoding: 'utf8' })
++    if (child.status !== 0) throw new Error(child.stderr)
++    return JSON.parse(child.stdout)
++  })
++  const fixture = createFixture()
++  const modules = Object.fromEntries(['sdk', 'excel', 'frontend'].map(target => [target, Array.from({ length: 5 }, () => {
++    const child = spawnSync(process.execPath, [__filename, '--module-worker', target], { encoding: 'utf8' })
++    if (child.status !== 0) throw new Error(child.stderr)
++    return JSON.parse(child.stdout)
++  })]))
++  const result = { measuredAt: new Date().toISOString(), node: process.version, platform: `${process.platform}/${process.arch}`, method: 'Synthetic fixtures; SDK stub for cloud actions; 3ms simulated DB latency; local Node timing only. Module cold samples use fresh processes. Page timings include read counters and simulated setData serialization, not rendering. Root byte size is measured once per snapshot write, not on every read.', fixture: { clients: fixture.snapshot.clients.length, shipments: fixture.snapshot.shipments.length, payments: fixture.snapshot.payments.length, periods: fixture.snapshot.billingPeriods.length, snapshotBytes: bytes(fixture.snapshot) }, cloud, modules, ...(await measurePages(fixture)), inventory: inventory() }
++  const output = process.argv[2]
++  if (output) fs.writeFileSync(output, JSON.stringify(result, null, 2) + '\n')
++  else console.log(JSON.stringify(result, null, 2))
++}
++
++if (require.main === module) main().catch(error => { console.error(error); process.exitCode = 1 })
++module.exports = { installWx, instantiatePage, measurePages, inventory }
+--- /dev/null
++++ b/tests/progressive-list.test.js
+@@ -0,0 +1,101 @@
++const test = require('node:test')
++const assert = require('node:assert/strict')
++const { setProgressiveList, appendProgressiveList } = require('../services/progressive-list')
++const { installWx, instantiatePage } = require('../scripts/benchmark-performance')
++const { createFixture } = require('../scripts/performance-fixture')
++const flush = () => new Promise(resolve => setImmediate(resolve))
++const { setProgressiveModel, cancelProgressiveModel } = require('../services/progressive-list')
++
++test('多段账单分批发送，完整汇总立即保留，最终数据逐字段相同', async () => {
++  const { page, payloads } = instantiatePage('pages/statement/statement')
++  const model = { shipments: Array.from({ length: 97 }, (_, id) => ({ id: `s${id}` })), payments: Array.from({ length: 62 }, (_, id) => ({ id: `p${id}` })), total: '¥1234.00', received: '¥567.00', outstanding: '¥667.00' }
++  setProgressiveModel(page, model, ['shipments', 'payments'])
++  assert.equal(page.data.shipments.length, 30)
++  assert.equal(page.data.payments.length, 30)
++  assert.equal(page.data.total, model.total)
++  while (page._progressiveModel) await new Promise(resolve => setTimeout(resolve, 1))
++  Object.keys(model).forEach(key => assert.deepEqual(page.data[key], model[key]))
++  assert.ok(payloads.slice(1).every(payload => payload.keys.length <= 60 && payload.keys.every(key => /^(shipments|payments)\[\d+\]$/.test(key))))
++  setProgressiveModel(page, model, ['shipments', 'payments'])
++  assert.equal(page.data.shipments.length, 97)
++  assert.ok(!payloads[payloads.length - 1].keys.includes('shipments'), 'unchanged return does not collapse or resend a section')
++})
++
++test('账单的新刷新取消旧批次，卸载后不再发送数据，小账单无延时任务', async () => {
++  const { page, payloads } = instantiatePage('pages/client-ledger/client-ledger')
++  const oldRows = Array.from({ length: 100 }, (_, id) => ({ id: `old${id}` }))
++  setProgressiveModel(page, { shipments: oldRows, payments: [] }, ['shipments', 'payments'])
++  setProgressiveModel(page, { shipments: [{ id: 'new' }], payments: [] }, ['shipments', 'payments'])
++  assert.equal(page._progressiveModel, null)
++  await new Promise(resolve => setTimeout(resolve, 5))
++  assert.deepEqual(page.data.shipments, [{ id: 'new' }])
++  setProgressiveModel(page, { shipments: oldRows, payments: [] }, ['shipments', 'payments'])
++  cancelProgressiveModel(page)
++  const count = payloads.length
++  await new Promise(resolve => setTimeout(resolve, 5))
++  assert.equal(payloads.length, count)
++})
++
++test('渐进列表小样本不分段，长列表只追加新行并保持完整顺序', () => {
++  const { page, payloads } = instantiatePage('pages/clients/clients')
++  const items = Array.from({ length: 97 }, (_, id) => ({ id: String(id), name: `第${id}项` }))
++  setProgressiveList(page, 'clients', items, { clientCount: items.length })
++  assert.equal(page.data.clients.length, 30)
++  assert.equal(page.data.clientCount, 97)
++  appendProgressiveList(page, 'clients')
++  assert.equal(page.data.clients.length, 60)
++  assert.ok(payloads[1].keys.every(key => /^clients\[\d+\]$/.test(key)))
++  appendProgressiveList(page, 'clients')
++  appendProgressiveList(page, 'clients')
++  assert.deepEqual(page.data.clients, items)
++  const calls = payloads.length
++  appendProgressiveList(page, 'clients')
++  assert.equal(payloads.length, calls)
++  setProgressiveList(page, 'clients', items, {})
++  assert.equal(page.data.clients.length, 97, 'return/refresh retains the displayed extent')
++  setProgressiveList(page, 'clients', items.slice(0, 4), {}, true)
++  assert.deepEqual(page.data.clients, items.slice(0, 4))
++  setProgressiveList(page, 'clients', [], {}, true)
++  assert.deepEqual(page.data.clients, [])
++})
++
++test('客户完整搜索、负责人过滤、总数与排序不受首批30行限制', async () => {
++  const fixture = createFixture(97, 97)
++  fixture.snapshot.clients[96].ownerMemberId = 'another_member'
++  fixture.snapshot.clients[96].phone = 'search-full-list'
++  installWx(fixture)
++  require('../services/repository-instance').resetRepository()
++  const { page } = instantiatePage('pages/clients/clients')
++  page.onShow(); await flush()
++  assert.equal(page.data.clients.length, 30)
++  assert.equal(page.data.clientCount, 97)
++  page.onSearch({ detail: { value: 'search-full-list' } })
++  assert.deepEqual(page.data.clients.map(row => row.id), ['client_0096'])
++  page.setScope({ currentTarget: { dataset: { scope: 'mine' } } })
++  assert.equal(page.data.clients.length, 0)
++  page.onSearch({ detail: { value: '' } })
++  assert.equal(page.data.clientCount, 96)
++  while (page.data.clients.length < page.data.clientCount) page.onReachBottom()
++  assert.deepEqual(page.data.clients.map(row => row.id), page.allClients.filter(row => row.ownerMemberId === fixture.identity.memberId).map(row => row.id))
++  page.onShow(); await flush()
++  assert.equal(page.data.clients.length, 96)
++})
++
++test('历史的月份和负责人筛选始终作用于全部历史，追加后无丢失或重复', async () => {
++  const fixture = createFixture(97, 97)
++  const period = fixture.snapshot.billingPeriods.find(row => row.id === 'period_96_settled')
++  period.startAt = '2026-06-01T00:00:00.000Z'
++  period.closedAt = '2026-06-30T00:00:00.000Z'
++  installWx(fixture)
++  require('../services/repository-instance').resetRepository()
++  const { page } = instantiatePage('pages/history/history')
++  page.onShow(); await flush()
++  assert.equal(page.data.histories.length, 30)
++  const expected = page.allHistories.map(row => row.id)
++  while (page.data.histories.length < expected.length) page.onReachBottom()
++  assert.deepEqual(page.data.histories.map(row => row.id), expected)
++  page.onMonthChange({ detail: { value: String(page.monthValues.indexOf('2026-06')) } })
++  assert.deepEqual(page.data.histories.map(row => row.id), ['period_96_settled'])
++  page.setScope({ currentTarget: { dataset: { scope: 'mine' } } })
++  assert.deepEqual(page.data.histories.map(row => row.id), ['period_96_settled'])
++})
+--- /dev/null
++++ b/tests/performance-cloud.test.js
+@@ -0,0 +1,96 @@
++const test = require('node:test')
++const assert = require('node:assert/strict')
++const Module = require('node:module')
++const path = require('node:path')
++const { createFixture, fakeDatabase } = require('../scripts/performance-fixture')
++
++async function withLedger(callback) {
++  const fixture = createFixture(2, 4)
++  const db = fakeDatabase(fixture)
++  const loads = []
++  const original = Module._load
++  const prefix = path.resolve(__dirname, '../cloudfunctions/ledger')
++  Object.keys(require.cache).filter(name => name.startsWith(prefix) && !name.includes('node_modules')).forEach(name => delete require.cache[name])
++  const cloud = {
++    init() {}, database: () => db, getWXContext: () => ({ OPENID: fixture.openid }),
++    uploadFile: async () => ({ fileID: 'cloud://synthetic/export.xlsx' }),
++    deleteFile: async () => ({ fileList: [{ status: 0 }] })
++  }
++  Module._load = function (request, ...args) {
++    loads.push(request)
++    if (request === 'wx-server-sdk') return cloud
++    return original.call(this, request, ...args)
++  }
++  try { await callback({ ledger: require('../cloudfunctions/ledger'), fixture, db, loads, cloud }) }
++  finally { Module._load = original }
++}
++
++test('普通 ledger action 和临时文件清理不加载 ExcelJS 或工作簿模块', async () => {
++  await withLedger(async ({ ledger, fixture, loads, db }) => {
++    db.runTransaction = async callback => callback(db)
++    for (const action of ['bootstrap', 'saveClient', 'postShipment', 'recordPayment', 'closeBillingPeriod', 'getClientDeletePreview', 'getStatementExportMeta', 'getStatementExportPage', 'cleanupStatementExportFile']) {
++      await ledger.main({ action, payload: { args: ['client_0000'], clientId: 'client_0000', periodId: 'period_0_open', resource: 'shipments', offset: 0, limit: 100, fileID: 'cloud://synthetic/invalid.xlsx' } })
++      assert.ok(!loads.includes('exceljs'), action)
++      assert.ok(!loads.some(name => /statement-excel/.test(name)), action)
++    }
++    const { cloudPrefix } = require('../cloudfunctions/ledger/services/statement-export-file')
++    const cleaned = await ledger.main({ action: 'cleanupStatementExportFile', payload: { fileID: `cloud://synthetic/${cloudPrefix(fixture.snapshot.memberships[0])}sample.xlsx` } })
++    assert.equal(cleaned.ok, true)
++    assert.ok(!loads.includes('exceljs'))
++  })
++})
++
++test('bootstrap 在真实成员检查和企业读取后并行8个同tenant集合，返回快照保持脱敏', async () => {
++  await withLedger(async ({ ledger, fixture, db }) => {
++    const result = await ledger.main({ action: 'bootstrap', tenantId: 'forged', payload: { tenantId: 'forged', role: 'admin' } })
++    assert.equal(result.ok, true)
++    assert.equal(db.queries.length, 10)
++    assert.equal(db.queries[0].name, 'memberships')
++    assert.equal(db.queries[0].documentId, fixture.identity.memberId)
++    assert.equal(db.queries[1].name, 'enterprises')
++    assert.equal(db.maxActive(), 8)
++    db.queries.slice(2).forEach(query => assert.deepEqual(query.criteria, { tenantId: fixture.tenantId }))
++    const { clientSnapshot } = require('../cloudfunctions/ledger/services/client-snapshot')
++    assert.deepEqual(result.snapshot, clientSnapshot(fixture.snapshot))
++    assert.ok(!JSON.stringify(result.snapshot).includes(fixture.openid))
++  })
++})
++
++test('失效成员在任何tenant读取和Excel require之前拒绝', async () => {
++  await withLedger(async ({ ledger, fixture, db, loads }) => {
++    fixture.snapshot.memberships[0].status = 'disabled'
++    for (const action of ['bootstrap', 'createStatementExcel', 'saveClient']) {
++      const response = await ledger.main({ action })
++      assert.equal(response.code, 'MEMBERSHIP_DISABLED')
++    }
++    assert.ok(db.queries.every(query => query.name === 'memberships' && query.documentId))
++    assert.ok(!loads.some(name => /statement-export-file|statement-excel|exceljs/.test(name)))
++  })
++})
++
++test('事务内仍重新检查成员并串行读取快照', async () => {
++  await withLedger(async ({ ledger, db }) => {
++    db.runTransaction = async callback => callback(db)
++    const response = await ledger.main({ action: 'recordPayment', payload: { args: [{}] } })
++    assert.equal(response.ok, false) // Missing confirmation still rejected by the original domain contract.
++    assert.equal(db.queries.filter(query => query.documentId && query.name === 'memberships').length, 2)
++    assert.equal(db.queries.length, 11)
++    assert.equal(db.maxActive(), 1)
++  })
++})
++
++test('只有有效 createStatementExcel 加载工作簿和ExcelJS；继续生成真实xlsx', async () => {
++  await withLedger(async ({ ledger, loads, cloud }) => {
++    let uploaded = false
++    cloud.uploadFile = async ({ fileContent }) => {
++      assert.equal(fileContent.subarray(0, 2).toString(), 'PK')
++      uploaded = true
++      return { fileID: 'cloud://synthetic/generated.xlsx' }
++    }
++    const response = await ledger.main({ action: 'createStatementExcel', payload: { clientId: 'client_0000', periodId: 'period_0_open' } })
++    assert.equal(response.ok, true, response.error)
++    assert.equal(uploaded, true)
++    assert.ok(loads.includes('exceljs'))
++    assert.ok(loads.some(name => /statement-excel/.test(name)))
++  })
++})
+--- /dev/null
++++ b/tests/performance-client.test.js
+@@ -0,0 +1,153 @@
++const test = require('node:test')
++const assert = require('node:assert/strict')
++const { createFixture } = require('../scripts/performance-fixture')
++const { installWx, instantiatePage } = require('../scripts/benchmark-performance')
++const storageModule = require('../services/storage')
++const { createLedgerRepository } = require('../services/ledger-repository')
++const flush = () => new Promise(resolve => setImmediate(resolve))
++
++function setup(fixture = createFixture(4, 12)) {
++  const api = installWx(fixture)
++  ;['cloud-repository', 'repository-instance', 'page-context'].forEach(name => delete require.cache[require.resolve(`../services/${name}`)])
++  const instance = require('../services/repository-instance')
++  return { api, instance, fixture }
++}
++
++test('一次同步页面计算只复制一个工作快照，所有读取结果与原领域仓储一致', async () => {
++  const originalStorage = storageModule.createMemoryStorage
++  let reads = 0
++  storageModule.createMemoryStorage = (...args) => {
++    const storage = originalStorage(...args)
++    return { read() { reads += 1; return storage.read() }, write: storage.write }
++  }
++  try {
++    const { instance, fixture } = setup()
++    // Include old rows without normalized freight fields and legacy monthly periods.
++    delete fixture.snapshot.shipments[0].freightCents
++    delete fixture.snapshot.shipments[0].itemsSubtotalCents
++    delete fixture.snapshot.shipments[1].periodId
++    const original = JSON.stringify(fixture.snapshot)
++    await instance.prepareRepository()
++    const cloud = instance.getRepository()
++    const reference = createLedgerRepository(originalStorage({ schemaVersion: 1, tenants: { [fixture.tenantId]: fixture.snapshot } }))
++    const requests = [
++      ['getEnterprise'], ['listClients'], ['listMembers'], ['listProducts'], ['listCustomProducts'],
++      ['getClient', 'client_0000'], ['getClientLedger', 'client_0000'], ['getDashboard'],
++      ['listShipments'], ['listPayments'], ['listBillingPeriods'], ['getPeriodDetail', 'period_0_open'],
++      ['getStatement', 'client_0000'], ['getStatement', '', 'period_0_settled'],
++      ['getAuditLogs'], ['listCustomerPrices', 'client_0000'], ['getShipment', 'shipment_0']
++    ]
++    reads = 0
++    cloud.withReadSnapshot(() => {
++      for (const [method, ...args] of requests) {
++        assert.deepEqual(cloud[method](fixture.tenantId, ...args), reference[method](fixture.tenantId, ...args), method)
++      }
++    })
++    assert.equal(reads, 1)
++    assert.equal(JSON.stringify(fixture.snapshot), original, 'legacy normalization never writes the source snapshot')
++    cloud.withReadSnapshot(() => {
++      const ledger = cloud.getClientLedger(fixture.tenantId, 'client_0000')
++      ledger.client.name = 'mutated caller value'
++      ledger.shipments[0].lines[0].productSnapshot.label = 'mutated label'
++      assert.notEqual(cloud.getClient(fixture.tenantId, 'client_0000').name, ledger.client.name)
++      assert.notEqual(cloud.getShipment(fixture.tenantId, ledger.shipments[0].id).lines[0].productSnapshot.label, 'mutated label')
++    })
++    assert.equal(reads, 2, 'completed read scopes do not become a persistent cache')
++    assert.throws(() => cloud.withReadSnapshot(() => { cloud.getEnterprise(); throw new Error('model failure') }), /model failure/)
++    cloud.getEnterprise()
++    assert.equal(reads, 4, 'failed scope also releases its copy')
++    await cloud.withReadSnapshot(async () => { cloud.getEnterprise(); await Promise.resolve(); cloud.getEnterprise() })
++    assert.equal(reads, 6, 'read scope does not survive an await')
++  } finally { storageModule.createMemoryStorage = originalStorage }
++})
++
++test('原有 prepareRepository 并发去重：3个调用只有1个请求；完成与失败均清理', async () => {
++  const { instance, api } = setup()
++  await Promise.all([instance.prepareRepository(), instance.prepareRepository(), instance.prepareRepository()])
++  assert.equal(api.calls(), 1)
++  await instance.prepareRepository()
++  assert.equal(api.calls(), 2, 'new navigation still validates membership on the server')
++  let requests = 0
++  const originalCall = wx.cloud.callFunction
++  wx.cloud.callFunction = () => { requests += 1; return Promise.reject(new Error('offline')) }
++  const rejected = await Promise.allSettled([instance.prepareRepository(), instance.prepareRepository(), instance.prepareRepository()])
++  assert.equal(requests, 1)
++  assert.ok(rejected.every(result => result.status === 'rejected'))
++  wx.cloud.callFunction = originalCall
++  await instance.prepareRepository()
++  assert.equal(api.calls(), 3)
++})
++
++test('写入返回的新快照立即被下一次读取使用，退出后不复用旧tenant', async () => {
++  const { instance, fixture } = setup()
++  await instance.prepareRepository()
++  const repository = instance.getRepository()
++  const sent = []
++  wx.cloud.callFunction = async request => {
++    sent.push(request.data)
++    const snapshot = JSON.parse(JSON.stringify(fixture.snapshot))
++    snapshot.clients[0].name = '服务器确认的新名称'
++    return { result: { ok: true, result: snapshot.clients[0], snapshot } }
++  }
++  await repository.saveClient('forged-tenant', { confirmed: true, id: 'client_0000', name: '请求名称' })
++  assert.equal(sent[0].action, 'saveClient')
++  assert.equal(sent[0].payload.tenantId, undefined)
++  assert.equal(repository.getClient(fixture.tenantId, 'client_0000').name, '服务器确认的新名称')
++  instance.resetRepository()
++  assert.notEqual(instance.getRepository(), repository)
++  assert.throws(() => instance.getRepository().listClients(), /尚未加载/)
++})
++
++test('返回页保留内容且仍重新授权；disabled立即清仓储并跳转；callback不会执行两次', async () => {
++  const { instance, api } = setup()
++  const { loadPage } = require('../services/page-context')
++  const page = {}
++  let callbacks = 0
++  let redirects = 0
++  let lightLoading = 0
++  wx.showNavigationBarLoading = () => { lightLoading += 1 }
++  wx.hideNavigationBarLoading = () => {}
++  wx.reLaunch = options => { redirects += 1; assert.match(options.url, /reason=disabled/); options.complete() }
++  loadPage(page, () => { callbacks += 1 })
++  await flush()
++  assert.equal(callbacks, 1)
++  assert.equal(api.loading.show, 1)
++  loadPage(page, () => { callbacks += 1 })
++  await flush()
++  assert.equal(callbacks, 2)
++  assert.equal(api.calls(), 2)
++  assert.equal(lightLoading, 1)
++  assert.equal(api.loading.show, 1)
++  wx.cloud.callFunction = async () => ({ result: { ok: false, code: 'MEMBERSHIP_DISABLED', error: '成员账号已停用' } })
++  const old = instance.getRepository()
++  loadPage(page, () => { callbacks += 1 })
++  await flush()
++  assert.equal(callbacks, 2)
++  assert.equal(redirects, 1)
++  assert.notEqual(instance.getRepository(), old)
++  assert.throws(() => instance.getRepository().listClients(), /尚未加载/)
++})
++
++test('列表与快速记账只向setData发送渲染数据；完整产品和客户仍可选择和搜索', async () => {
++  setup(createFixture(40, 80))
++  for (const name of ['clients', 'history', 'products', 'customer-prices', 'quick-entry']) {
++    const { page, payloads } = instantiatePage(`pages/${name}/${name}`)
++    if (page.onLoad) await page.onLoad({ clientId: 'client_0000' })
++    if (page.onShow) page.onShow()
++    await flush()
++    const keys = payloads.flatMap(item => item.keys)
++    assert.ok(!keys.some(key => ['allClients', 'allHistories', 'allProducts', 'allPrices', 'productOptions', 'standardProductOptions', 'customProductOptions'].includes(key)), name)
++    assert.equal(payloads.length, 1, name)
++    if (name === 'clients') {
++      page.onSearch({ detail: { value: '0039' } })
++      assert.equal(page.data.clients[0].id, 'client_0039')
++    }
++    if (name === 'quick-entry') {
++      assert.equal(page.clients.length, 40)
++      assert.ok(page.productOptions.length > 150)
++      assert.equal(page.data.productOptions, undefined)
++      page.updateProductFilter('standard', '40×40')
++      assert.ok(page.data.filteredProductOptions.length > 0)
++    }
++  }
++})

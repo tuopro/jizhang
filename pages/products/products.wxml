@@ -6,7 +6,7 @@
   <view wx:else class="card compact-card">
     <view wx:for="{{products}}" wx:key="id" class="list-row product-row" data-id="{{item.id}}" bindtap="edit">
       <view><view class="row-title {{!item.active ? 'inactive' : ''}}">{{item.label}}</view><view class="row-note">{{item.isStandard ? '标准规格' : (item.active ? '自定义规格 · 使用中' : '自定义规格 · 已停用')}}</view></view>
-      <button class="mini-action" data-id="{{item.id}}" catchtap="toggle">{{item.active ? '停用' : '启用'}}</button>
+      <button class="mini-action {{item.active ? 'deactivate' : 'activate'}}" data-id="{{item.id}}" catchtap="toggle">{{item.active ? '停用' : '启用'}}</button>
     </view>
   </view>
   <view wx:if="{{tab === 'custom'}}" class="fixed-action-space"></view>

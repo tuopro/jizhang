@@ -5,9 +5,9 @@
     <view class="period-status">{{periodTitle}}<text wx:if="{{periodRange}}"> · {{periodRange}}</text></view>
     <view wx:if="{{periodId}}" class="owner-line period-owner">本期负责人：{{periodOwnerText}}</view>
     <view class="metrics">
-      <view><view class="metric-label">本期货款</view><view class="metric-value">{{shipmentTotal}}</view></view>
-      <view><view class="metric-label">已收款</view><view class="metric-value received">{{received}}</view></view>
-      <view><view class="metric-label">剩余应收</view><view class="metric-value outstanding">{{outstanding}}</view></view>
+      <view class="metric-cell"><view class="metric-label">本期应收</view><view class="metric-value">{{shipmentTotal}}</view></view>
+      <view class="metric-cell"><view class="metric-label">已收款</view><view class="metric-value received">{{received}}</view></view>
+      <view class="metric-cell"><view class="metric-label">剩余应收</view><view class="metric-value outstanding">{{outstanding}}</view></view>
     </view>
     <view class="shipment-count">本期发货 {{shipmentCount}} 次</view>
     <view class="period-breakdown">商品合计 {{itemsSubtotal}} · 运费 {{freightTotal}}</view>
@@ -17,7 +17,7 @@
     <button class="primary-button" bindtap="quickEntry">记一笔</button>
     <button class="action-button" bindtap="payment" disabled="{{!canReceivePayment}}">收款</button>
     <button class="action-button" bindtap="statement">生成对账单</button>
-    <button wx:if="{{isAdmin}}" class="action-button" bindtap="prices">该客户价格表</button>
+    <button wx:if="{{canManagePrices}}" class="action-button" bindtap="prices">该客户价格表</button>
     <button wx:if="{{canSettle}}" class="settle-button" bindtap="openSettlementConfirm">结清本期</button>
   </view>
 
@@ -32,11 +32,6 @@
     </view>
   </view>
 
-  <view class="danger-zone">
-    <view class="danger-divider"></view>
-    <button class="delete-client-button" bindtap="openDelete">删除客户</button>
-  </view>
-
   <view class="section-head"><text class="section-title">本期收款</text></view>
   <view wx:if="{{payments.length === 0}}" class="card empty-state">还没有收款记录</view>
   <view wx:else class="card compact-card">
@@ -46,11 +41,17 @@
     </view>
   </view>
 
+  <view class="danger-zone">
+    <view class="danger-divider"></view>
+    <view class="danger-caption">危险操作</view>
+    <button class="delete-client-button" bindtap="openDelete">删除客户</button>
+  </view>
+
   <view wx:if="{{showSettlementConfirm}}" class="settlement-mask">
     <view class="settlement-dialog">
       <view class="settlement-title">本期已全部收款</view>
       <view class="settlement-content">是否结清本期并生成历史账单？暂不结清时，本期仍保持进行中，后续发货继续记在本期。</view>
-      <view class="settlement-actions">
+      <view class="settlement-actions action-row action-row--responsive">
         <button class="dialog-secondary" bindtap="deferSettlement" disabled="{{closing}}">暂不结清</button>
         <button class="dialog-primary" bindtap="confirmSettlement" loading="{{closing}}" disabled="{{closing}}">确认结清本期</button>
       </view>
@@ -73,7 +74,7 @@
       <view class="delete irreversible">此操作无法恢复。</view>
       <text class="form-label">请输入完整客户名称确认</text>
       <input class="form-input" value="{{deleteConfirmName}}" bindinput="onDeleteNameInput" placeholder="{{deletePreview.clientName}}" />
-      <view class="delete-actions">
+      <view class="delete-actions action-row action-row--responsive">
         <button class="dialog-secondary" bindtap="closeDeleteConfirm" disabled="{{deleting}}">取消</button>
         <button class="delete-final-button" bindtap="confirmStrongDelete" loading="{{deleting}}" disabled="{{!deleteNameMatches || deleting}}">彻底删除</button>
       </view>

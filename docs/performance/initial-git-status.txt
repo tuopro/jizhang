@@ -1,0 +1,73 @@
+ M PREFERENCES.md
+ M app.json
+ M app.wxss
+ M cloudfunctions/ledger/index.js
+ M cloudfunctions/ledger/package.json
+ M cloudfunctions/ledger/services/access-control.js
+ M "docs/\344\272\221\345\274\200\345\217\221\351\203\250\347\275\262\344\270\216\344\270\212\347\272\277.md"
+ M "docs/\351\232\220\347\247\201\346\225\260\346\215\256\344\270\216\345\276\256\344\277\241\346\216\245\345\217\243\347\233\230\347\202\271.md"
+ M pages/client-form/client-form.wxml
+ M pages/client-ledger/client-ledger.wxml
+ M pages/client-ledger/client-ledger.wxss
+ M pages/clients/clients.wxml
+ M pages/clients/clients.wxss
+ M pages/customer-prices/customer-prices.wxss
+ M pages/history/history.wxml
+ M pages/history/history.wxss
+ M pages/index/index.wxss
+ M pages/join-enterprise/join-enterprise.js
+ M pages/join-enterprise/join-enterprise.wxss
+ M pages/members/members.wxss
+ M pages/mine/mine.js
+ M pages/mine/mine.wxml
+ M pages/mine/mine.wxss
+ M pages/owner-transfer/owner-transfer.wxml
+ M pages/owner-transfer/owner-transfer.wxss
+ M pages/payment-form/payment-form.wxml
+ M pages/payment-form/payment-form.wxss
+ M pages/products/products.wxml
+ M pages/products/products.wxss
+ M pages/quick-entry/quick-entry.js
+ M pages/quick-entry/quick-entry.wxml
+ M pages/quick-entry/quick-entry.wxss
+ M pages/shipment-detail/shipment-detail.wxml
+ M pages/shipment-detail/shipment-detail.wxss
+ M pages/statement/statement.js
+ M pages/statement/statement.wxml
+ M pages/statement/statement.wxss
+ M pages/unauthorized/unauthorized.js
+ M pages/unauthorized/unauthorized.wxss
+ M scripts/check-project.js
+ M services/cloud-repository.js
+ M services/page-context.js
+ M tests/access-control.test.js
+ M tests/privacy-boundary.test.js
+ M tests/quick-entry-page.test.js
+?? cloudfunctions/ledger/config.json
+?? cloudfunctions/ledger/package-lock.json
+?? cloudfunctions/ledger/services/content-security.js
+?? cloudfunctions/ledger/services/statement-excel.js
+?? cloudfunctions/ledger/services/statement-export-cloud.js
+?? cloudfunctions/ledger/services/statement-export-file.js
+?? cloudfunctions/ledger/services/statement-export.js
+?? "docs/\345\210\206\351\241\265\350\264\246\345\215\225\345\233\276\347\211\207\344\270\216Excel\345\257\274\345\207\272\346\226\271\346\241\210.md"
+?? pages/privacy-consent/
+?? pages/statement-export/
+?? services/content-security.js
+?? services/excel-export-client.js
+?? services/photo-album.js
+?? services/privacy-consent.js
+?? services/statement-export-client.js
+?? services/statement-export.js
+?? services/statement-image-renderer.js
+?? services/statement-paginator.js
+?? tests/content-security.test.js
+?? tests/excel-export-client.test.js
+?? tests/photo-album.test.js
+?? tests/privacy-consent.test.js
+?? tests/statement-excel.test.js
+?? tests/statement-export-client.test.js
+?? tests/statement-export-cloud.test.js
+?? tests/statement-export-model.test.js
+?? tests/statement-image-renderer.test.js
+?? tests/statement-paginator.test.js

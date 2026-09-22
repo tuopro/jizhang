@@ -260,7 +260,7 @@ test('普通成员可发起本人负责账期的结清，其它高风险操作�
   assert.doesNotThrow(() => assertMutationPermission(member, 'closeBillingPeriod', []))
   assert.doesNotThrow(() => assertMutationPermission(member, 'saveClient', [{ name: '新客户' }]))
   assert.throws(() => assertMutationPermission(member, 'saveClient', [{ id: 'client_1' }]), /仅限管理员/)
-  assert.throws(() => assertMutationPermission(member, 'updateShipment', []), /仅限管理员/)
+  assert.doesNotThrow(() => assertMutationPermission(member, 'updateShipment', [])) // 客户归属由事务内领域校验。
 })
 
 test('成员列表快照不会向前端暴露openid，邀请token也不进入企业账本快照', () => {

@@ -1,0 +1,1376 @@
+{
+  "measuredAt": "2026-09-21T12:11:36.601Z",
+  "node": "v22.22.3",
+  "platform": "darwin/arm64",
+  "method": "Synthetic fixtures; SDK stub for cloud actions; 3ms simulated DB latency; local Node timing only. Module cold samples use fresh processes. Page timings include read counters and simulated setData serialization, not rendering. Root byte size is measured once per snapshot write, not on every read.",
+  "fixture": {
+    "clients": 200,
+    "shipments": 1000,
+    "payments": 1000,
+    "periods": 400,
+    "snapshotBytes": 2792830
+  },
+  "cloud": [
+    {
+      "requireMs": 3.8885000000000005,
+      "moduleCount": 16,
+      "excelLoads": 0,
+      "bootstrapMs": 12.533874999999998,
+      "queries": [
+        {
+          "name": "memberships",
+          "criteria": null,
+          "documentId": "member_5f5e89aa230a8d4d863bdca0"
+        },
+        {
+          "name": "enterprises",
+          "criteria": null,
+          "documentId": "tenant_performance_fixture"
+        },
+        {
+          "name": "clients",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "products",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "customer_prices",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "shipments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "payments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "billing_periods",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "audit_logs",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "memberships",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        }
+      ],
+      "maxConcurrentQueries": 8,
+      "responseBytes": 122990,
+      "snapshotBytes": 122771,
+      "injectedQueryDelayMs": 3
+    },
+    {
+      "requireMs": 3.889709,
+      "moduleCount": 16,
+      "excelLoads": 0,
+      "bootstrapMs": 12.502417000000001,
+      "queries": [
+        {
+          "name": "memberships",
+          "criteria": null,
+          "documentId": "member_5f5e89aa230a8d4d863bdca0"
+        },
+        {
+          "name": "enterprises",
+          "criteria": null,
+          "documentId": "tenant_performance_fixture"
+        },
+        {
+          "name": "clients",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "products",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "customer_prices",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "shipments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "payments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "billing_periods",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "audit_logs",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "memberships",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        }
+      ],
+      "maxConcurrentQueries": 8,
+      "responseBytes": 122990,
+      "snapshotBytes": 122771,
+      "injectedQueryDelayMs": 3
+    },
+    {
+      "requireMs": 4.0546669999999985,
+      "moduleCount": 16,
+      "excelLoads": 0,
+      "bootstrapMs": 12.709,
+      "queries": [
+        {
+          "name": "memberships",
+          "criteria": null,
+          "documentId": "member_5f5e89aa230a8d4d863bdca0"
+        },
+        {
+          "name": "enterprises",
+          "criteria": null,
+          "documentId": "tenant_performance_fixture"
+        },
+        {
+          "name": "clients",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "products",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "customer_prices",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "shipments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "payments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "billing_periods",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "audit_logs",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "memberships",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        }
+      ],
+      "maxConcurrentQueries": 8,
+      "responseBytes": 122990,
+      "snapshotBytes": 122771,
+      "injectedQueryDelayMs": 3
+    },
+    {
+      "requireMs": 3.866417,
+      "moduleCount": 16,
+      "excelLoads": 0,
+      "bootstrapMs": 12.413707999999998,
+      "queries": [
+        {
+          "name": "memberships",
+          "criteria": null,
+          "documentId": "member_5f5e89aa230a8d4d863bdca0"
+        },
+        {
+          "name": "enterprises",
+          "criteria": null,
+          "documentId": "tenant_performance_fixture"
+        },
+        {
+          "name": "clients",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "products",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "customer_prices",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "shipments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "payments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "billing_periods",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "audit_logs",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "memberships",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        }
+      ],
+      "maxConcurrentQueries": 8,
+      "responseBytes": 122990,
+      "snapshotBytes": 122771,
+      "injectedQueryDelayMs": 3
+    },
+    {
+      "requireMs": 3.7069159999999997,
+      "moduleCount": 16,
+      "excelLoads": 0,
+      "bootstrapMs": 12.687249999999999,
+      "queries": [
+        {
+          "name": "memberships",
+          "criteria": null,
+          "documentId": "member_5f5e89aa230a8d4d863bdca0"
+        },
+        {
+          "name": "enterprises",
+          "criteria": null,
+          "documentId": "tenant_performance_fixture"
+        },
+        {
+          "name": "clients",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "products",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "customer_prices",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "shipments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "payments",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "billing_periods",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "audit_logs",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        },
+        {
+          "name": "memberships",
+          "criteria": {
+            "tenantId": "tenant_performance_fixture"
+          },
+          "documentId": null
+        }
+      ],
+      "maxConcurrentQueries": 8,
+      "responseBytes": 122990,
+      "snapshotBytes": 122771,
+      "injectedQueryDelayMs": 3
+    }
+  ],
+  "modules": {
+    "sdk": [
+      {
+        "coldMs": 70.34375,
+        "warmMs": 0.011624999999995111,
+        "modules": 418
+      },
+      {
+        "coldMs": 70.056375,
+        "warmMs": 0.011375000000001023,
+        "modules": 418
+      },
+      {
+        "coldMs": 70.360208,
+        "warmMs": 0.011667000000002758,
+        "modules": 418
+      },
+      {
+        "coldMs": 70.70316600000001,
+        "warmMs": 0.010459000000011542,
+        "modules": 418
+      },
+      {
+        "coldMs": 70.719167,
+        "warmMs": 0.010292000000006851,
+        "modules": 418
+      }
+    ],
+    "excel": [
+      {
+        "coldMs": 58.231917,
+        "warmMs": 0.012083000000004063,
+        "modules": 463
+      },
+      {
+        "coldMs": 57.67058300000001,
+        "warmMs": 0.01099999999999568,
+        "modules": 463
+      },
+      {
+        "coldMs": 57.131042,
+        "warmMs": 0.011208000000010543,
+        "modules": 463
+      },
+      {
+        "coldMs": 57.964208000000006,
+        "warmMs": 0.009792000000004464,
+        "modules": 463
+      },
+      {
+        "coldMs": 59.348667,
+        "warmMs": 0.010290999999995165,
+        "modules": 463
+      }
+    ],
+    "frontend": [
+      {
+        "coldMs": 2.4452499999999997,
+        "warmMs": 0.014165999999999457,
+        "modules": 10
+      },
+      {
+        "coldMs": 2.424208,
+        "warmMs": 0.01220799999999933,
+        "modules": 10
+      },
+      {
+        "coldMs": 2.269959,
+        "warmMs": 0.011333999999999733,
+        "modules": 10
+      },
+      {
+        "coldMs": 2.4243330000000007,
+        "warmMs": 0.012290999999999386,
+        "modules": 10
+      },
+      {
+        "coldMs": 2.377542,
+        "warmMs": 0.010792000000000357,
+        "modules": 10
+      }
+    ]
+  },
+  "pages": [
+    {
+      "name": "index",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 1765,
+      "totalPayloadBytes": 1765,
+      "completeSetData": 1,
+      "completePayloadBytes": 1765,
+      "completeMaxPayloadBytes": 1765,
+      "completeRows": {
+        "owingClients": 4,
+        "recentShipments": 5,
+        "recentPayments": 5
+      },
+      "maxPayloadKeys": [
+        "enterpriseName",
+        "totalOutstanding",
+        "unsettledClientCount",
+        "owingClients",
+        "recentShipments",
+        "recentPayments"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 122.5547919999999,
+      "localInitializationMs": 140.7186670000001,
+      "rows": {
+        "owingClients": 4,
+        "recentShipments": 5,
+        "recentPayments": 5
+      }
+    },
+    {
+      "name": "clients",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 5114,
+      "totalPayloadBytes": 5114,
+      "completeSetData": 1,
+      "completePayloadBytes": 5114,
+      "completeMaxPayloadBytes": 5114,
+      "completeRows": {
+        "clients": 30
+      },
+      "maxPayloadKeys": [
+        "keyword",
+        "clientCount",
+        "clients"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 97.84412500000008,
+      "localInitializationMs": 115.09483300000011,
+      "rows": {
+        "clients": 30
+      }
+    },
+    {
+      "name": "client-ledger",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 1770,
+      "totalPayloadBytes": 1770,
+      "completeSetData": 1,
+      "completePayloadBytes": 1770,
+      "completeMaxPayloadBytes": 1770,
+      "completeRows": {
+        "shipments": 3,
+        "payments": 3
+      },
+      "maxPayloadKeys": [
+        "clientId",
+        "client",
+        "periodId",
+        "periodTitle",
+        "periodRange",
+        "itemsSubtotal",
+        "freightTotal",
+        "shipmentTotal",
+        "received",
+        "outstanding",
+        "shipmentCount",
+        "canReceivePayment",
+        "canSettle",
+        "isAdmin",
+        "clientOwnerText",
+        "periodOwnerText",
+        "shipments",
+        "payments"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 8.032874999999876,
+      "localInitializationMs": 24.38499999999999,
+      "rows": {
+        "shipments": 3,
+        "payments": 3
+      }
+    },
+    {
+      "name": "statement",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 0,
+      "initSetData": 2,
+      "maxPayloadBytes": 2811,
+      "totalPayloadBytes": 2839,
+      "completeSetData": 2,
+      "completePayloadBytes": 2839,
+      "completeMaxPayloadBytes": 2811,
+      "completeRows": {
+        "shipments": 3,
+        "payments": 3
+      },
+      "maxPayloadKeys": [
+        "client",
+        "period",
+        "periodTitle",
+        "periodLabel",
+        "periodOwnerText",
+        "isClosed",
+        "canExport",
+        "shipments",
+        "payments",
+        "itemsSubtotal",
+        "freightTotal",
+        "total",
+        "received",
+        "outstanding"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 7.363832999999886,
+      "localInitializationMs": 25.05579200000011,
+      "rows": {
+        "shipments": 3,
+        "payments": 3
+      }
+    },
+    {
+      "name": "history",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 10086,
+      "totalPayloadBytes": 10086,
+      "completeSetData": 1,
+      "completePayloadBytes": 10086,
+      "completeMaxPayloadBytes": 10086,
+      "completeRows": {
+        "histories": 30,
+        "monthOptions": 2
+      },
+      "maxPayloadKeys": [
+        "monthOptions",
+        "monthIndex",
+        "histories"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 14.154167000000143,
+      "localInitializationMs": 30.10912499999995,
+      "rows": {
+        "histories": 30,
+        "monthOptions": 2
+      }
+    },
+    {
+      "name": "quick-entry",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 0,
+      "initSetData": 1,
+      "maxPayloadBytes": 3874,
+      "totalPayloadBytes": 3874,
+      "completeSetData": 1,
+      "completePayloadBytes": 3874,
+      "completeMaxPayloadBytes": 3874,
+      "completeRows": {
+        "clientNames": 200,
+        "rows": 0,
+        "filteredProductOptions": 0,
+        "colorOptions": 5,
+        "toothOptions": 5,
+        "unitOptions": 3,
+        "unmatchedLines": 0
+      },
+      "maxPayloadKeys": [
+        "clientNames",
+        "selectedClientIndex",
+        "selectedClientId"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 8.389249999999947,
+      "localInitializationMs": 24.651374999999916,
+      "rows": {
+        "clientNames": 200,
+        "rows": 0,
+        "filteredProductOptions": 0,
+        "colorOptions": 5,
+        "toothOptions": 5,
+        "unitOptions": 3,
+        "unmatchedLines": 0
+      }
+    },
+    {
+      "name": "shipment-detail",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 1611,
+      "totalPayloadBytes": 1611,
+      "completeSetData": 1,
+      "completePayloadBytes": 1611,
+      "completeMaxPayloadBytes": 1611,
+      "completeRows": {
+        "lines": 2,
+        "audits": 1
+      },
+      "maxPayloadKeys": [
+        "shipment",
+        "itemsSubtotal",
+        "freight",
+        "total",
+        "canEdit",
+        "lines",
+        "audits"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 7.2542909999999665,
+      "localInitializationMs": 24.272665999999845,
+      "rows": {
+        "lines": 2,
+        "audits": 1
+      }
+    },
+    {
+      "name": "payment-form",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 0,
+      "initSetData": 1,
+      "maxPayloadBytes": 544,
+      "totalPayloadBytes": 544,
+      "completeSetData": 1,
+      "completePayloadBytes": 544,
+      "completeMaxPayloadBytes": 544,
+      "completeRows": {
+        "methods": 5
+      },
+      "maxPayloadKeys": [
+        "client",
+        "periodId",
+        "shipmentTotal",
+        "received",
+        "outstanding",
+        "amountYuan",
+        "paymentDate",
+        "canSettle",
+        "periodOwnerText"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 7.816125000000056,
+      "localInitializationMs": 24.149667000000136,
+      "rows": {
+        "methods": 5
+      }
+    },
+    {
+      "name": "products",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 16003,
+      "totalPayloadBytes": 16003,
+      "completeSetData": 1,
+      "completePayloadBytes": 16003,
+      "completeMaxPayloadBytes": 16003,
+      "completeRows": {
+        "products": 150
+      },
+      "maxPayloadKeys": [
+        "products"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 7.271834000000126,
+      "localInitializationMs": 24.711332999999968,
+      "rows": {
+        "products": 150
+      }
+    },
+    {
+      "name": "customer-prices",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 360,
+      "totalPayloadBytes": 360,
+      "completeSetData": 1,
+      "completePayloadBytes": 360,
+      "completeMaxPayloadBytes": 360,
+      "completeRows": {
+        "prices": 0,
+        "filteredProducts": 0,
+        "units": 3
+      },
+      "maxPayloadKeys": [
+        "prices",
+        "client"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 8.10370799999987,
+      "localInitializationMs": 24.900709000000006,
+      "rows": {
+        "prices": 0,
+        "filteredProducts": 0,
+        "units": 3
+      }
+    },
+    {
+      "name": "members",
+      "initCloudCalls": 2,
+      "returnCloudCalls": 2,
+      "initSetData": 2,
+      "maxPayloadBytes": 830,
+      "totalPayloadBytes": 867,
+      "completeSetData": 2,
+      "completePayloadBytes": 867,
+      "completeMaxPayloadBytes": 830,
+      "completeRows": {
+        "members": 1,
+        "activeMembers": 1
+      },
+      "maxPayloadKeys": [
+        "members",
+        "activeMembers",
+        "currentMemberId",
+        "isAdmin",
+        "invite",
+        "inviteLoading",
+        "unownedClientCount"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 8.172417000000223,
+      "localInitializationMs": 26.101875000000064,
+      "rows": {
+        "members": 1,
+        "activeMembers": 1
+      }
+    },
+    {
+      "name": "mine",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 165,
+      "totalPayloadBytes": 165,
+      "completeSetData": 1,
+      "completePayloadBytes": 165,
+      "completeMaxPayloadBytes": 165,
+      "completeRows": {},
+      "maxPayloadKeys": [
+        "enterpriseName",
+        "modeText",
+        "roleText",
+        "displayName",
+        "isAdmin",
+        "showDeveloperTools"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 6.475040999999692,
+      "localInitializationMs": 23.252458000000388,
+      "rows": {}
+    },
+    {
+      "name": "audit-logs",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 24515,
+      "totalPayloadBytes": 24515,
+      "completeSetData": 1,
+      "completePayloadBytes": 24515,
+      "completeMaxPayloadBytes": 24515,
+      "completeRows": {
+        "logs": 200
+      },
+      "maxPayloadKeys": [
+        "logs",
+        "allowed"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 10.439499999999953,
+      "localInitializationMs": 26.333666999999878,
+      "rows": {
+        "logs": 200
+      }
+    },
+    {
+      "name": "client-form",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 0,
+      "initSetData": 1,
+      "maxPayloadBytes": 144,
+      "totalPayloadBytes": 144,
+      "completeSetData": 1,
+      "completePayloadBytes": 144,
+      "completeMaxPayloadBytes": 144,
+      "completeRows": {},
+      "maxPayloadKeys": [
+        "id",
+        "name",
+        "contact",
+        "phone",
+        "settlementDay",
+        "note"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 6.754124999999931,
+      "localInitializationMs": 23.454167000000325,
+      "rows": {}
+    },
+    {
+      "name": "product-form",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 0,
+      "initSetData": 0,
+      "maxPayloadBytes": 0,
+      "totalPayloadBytes": 0,
+      "completeSetData": 0,
+      "completePayloadBytes": 0,
+      "completeMaxPayloadBytes": 0,
+      "completeRows": {},
+      "maxPayloadKeys": [],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 6.656416999999692,
+      "localInitializationMs": 25.162874999999985,
+      "rows": {}
+    },
+    {
+      "name": "enterprise",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 0,
+      "initSetData": 1,
+      "maxPayloadBytes": 80,
+      "totalPayloadBytes": 80,
+      "completeSetData": 1,
+      "completePayloadBytes": 80,
+      "completeMaxPayloadBytes": 80,
+      "completeRows": {
+        "units": 3
+      },
+      "maxPayloadKeys": [
+        "name",
+        "contact",
+        "phone",
+        "address",
+        "unitIndex"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 8.131291000000147,
+      "localInitializationMs": 25.159000000000106,
+      "rows": {
+        "units": 3
+      }
+    },
+    {
+      "name": "owner-transfer",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 1,
+      "initSetData": 1,
+      "maxPayloadBytes": 1486,
+      "totalPayloadBytes": 1486,
+      "completeSetData": 1,
+      "completePayloadBytes": 1486,
+      "completeMaxPayloadBytes": 1486,
+      "completeRows": {
+        "members": 1,
+        "memberNames": 1
+      },
+      "maxPayloadKeys": [
+        "client",
+        "period",
+        "members",
+        "memberNames",
+        "clientOwnerIndex",
+        "periodOwnerIndex",
+        "currentClientOwner",
+        "currentPeriodOwner",
+        "isAdmin"
+      ],
+      "rootReads": 1,
+      "rootCloneBytes": 2792891,
+      "modelMs": 8.93579200000022,
+      "localInitializationMs": 26.151000000000295,
+      "rows": {
+        "members": 1,
+        "memberNames": 1
+      }
+    },
+    {
+      "name": "help",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 0,
+      "initSetData": 0,
+      "maxPayloadBytes": 0,
+      "totalPayloadBytes": 0,
+      "completeSetData": 0,
+      "completePayloadBytes": 0,
+      "completeMaxPayloadBytes": 0,
+      "completeRows": {},
+      "maxPayloadKeys": [],
+      "rootReads": 0,
+      "rootCloneBytes": 0,
+      "modelMs": 0.02070800000001327,
+      "localInitializationMs": 15.97729100000015,
+      "rows": {}
+    },
+    {
+      "name": "data-settings",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 0,
+      "initSetData": 1,
+      "maxPayloadBytes": 14,
+      "totalPayloadBytes": 14,
+      "completeSetData": 1,
+      "completePayloadBytes": 14,
+      "completeMaxPayloadBytes": 14,
+      "completeRows": {},
+      "maxPayloadKeys": [
+        "cloud"
+      ],
+      "rootReads": 0,
+      "rootCloneBytes": 0,
+      "modelMs": 0.05945799999972223,
+      "localInitializationMs": 16.804165999999896,
+      "rows": {}
+    },
+    {
+      "name": "parser-test",
+      "initCloudCalls": 1,
+      "returnCloudCalls": 0,
+      "initSetData": 0,
+      "maxPayloadBytes": 0,
+      "totalPayloadBytes": 0,
+      "completeSetData": 0,
+      "completePayloadBytes": 0,
+      "completeMaxPayloadBytes": 0,
+      "completeRows": {
+        "items": 0,
+        "unmatchedLines": 0
+      },
+      "maxPayloadKeys": [],
+      "rootReads": 0,
+      "rootCloneBytes": 0,
+      "modelMs": 0.08354199999985212,
+      "localInitializationMs": 17.383374999999887,
+      "rows": {
+        "items": 0,
+        "unmatchedLines": 0
+      }
+    },
+    {
+      "name": "unauthorized",
+      "initCloudCalls": 0,
+      "returnCloudCalls": 0,
+      "initSetData": 1,
+      "maxPayloadBytes": 76,
+      "totalPayloadBytes": 76,
+      "completeSetData": 1,
+      "completePayloadBytes": 76,
+      "completeMaxPayloadBytes": 76,
+      "completeRows": {},
+      "maxPayloadKeys": [
+        "disabled",
+        "message"
+      ],
+      "rootReads": 0,
+      "rootCloneBytes": 0,
+      "modelMs": 0,
+      "localInitializationMs": 0.05983299999979863,
+      "rows": {}
+    },
+    {
+      "name": "join-enterprise",
+      "initCloudCalls": 0,
+      "returnCloudCalls": 0,
+      "initSetData": 1,
+      "maxPayloadBytes": 85,
+      "totalPayloadBytes": 85,
+      "completeSetData": 1,
+      "completePayloadBytes": 85,
+      "completeMaxPayloadBytes": 85,
+      "completeRows": {},
+      "maxPayloadKeys": [
+        "loading",
+        "error"
+      ],
+      "rootReads": 0,
+      "rootCloneBytes": 0,
+      "modelMs": 0,
+      "localInitializationMs": 0.05170799999996234,
+      "rows": {}
+    },
+    {
+      "name": "privacy-consent",
+      "initCloudCalls": 0,
+      "returnCloudCalls": 0,
+      "initSetData": 2,
+      "maxPayloadBytes": 101,
+      "totalPayloadBytes": 163,
+      "completeSetData": 2,
+      "completePayloadBytes": 163,
+      "completeMaxPayloadBytes": 101,
+      "completeRows": {},
+      "maxPayloadKeys": [
+        "checkingPrivacy",
+        "privacyStatusReady",
+        "needWechatPrivacyAuthorization",
+        "error"
+      ],
+      "rootReads": 0,
+      "rootCloneBytes": 0,
+      "modelMs": 0,
+      "localInitializationMs": 0.04404199999999037,
+      "rows": {}
+    }
+  ],
+  "loading": {
+    "show": 20,
+    "hide": 20
+  },
+  "inventory": {
+    "pageCount": 24,
+    "sourceBytes": 390651,
+    "bytesByExtension": {
+      ".js": 279457,
+      ".wxml": 56416,
+      ".wxss": 51726,
+      ".json": 3052
+    },
+    "largestFiles": [
+      {
+        "name": "services/ledger-repository.js",
+        "bytes": 60934
+      },
+      {
+        "name": "pages/quick-entry/quick-entry.js",
+        "bytes": 28378
+      },
+      {
+        "name": "services/order-parser.js",
+        "bytes": 25197
+      },
+      {
+        "name": "pages/quick-entry/quick-entry.wxss",
+        "bytes": 14885
+      },
+      {
+        "name": "services/statement-image-renderer.js",
+        "bytes": 14282
+      },
+      {
+        "name": "services/statement-export.js",
+        "bytes": 14116
+      },
+      {
+        "name": "pages/quick-entry/quick-entry.wxml",
+        "bytes": 13939
+      },
+      {
+        "name": "services/content-security.js",
+        "bytes": 12907
+      },
+      {
+        "name": "services/statement-paginator.js",
+        "bytes": 11879
+      },
+      {
+        "name": "pages/client-ledger/client-ledger.js",
+        "bytes": 9167
+      },
+      {
+        "name": "pages/members/members.js",
+        "bytes": 6873
+      },
+      {
+        "name": "pages/statement-export/statement-export.js",
+        "bytes": 6467
+      }
+    ],
+    "pageScan": [
+      {
+        "name": "pages/index/index",
+        "setDataSites": 1,
+        "loops": [
+          "<view wx:for=\"{{owingClients}}\" wx:key=\"id\" class=\"list-row\" data-id=\"{{item.id}}\" bindtap=\"openClient\">",
+          "<view wx:for=\"{{recentShipments}}\" wx:key=\"id\" class=\"list-row shipment-row\" data-id=\"{{item.id}}\" bindtap=\"openShipment\">",
+          "<view wx:for=\"{{recentPayments}}\" wx:key=\"id\" class=\"list-row\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/clients/clients",
+        "setDataSites": 0,
+        "loops": [
+          "<view wx:for=\"{{clients}}\" wx:key=\"id\" class=\"list-row\" data-id=\"{{item.id}}\" bindtap=\"openClient\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/history/history",
+        "setDataSites": 0,
+        "loops": [
+          "<view wx:for=\"{{histories}}\" wx:key=\"id\" class=\"card history-card\" data-id=\"{{item.id}}\" bindtap=\"openHistory\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/mine/mine",
+        "setDataSites": 1,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/quick-entry/quick-entry",
+        "setDataSites": 20,
+        "loops": [
+          "<view wx:for=\"{{rows}}\" wx:key=\"rowId\" class=\"card item-card\">",
+          "<view wx:for=\"{{item.issues}}\" wx:for-item=\"issue\" wx:key=\"*this\" class=\"parse-note\">",
+          "<view wx:for=\"{{unmatchedLines}}\" wx:key=\"*this\" class=\"unmatched-line\">",
+          "<view wx:for=\"{{filteredProductOptions}}\" wx:key=\"id\" class=\"product-option\" data-product-id=\"{{item.id}}\" bindtap=\"selectProduct\" >"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/client-form/client-form",
+        "setDataSites": 2,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/client-ledger/client-ledger",
+        "setDataSites": 13,
+        "loops": [
+          "<view wx:for=\"{{shipments}}\" wx:key=\"id\" class=\"shipment-item\" data-id=\"{{item.id}}\" bindtap=\"openShipment\">",
+          "<view wx:for=\"{{payments}}\" wx:key=\"id\" class=\"list-row\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/shipment-detail/shipment-detail",
+        "setDataSites": 1,
+        "loops": [
+          "<view class=\"card line-card\" wx:for=\"{{lines}}\" wx:key=\"id\">",
+          "<view wx:for=\"{{audits}}\" wx:key=\"id\" class=\"list-row\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/payment-form/payment-form",
+        "setDataSites": 11,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/statement/statement",
+        "setDataSites": 8,
+        "loops": [
+          "<view wx:for=\"{{shipments}}\" wx:key=\"id\" class=\"shipment-block\">",
+          "<view wx:for=\"{{item.lines}}\" wx:for-item=\"line\" wx:key=\"id\" class=\"statement-line\">",
+          "<view wx:for=\"{{payments}}\" wx:key=\"id\" class=\"payment-line\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/statement-export/statement-export",
+        "setDataSites": 11,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/products/products",
+        "setDataSites": 1,
+        "loops": [
+          "<view wx:for=\"{{products}}\" wx:key=\"id\" class=\"list-row product-row\" data-id=\"{{item.id}}\" bindtap=\"edit\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/product-form/product-form",
+        "setDataSites": 2,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/customer-prices/customer-prices",
+        "setDataSites": 8,
+        "loops": [
+          "<view wx:for=\"{{prices}}\" wx:key=\"id\" class=\"list-row\" data-id=\"{{item.id}}\" bindtap=\"openEdit\">",
+          "<view wx:for=\"{{filteredProducts}}\" wx:key=\"id\" class=\"product-option\" data-id=\"{{item.id}}\" bindtap=\"selectProduct\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/enterprise/enterprise",
+        "setDataSites": 3,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/members/members",
+        "setDataSites": 5,
+        "loops": [
+          "<view wx:for=\"{{members}}\" wx:key=\"id\" class=\"member-row disabled-{{item.status === 'disabled'}}\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/join-enterprise/join-enterprise",
+        "setDataSites": 6,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/privacy-consent/privacy-consent",
+        "setDataSites": 9,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/unauthorized/unauthorized",
+        "setDataSites": 1,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/owner-transfer/owner-transfer",
+        "setDataSites": 3,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/audit-logs/audit-logs",
+        "setDataSites": 1,
+        "loops": [
+          "<view wx:for=\"{{logs}}\" wx:key=\"id\" class=\"log-row\">"
+        ],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/help/help",
+        "setDataSites": 0,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/data-settings/data-settings",
+        "setDataSites": 1,
+        "loops": [],
+        "hiddenSites": 0
+      },
+      {
+        "name": "pages/parser-test/parser-test",
+        "setDataSites": 2,
+        "loops": [
+          "<view wx:for=\"{{items}}\" wx:key=\"index\" class=\"card result-card\">",
+          "<view wx:for=\"{{item.issues}}\" wx:for-item=\"issue\" wx:key=\"*this\" class=\"issue\">",
+          "<view wx:for=\"{{unmatchedLines}}\" wx:key=\"*this\" class=\"unmatched-line\">"
+        ],
+        "hiddenSites": 0
+      }
+    ]
+  },
+  "moduleMeasuredAt": "2026-09-21T12:11:40.574Z",
+  "moduleMeasurementNote": "Final module samples collected sequentially, without parallel benchmarks."
+}

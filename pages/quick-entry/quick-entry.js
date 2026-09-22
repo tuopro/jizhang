@@ -5,6 +5,8 @@ const {
   isCloudMode
 } = require('../../services/repository-instance')
 const { handleAccessError } = require('../../services/page-context')
+const { canEditShipment } = require('../../services/ledger-repository')
+const { runAfterPrivacyConsent } = require('../../services/privacy-consent')
 const { parseOrderText } = require('../../services/order-parser')
 const { formatProductLabel } = require('../../data/product-specs')
 const { calculatePricedItem } = require('../../services/pricing')
@@ -72,7 +74,6 @@ function priceFields(price, fallbackUnit) {
 
 Page({
   data: {
-    clients: [],
     clientNames: [],
     selectedClientIndex: 0,
     selectedClientId: '',
@@ -80,9 +81,6 @@ Page({
     orderText: '',
     hasParsed: false,
     rows: [],
-    productOptions: [],
-    standardProductOptions: [],
-    customProductOptions: [],
     filteredProductOptions: [],
     selectorOpen: false,
     selectorRowIndex: -1,
@@ -106,16 +104,24 @@ Page({
     canPost: false,
     submitting: false,
     editing: false,
+    canSaveCorrectionPrices: false,
     editReason: ''
   },
 
   onLoad(options) {
+    return runAfterPrivacyConsent(this, () => this.loadEntry(options), {
+      route: 'pages/quick-entry/quick-entry', query: options || {}
+    })
+  },
+
+  loadEntry(options) {
     this.loadOptions = options || {}
+    this.correctionBlocked = Boolean(this.loadOptions.shipmentId)
     if (isCloudMode()) {
       wx.showLoading({ title: '加载账本' })
       prepareRepository().then(() => {
         wx.hideLoading()
-        this.initializePage()
+        getRepository().withReadSnapshot(() => this.initializePage())
       }).catch(error => {
         wx.hideLoading()
         if (handleAccessError(error)) return
@@ -131,21 +137,22 @@ Page({
     repository.initializeDemoTenant()
     const clients = repository.listClients(getActiveTenantId())
     const productOptions = buildProductOptions(repository)
+    this.productOptions = productOptions
+    this.standardProductOptions = productOptions.filter(option => option.isStandard)
+    this.customProductOptions = productOptions.filter(option => !option.isStandard)
+    this.clients = clients
     this.setData({
-      clients,
       clientNames: clients.map(client => client.name),
       selectedClientIndex: Math.max(0, clients.findIndex(client => client.id === this.loadOptions.clientId)),
-      selectedClientId: this.loadOptions.clientId || (clients.length ? clients[0].id : ''),
-      productOptions,
-      standardProductOptions: productOptions.filter(option => option.isStandard),
-      customProductOptions: productOptions.filter(option => !option.isStandard)
+      selectedClientId: this.loadOptions.clientId || (clients.length ? clients[0].id : '')
     }, () => {
       if (this.loadOptions.shipmentId) this.loadShipmentForEdit(this.loadOptions.shipmentId)
     })
   },
 
   loadShipmentForEdit(shipmentId) {
-    const shipment = getRepository().getShipment(getActiveTenantId(), shipmentId)
+    const repository = getRepository()
+    const shipment = repository.getShipment(getActiveTenantId(), shipmentId)
     if (!shipment) {
       wx.showModal({
         title: '记录不存在', content: '该发货记录不存在，可能已随客户删除。', showCancel: false,
@@ -153,9 +160,22 @@ Page({
       })
       return
     }
-    const selectedClientIndex = Math.max(0, this.data.clients.findIndex(client => client.id === shipment.clientId))
+    const identity = repository.isCloudRepository ? repository.getIdentity() : { role: 'admin', status: 'active' }
+    try {
+      const { client, period } = repository.getShipmentEditContext(getActiveTenantId(), shipment.id)
+      if (period.isClosed) throw new Error('该账期已结清，历史账单保持只读。')
+      if (!canEditShipment(identity, client, period)) throw new Error('仅管理员或客户当前负责人可以修正开放账期发货账目')
+    } catch (error) {
+      this.correctionBlocked = true
+      this.setData({ canPost: false })
+      wx.showModal({ title: '无法修正', content: error.message, showCancel: false, success: () => wx.navigateBack() })
+      return
+    }
+    this.correctionBlocked = false
+    const selectedClientIndex = Math.max(0, this.clients.findIndex(client => client.id === shipment.clientId))
     this.setData({
       editing: true,
+      canSaveCorrectionPrices: identity.role === 'admin',
       selectedClientIndex,
       selectedClientId: shipment.clientId,
       shipmentDate: shipment.shipmentDate,
@@ -185,7 +205,7 @@ Page({
 
   onClientChange(event) {
     const index = Number(event.detail.value)
-    const client = this.data.clients[index]
+    const client = this.clients[index]
     this.setData({ selectedClientIndex: index, selectedClientId: client ? client.id : '' })
     if (this.data.rows.length) this.reloadPricesForClient()
   },
@@ -231,8 +251,8 @@ Page({
   },
 
   buildRow(item, index) {
-    const productIndex = this.data.productOptions.findIndex(option => option.id === item.productId)
-    const productOption = productIndex >= 0 ? this.data.productOptions[productIndex] : null
+    const productIndex = this.productOptions.findIndex(option => option.id === item.productId)
+    const productOption = productIndex >= 0 ? this.productOptions[productIndex] : null
     const effectiveProductId = item.productId && productOption ? item.productId : ''
     const price = effectiveProductId
       ? getRepository().getCustomerPriceForProduct(
@@ -329,6 +349,7 @@ Page({
 
       return Object.assign({}, row, {
         rowValid,
+        saveAsDefault: this.data.editing && !this.data.canSaveCorrectionPrices ? false : row.saveAsDefault,
         unitMismatch,
         suggestedConversionRate,
         priceChanged,
@@ -344,7 +365,7 @@ Page({
     const totalCents = itemsSubtotalCents + (freightValid ? freightCents : 0)
     const canPost = Boolean(
       this.data.selectedClientId && rows.length > 0 &&
-      rows.every(row => row.rowValid) && freightValid && !this.data.submitting
+      rows.every(row => row.rowValid) && freightValid && !this.data.submitting && !this.correctionBlocked
     )
     this.setData({
       rows,
@@ -360,18 +381,16 @@ Page({
 
   refreshProductOptions() {
     const productOptions = buildProductOptions(getRepository())
-    this.setData({
-      productOptions,
-      standardProductOptions: productOptions.filter(option => option.isStandard),
-      customProductOptions: productOptions.filter(option => !option.isStandard)
-    })
+    this.productOptions = productOptions
+    this.standardProductOptions = productOptions.filter(option => option.isStandard)
+    this.customProductOptions = productOptions.filter(option => !option.isStandard)
     return productOptions
   },
 
   updateProductFilter(tab, search) {
     const source = tab === 'custom'
-      ? this.data.customProductOptions
-      : this.data.standardProductOptions
+      ? this.customProductOptions
+      : this.standardProductOptions
     const keyword = String(search || '').trim().toLowerCase()
     const filtered = source.filter(option =>
       !keyword || option.searchText.includes(keyword)
@@ -383,7 +402,7 @@ Page({
     const rowIndex = Number(event.currentTarget.dataset.index)
     const row = this.data.rows[rowIndex]
     if (!row) return
-    const current = this.data.productOptions.find(option => option.id === row.productId)
+    const current = this.productOptions.find(option => option.id === row.productId)
     const tab = current && !current.isStandard ? 'custom' : 'standard'
     this.setData({
       selectorOpen: true,
@@ -426,7 +445,7 @@ Page({
     )
     rows[rowIndex] = Object.assign({}, rows[rowIndex], {
       productId: option.id,
-      productIndex: this.data.productOptions.findIndex(item => item.id === option.id),
+      productIndex: this.productOptions.findIndex(item => item.id === option.id),
       productLabel: option.label,
       needsProductConfirmation: false,
       canCreateCustomProduct: false,
@@ -448,12 +467,12 @@ Page({
   onProductChange(event) {
     const rowIndex = Number(event.currentTarget.dataset.index)
     const productIndex = Number(event.detail.value)
-    const option = this.data.productOptions[productIndex]
+    const option = this.productOptions[productIndex]
     this.applyProductSelection(rowIndex, option, false)
   },
 
   selectProduct(event) {
-    const option = this.data.productOptions.find(item => item.id === event.currentTarget.dataset.productId)
+    const option = this.productOptions.find(item => item.id === event.currentTarget.dataset.productId)
     if (!option) return
     this.applyProductSelection(this.data.selectorRowIndex, option, false)
     this.closeProductSelector()
@@ -648,6 +667,7 @@ Page({
   },
 
   onSaveDefaultChange(event) {
+    if (this.data.editing && !this.data.canSaveCorrectionPrices) return
     const index = Number(event.currentTarget.dataset.index)
     const rows = this.data.rows.slice()
     rows[index] = Object.assign({}, rows[index], { saveAsDefault: event.detail.value })
@@ -665,7 +685,7 @@ Page({
       wx.showToast({ title: '请填写修正原因', icon: 'none' })
       return
     }
-    const client = this.data.clients[this.data.selectedClientIndex]
+    const client = this.clients[this.data.selectedClientIndex]
     wx.showModal({
       title: this.data.editing ? '确认修正账目' : '确认正式入账',
       content: `${client.name}\n${this.data.rows.length}项商品\n商品合计 ${this.data.itemsSubtotalText}\n运费 ${this.data.freightText}\n本次合计 ${this.data.totalText}\n\n${this.data.editing ? '原记录和修正原因将保留在审计记录中。' : '确认后将加入该客户本期账款。'}`,
@@ -678,6 +698,7 @@ Page({
   },
 
   postShipment() {
+    if (this.correctionBlocked) return
     this.setData({ submitting: true, canPost: false })
     try {
       const payload = {

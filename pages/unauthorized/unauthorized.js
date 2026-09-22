@@ -1,3 +1,5 @@
+const { runAfterPrivacyConsent } = require('../../services/privacy-consent')
+
 Page({
   data: {
     disabled: false,
@@ -6,6 +8,12 @@ Page({
   },
 
   onLoad(options) {
+    runAfterPrivacyConsent(this, () => this.showReason(options), {
+      route: 'pages/unauthorized/unauthorized', query: options || {}
+    })
+  },
+
+  showReason(options) {
     const disabled = options && options.reason === 'disabled'
     this.setData({
       disabled,

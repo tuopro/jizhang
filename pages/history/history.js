@@ -1,5 +1,6 @@
 const { loadPage } = require('../../services/page-context')
 const { formatCurrency } = require('../../utils/money')
+const { setProgressiveList, appendProgressiveList } = require('../../services/progressive-list')
 
 function monthsInRange(startDate, endDate) {
   if (!/^\d{4}-\d{2}/.test(startDate || '') || !/^\d{4}-\d{2}/.test(endDate || '')) return []
@@ -17,7 +18,7 @@ function monthsInRange(startDate, endDate) {
 }
 
 Page({
-  data: { allHistories: [], histories: [], monthOptions: ['全部月份'], monthValues: [''], monthIndex: 0, scope: 'all', currentMemberId: '' },
+  data: { histories: [], monthOptions: ['全部月份'], monthIndex: 0, scope: 'all' },
   onShow() {
     loadPage(this, (repository, tenantId) => {
       const identity = repository.isCloudRepository ? repository.getIdentity() : { memberId: 'member_local_admin' }
@@ -36,27 +37,33 @@ Page({
       })
       const months = Array.from(new Set(histories.reduce((result, item) =>
         result.concat(monthsInRange(item.startDate, item.closedDate)), []))).sort().reverse()
-      const selectedMonth = this.data.monthValues[this.data.monthIndex] || ''
+      const selectedMonth = (this.monthValues || [''])[this.data.monthIndex] || ''
       const monthValues = [''].concat(months)
       const monthOptions = ['全部月份'].concat(months.map(item => `${item.slice(0, 4)}年${Number(item.slice(5))}月`))
       const monthIndex = Math.max(0, monthValues.indexOf(selectedMonth))
-      this.setData({ allHistories: histories, monthOptions, monthValues, monthIndex, currentMemberId: identity.memberId }, () => this.applyFilters())
+      this.allHistories = histories
+      this.monthValues = monthValues
+      this.currentMemberId = identity.memberId
+      this.applyFilters({ monthOptions, monthIndex })
     })
   },
   onMonthChange(event) {
     const monthIndex = Number(event.detail.value)
-    this.setData({ monthIndex }, () => this.applyFilters())
+    this.applyFilters({ monthIndex })
   },
   setScope(event) {
-    this.setData({ scope: event.currentTarget.dataset.scope }, () => this.applyFilters())
+    this.applyFilters({ scope: event.currentTarget.dataset.scope })
   },
-  applyFilters() {
-    const month = this.data.monthValues[this.data.monthIndex] || ''
-    const mineOnly = this.data.scope === 'mine'
-    const histories = this.data.allHistories.filter(item =>
-      (!mineOnly || item.ownerMemberId === this.data.currentMemberId) &&
+  applyFilters(patch) {
+    const state = Object.assign({}, this.data, patch)
+    const month = (this.monthValues || [''])[state.monthIndex] || ''
+    const mineOnly = state.scope === 'mine'
+    const histories = (this.allHistories || []).filter(item =>
+      (!mineOnly || item.ownerMemberId === this.currentMemberId) &&
       (!month || (item.startDate.slice(0, 7) <= month && item.closedDate.slice(0, 7) >= month)))
-    this.setData({ histories })
+    const reset = state.scope !== this.data.scope || state.monthIndex !== this.data.monthIndex
+    setProgressiveList(this, 'histories', histories, patch, reset)
   },
+  onReachBottom() { appendProgressiveList(this, 'histories') },
   openHistory(event) { wx.navigateTo({ url: `/pages/statement/statement?periodId=${event.currentTarget.dataset.id}` }) }
 })

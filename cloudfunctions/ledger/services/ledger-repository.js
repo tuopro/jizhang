@@ -27,6 +27,35 @@ function canCloseBillingPeriod(identity, period) {
   ))
 }
 
+function canEditShipment(identity, client, period) {
+  const memberId = identity && (identity.id || identity.memberId)
+  return Boolean(identity && identity.status === 'active' && client && period &&
+    period.status === 'open' && (
+      identity.role === 'admin' ||
+      (identity.role === 'member' && memberId && memberId === client.ownerMemberId)
+    ))
+}
+
+// Only persisted, unambiguously open periods can grant price permissions.
+// Never use allPeriods(), which synthesizes legacy periods for display.
+function currentPriceOpenPeriod(tenant, clientId) {
+  const periods = tenant.billingPeriods.filter(period => period.clientId === clientId &&
+    period.tenantId === tenant.enterprise.id && period.status === 'open')
+  return periods.length === 1 ? periods[0] : null
+}
+
+function canManageCustomerPrices(identity, client, openPeriod) {
+  const memberId = identity && (identity.id || identity.memberId)
+  return Boolean(identity && identity.status === 'active' && client &&
+    identity.tenantId === client.tenantId && (
+      identity.role === 'admin' || (identity.role === 'member' && memberId && (
+        memberId === client.ownerMemberId ||
+        (openPeriod && openPeriod.status === 'open' && openPeriod.clientId === client.id &&
+          openPeriod.tenantId === client.tenantId && memberId === openPeriod.ownerMemberId)
+      ))
+    ))
+}
+
 function legacyPeriodIdForShipment(shipment) {
   if (shipment.periodId) return shipment.periodId
   const dateText = String(shipment.shipmentDate || shipment.createdAt || '').slice(0, 10)
@@ -102,17 +131,17 @@ function createLedgerRepository(storage, options) {
     return stored && stored.schemaVersion === 1 && stored.tenants ? stored : emptyRoot()
   }
 
-  function ensureTenantShape(tenant) {
+  function ensureTenantShape(tenant, preserveShipments) {
     if (!tenant.enterprise) tenant.enterprise = { id: '', name: '未命名企业', defaultUnit: '米' }
     ;['clients', 'customProducts', 'customerPrices', 'shipments', 'payments', 'billingPeriods', 'auditLogs', 'memberships']
       .forEach(field => { if (!Array.isArray(tenant[field])) tenant[field] = [] })
-    tenant.shipments.forEach(normalizeShipmentAmounts)
+    if (!preserveShipments) tenant.shipments.forEach(normalizeShipmentAmounts)
     return tenant
   }
 
-  function requireTenant(root, tenantId) {
+  function requireTenant(root, tenantId, preserveShipments) {
     if (!tenantId || !root.tenants[tenantId]) throw new Error('企业数据空间不存在')
-    return ensureTenantShape(root.tenants[tenantId])
+    return ensureTenantShape(root.tenants[tenantId], preserveShipments)
   }
 
   function currentActor(tenant) {
@@ -529,21 +558,56 @@ function createLedgerRepository(storage, options) {
     return tenant.customProducts.find(item => !item.isStandardOverride && item.id === productId) || null
   }
 
+  function priceActor(tenant) {
+    if (!config.actor) return Object.assign({ tenantId: tenant.enterprise.id }, currentActor(tenant))
+    const actor = tenant.memberships.find(item => item.id === (config.actor.id || config.actor.memberId))
+    if (!actor || actor.status !== 'active' || actor.tenantId !== tenant.enterprise.id) {
+      throw new Error('当前成员不存在或已停用')
+    }
+    return actor
+  }
+
+  function requireCustomerPriceAccess(tenant, clientId) {
+    const storedClient = tenant.clients.find(item => item.id === clientId &&
+      (item.tenantId === tenant.enterprise.id || (!config.actor && !item.tenantId)))
+    const client = storedClient && Object.assign({ tenantId: tenant.enterprise.id }, storedClient)
+    const actor = priceActor(tenant)
+    if (!canManageCustomerPrices(actor, client, currentPriceOpenPeriod(tenant, clientId))) {
+      const error = new Error('无权管理该客户价格，请联系客户负责人或管理员')
+      error.code = 'CUSTOMER_PRICE_FORBIDDEN'
+      throw error
+    }
+    return client
+  }
+
+  function getCustomerPriceAccess(tenantId, clientId) {
+    const tenant = requireTenant(readRoot(), tenantId)
+    return canManageCustomerPrices(priceActor(tenant),
+      tenant.clients.filter(item => item.id === clientId && (item.tenantId === tenantId || (!config.actor && !item.tenantId)))
+        .map(item => Object.assign({ tenantId }, item))[0],
+      currentPriceOpenPeriod(tenant, clientId))
+  }
+
   function getCustomerPrice(tenantId, clientId, productId, unit) {
-    const price = requireTenant(readRoot(), tenantId).customerPrices.find(item =>
+    const tenant = requireTenant(readRoot(), tenantId)
+    requireCustomerPriceAccess(tenant, clientId)
+    const price = tenant.customerPrices.find(item => (item.tenantId === tenantId || (!config.actor && !item.tenantId)) &&
       item.clientId === clientId && item.productId === productId && item.unit === unit && item.active !== false)
     return clone(price || null)
   }
 
   function getCustomerPriceForProduct(tenantId, clientId, productId) {
-    const price = requireTenant(readRoot(), tenantId).customerPrices.find(item =>
+    const tenant = requireTenant(readRoot(), tenantId)
+    requireCustomerPriceAccess(tenant, clientId)
+    const price = tenant.customerPrices.find(item => (item.tenantId === tenantId || (!config.actor && !item.tenantId)) &&
       item.clientId === clientId && item.productId === productId && item.active !== false)
     return clone(price || null)
   }
 
   function listCustomerPrices(tenantId, clientId) {
     const tenant = requireTenant(readRoot(), tenantId)
-    return clone(tenant.customerPrices.filter(item => item.clientId === clientId && item.active !== false)
+    requireCustomerPriceAccess(tenant, clientId)
+    return clone(tenant.customerPrices.filter(item => (item.tenantId === tenantId || (!config.actor && !item.tenantId)) && item.clientId === clientId && item.active !== false)
       .map(item => {
         const product = findProductForTenant(tenant, item.productId)
         return Object.assign({}, item, { productLabel: product ? formatProductLabel(product) : '已停用产品' })
@@ -556,13 +620,25 @@ function createLedgerRepository(storage, options) {
     const unitPriceCents = input.unitPriceCents != null ? Number(input.unitPriceCents) : yuanToCents(input.unitPriceYuan)
     if (!Number.isInteger(unitPriceCents) || unitPriceCents <= 0) throw new Error('请输入有效单价')
     const root = readRoot()
-    const tenant = requireTenant(root, tenantId)
-    const client = tenant.clients.find(item => item.id === input.clientId && item.active !== false)
+    // Price edits must not even normalize legacy shipment records on write-back.
+    const tenant = requireTenant(root, tenantId, true)
+    // Existing prices are resolved before authorization; payload clientId cannot
+    // redirect an ID-based edit to a different customer's permission scope.
+    if (input.id && input.priceId && input.id !== input.priceId) throw new Error('价格记录编号不一致')
+    const priceId = input.id || input.priceId
+    let price = priceId
+      ? tenant.customerPrices.find(item => item.id === priceId)
+      : tenant.customerPrices.find(item => item.clientId === input.clientId && item.productId === input.productId && item.active !== false)
+    if (priceId && (!price || price.active === false)) throw new Error('客户价格不存在或已停用')
+    if (price && price.tenantId !== tenantId && (config.actor || price.tenantId)) throw new Error('客户价格不属于当前企业')
+    const client = requireCustomerPriceAccess(tenant, price ? price.clientId : input.clientId)
+    if (price && ((input.clientId && input.clientId !== price.clientId) || input.productId !== price.productId)) {
+      throw new Error('价格记录与客户或产品不一致')
+    }
     const product = findProductForTenant(tenant, input.productId)
-    if (!client) throw new Error('客户不存在或已停用')
+    if (client.active === false) throw new Error('客户不存在或已停用')
     if (!product || product.active === false) throw new Error('产品不存在或已停用')
     const timestamp = now().toISOString()
-    let price = tenant.customerPrices.find(item => item.clientId === client.id && item.productId === product.id && item.active !== false)
     if (price) {
       const before = clone(price)
       Object.assign(price, { unit: input.unit, unitPriceCents, updatedAt: timestamp })
@@ -872,12 +948,16 @@ function createLedgerRepository(storage, options) {
   }
 
   function applySavedPrices(tenant, clientId, inputs, lines, timestamp) {
+    if (inputs.some(input => input.saveAsDefault)) requireCustomerPriceAccess(tenant, clientId)
     inputs.forEach((input, index) => {
       if (!input.saveAsDefault) return
       const line = lines[index]
       const price = tenant.customerPrices.find(item => item.clientId === clientId && item.productId === line.productId && item.active !== false)
+      if (price && price.tenantId !== tenant.enterprise.id && (config.actor || price.tenantId)) {
+        throw new Error('客户价格不属于当前企业')
+      }
       if (price) Object.assign(price, { unit: line.pricingUnit, unitPriceCents: line.unitPriceCents, updatedAt: timestamp })
-      else tenant.customerPrices.push({ id: makeId('price'), clientId, productId: line.productId, unit: line.pricingUnit, unitPriceCents: line.unitPriceCents, active: true, createdAt: timestamp, updatedAt: timestamp })
+      else tenant.customerPrices.push({ id: makeId('price'), tenantId: tenant.enterprise.id, clientId, productId: line.productId, unit: line.pricingUnit, unitPriceCents: line.unitPriceCents, active: true, createdAt: timestamp, updatedAt: timestamp })
     })
   }
 
@@ -921,17 +1001,51 @@ function createLedgerRepository(storage, options) {
     return clone(shipment)
   }
 
+  function shipmentEditContext(tenant, tenantId, shipmentId) {
+    const shipment = tenant.shipments.find(item => item.id === shipmentId && item.status !== 'void')
+    if (!shipment || shipment.tenantId !== tenantId) throw new Error('发货记录不存在或不属于当前企业')
+    const client = tenant.clients.find(item => item.id === shipment.clientId)
+    // Resolve legacy IDs only against stored periods. Never authorize a synthetic
+    // open period when a referenced period is missing or belongs to another client.
+    const period = tenant.billingPeriods.find(item => item.id === legacyPeriodIdForShipment(shipment))
+    if (!client || client.tenantId !== tenantId || !period || period.tenantId !== tenantId ||
+        period.clientId !== shipment.clientId) {
+      throw new Error('发货记录关联的客户或账期不存在，或归属不一致，暂不能修正')
+    }
+    return { shipment, client, period }
+  }
+
+  function getShipmentEditContext(tenantId, shipmentId) {
+    const tenant = requireTenant(readRoot(), tenantId)
+    const context = shipmentEditContext(tenant, tenantId, shipmentId)
+    return clone({ client: context.client, period: periodView(tenant, context.period) })
+  }
+
   function updateShipment(tenantId, shipmentId, payload) {
     if (!payload || payload.confirmed !== true) throw new Error('修正账目前必须经过人工确认')
     const reason = String(payload.reason || '').trim()
     if (reason.length < 2) throw new Error('请填写修正原因')
     const root = readRoot()
     const tenant = requireTenant(root, tenantId)
-    const shipment = tenant.shipments.find(item => item.id === shipmentId && item.status !== 'void')
-    if (!shipment) throw new Error('发货记录不存在')
-    const resolvedPeriod = allPeriods(tenant).find(item => item.id === legacyPeriodIdForShipment(shipment) && item.clientId === shipment.clientId)
-    const period = resolvedPeriod ? materializePeriod(tenant, resolvedPeriod) : null
+    // Explicit actors must still exist and be active in the current transaction
+    // snapshot. Only the standalone local demo may use the default actor.
+    let actor
+    if (config.actor) {
+      const member = tenant.memberships.find(item => item.id === (config.actor.id || config.actor.memberId))
+      if (!member || member.status !== 'active' || member.tenantId !== tenantId) {
+        throw new Error('当前成员不存在或已停用')
+      }
+      actor = member
+    } else {
+      actor = currentActor(tenant)
+    }
+    const { shipment, client, period } = shipmentEditContext(tenant, tenantId, shipmentId)
     if (isClosedPeriod(period)) throw new Error('已结清账单不可直接修改')
+    if (period.status !== 'open') throw new Error('账期状态异常，暂不能修正')
+    if (!canEditShipment(actor, client, period)) throw new Error('仅管理员或客户当前负责人可以修正发货账目')
+    if (actor.role !== 'admin' && (payload.items || []).some(item => item.saveAsDefault)) {
+      throw new Error('修改客户默认价格仅限管理员，请仅修改本笔成交价格')
+    }
     const before = clone(shipment)
     const lines = buildShipmentLines(tenant, payload.items)
     const itemsSubtotalCents = lines.reduce((sum, line) => sum + line.lineAmountCents, 0)
@@ -1142,12 +1256,12 @@ function createLedgerRepository(storage, options) {
     initializeTenant, initializeDemoTenant, getEnterprise, updateEnterprise,
     listMembers, updateMemberDisplayName, setMemberStatus, assignUnownedClients,
     listClients, getClient, getClientDeletePreview, deleteClient, saveClient, updateClientOwner, updateBillingPeriodOwner,
-    getCustomerPrice, getCustomerPriceForProduct, listCustomerPrices, saveCustomerPrice,
+    getCustomerPriceAccess, getCustomerPrice, getCustomerPriceForProduct, listCustomerPrices, saveCustomerPrice,
     listCustomProducts, listProducts, createCustomProduct, updateCustomProduct, setCustomProductActive, setProductActive,
-    postShipment, updateShipment, getShipment, listShipments,
+    postShipment, updateShipment, getShipment, getShipmentEditContext, listShipments,
     recordPayment, closeBillingPeriod, listPayments, listBillingPeriods, getPeriodDetail,
     getClientLedger, getDashboard, getStatement, getAuditLogs
   }
 }
 
-module.exports = { VALID_UNITS, VALID_PAYMENT_METHODS, currentPeriodId, canCloseBillingPeriod, createLedgerRepository }
+module.exports = { VALID_UNITS, VALID_PAYMENT_METHODS, currentPeriodId, canCloseBillingPeriod, canEditShipment, canManageCustomerPrices, currentPriceOpenPeriod, createLedgerRepository }

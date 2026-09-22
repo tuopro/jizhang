@@ -1,5 +1,10 @@
 # 月结客户记账小程序：项目偏好与进度
 
+## 最新状态索引（2026-09-21）
+
+- 最新本地结果是“客户价格负责人权限调整”，见文末记录及 `docs/客户价格负责人权限调整报告.md`；388/388 测试、24 页原生编译通过。发货修正及此前性能收尾继续保留；性能数字来自合成数据和本机 Node，不是真机 timing。
+- 本轮没有部署 ledger、上传体验版、提交审核或修改正式数据。下一轮需由用户安排新版本并做 iPhone 16 Pro 真机验收；下文较早日期的部署/待办描述属于历史记录。
+
 ## 项目背景
 
 - 用户经营 PVC 线槽工厂，需要一个面向批发/工业品销售的独立微信小程序。
@@ -15,6 +20,7 @@
 - 所有账目在正式入账前必须人工确认；删除、修改、收款和结清后续都要有二次确认与审计。
 - 价格变化不能回写历史订单；历史记录保存成交时的产品、数量、单位、单价和金额快照。
 - 多企业数据从底层按 `tenantId` 隔离；正式版还要在服务端按登录身份校验，不信任前端传入的企业编号。
+- 开放账期发货修正权限为 active admin 或客户当前负责人 member；使用 `client.ownerMemberId`，不依赖录入人或账期负责人。历史期任何成员均不可修正。结清权限独立按 `billingPeriod.ownerMemberId` 判断，不能与客户负责人混用。
 - 客观报告风险，不为了“看起来完成”而把本地演示包装成可生产使用。
 
 ## 技术决策
@@ -176,3 +182,145 @@
 - 备份包含小程序源码、`ledger` 云函数源码、测试、部署文档和项目偏好文档；`.DS_Store`、`project.private.config.json`、`node_modules/`、测试覆盖率目录及 npm 调试日志均通过 `.gitignore` 排除。
 - 上传前未发现 `.env`、私钥、访问令牌、证书或常见 API 密钥特征；`npm test` 为 `158/158` 通过，`npm run check` 通过 22 个页面、61 个 JavaScript、22 个 WXML 和 23 个 WXSS 的微信原生编译。
 - GitHub 当前只是代码与文档备份，不包含微信云数据库中的正式客户、账目、成员或审计数据，也不等于云函数部署或微信体验版上传；云端业务数据仍需单独设置定时备份并做恢复演练。
+
+## 2026-09-20 用户生成文本内容安全检查
+
+- 已按微信开放文档当前“文本内容安全识别”接口实现，接口英文名 `msgSecCheck`，正式云函数使用 `cloud.openapi.security.msgSecCheck`，固定 `version=2`、`scene=1（资料）`，单次最多 2500 字。
+- 检查只发生在 `ledger` 服务端完成真实身份、权限和原业务校验后、数据库持久化前；openid 只取 `cloud.getWXContext().OPENID`，前端不能提交审核结果绕过。`pass` 才放行，`risky/review` 拒绝；接口异常或无法判断时也不静默放行。
+- 实际审核字段：成员企业显示姓名；企业名称/联系人/地址；客户名称/联系人/备注；发货原始输入、商品行原文、发货备注、物流原始文本和非固定物流商名称；收款备注；账目修正原因；自定义产品名称/备注/非程序生成长度描述/别名/识别关键词/非固定特殊标签。
+- 电话、金额、数量、日期、各类 ID、tenantId、inviteToken、role/status、规格、固定颜色/齿型/单位/支付方式/物流商和特殊标签、搜索词及删除确认文字不送审。一次请求内的短文本带标签合并检查；超长文本按 2500 字分段；历史数据读取和未变化旧文本不重复审核。
+- 内容安全请求正文、风险关键词、openid、inviteToken、access token 和微信原始响应均不写日志或业务审计；被拒绝请求不会写正式数据库。隐私盘点已如实改为“自由文本会提交微信平台官方内容安全服务”，仍未接入第三方 AI 或第三方审核服务。
+- 体验版首次真机验证暴露 `cloudfunctions/ledger/config.json` 完全缺失，已新建该配置并在 `permissions.openapi` 中声明 `security.msgSecCheck`。补权限后问题仍存在，且真实日志为空 `errCode/errMsg`，因此不再把当前故障归因于 `-604101` 或权限。
+- 内容安全异常现仅保留并记录经长度限制和敏感值替换的微信 `errCode/errMsg`；不记录请求文本、openid、inviteToken、access token、payload 或完整错误对象。接口异常仍返回 `CONTENT_SECURITY_UNAVAILABLE` 并阻止保存，不允许失败放行。
+- 本轮没有修改数据库结构或新增集合，没有新增昵称/头像/手机号/定位等授权。线上生效前必须重新对 `cloudfunctions/ledger` 执行“上传并部署：云端安装依赖”，并上传体验版验证正常文本、风险文本和接口异常三条路径。
+- `wx-server-sdk` 依赖仍为 `latest`；2026-09-20 联网查询的 npm 当前版本为 `4.0.2`，其对外导出通用 `openapi` 云调用能力。为保证云端实际安装依赖和权限文件同时更新，不可只上传代码。
+- 新增 `tests/content-security.test.js` 的 22 项专项测试；全量 `npm test` 为 `180/180` 通过，`npm run check` 通过 22 个页面、64 个 JavaScript、22 个 WXML 和 23 个 WXSS 的微信原生编译，`git diff --check` 通过。
+
+## 2026-09-20 msgSecCheck v2 SDK 返回适配修复
+
+- 微信 `msgSecCheck v2` 原始 JSON 确实是小写 `errcode/errmsg`。但当前 `wx-server-sdk 4.0.2` 的 `cloud.openapi` 通用包装会在成功时删除原始 `errcode/errmsg`、将蛇形字段转为驼峰，再返回 `errCode: 0` 和 `errMsg: openapi...:ok`；因此 `cloud.openapi.security.msgSecCheck()` 的实际返回不是未包装的原始 v2 对象。
+- 原适配器只检查 `response.errcode`。SDK 已成功返回 `errCode: 0` 时，`response.errcode` 为 `undefined`，被误判为 `CONTENT_SECURITY_UNAVAILABLE`，这也解释了“测试02”未命中风险仍不能保存。
+- 现增加单一归一化层：原始 v2 读 `errcode/errmsg`，SDK 包装读 `errCode/errMsg`；两者都只在状态码为 0 且 `result.suggest === pass` 时放行，`risky/review` 继续拒绝，未知结构继续失败关闭。
+- 为体验版诊断临时增加 `[ledger-msg-sec-response]` 日志，仅记录 `hasResponse、keys、errcode、errmsg、suggest、label、trace_id`，不记录请求文本、openid、token 或 payload。普通 JavaScript `TypeError/Error` 只记录脱敏、限长的 `name/message`，不记录 stack。
+- 本轮不改变审核字段、放行/拒绝规则、事务顺序或数据库结构；修复上线仍必须重新部署 `cloudfunctions/ledger`。
+- 新增 SDK 成功包装、原始 v2 非零错误和本地 JavaScript 异常三条回归；全量 `npm test` 为 `183/183` 通过，`npm run check` 通过 22 个页面、64 个 JavaScript、22 个 WXML 和 23 个 WXSS 的微信原生编译，本地/云端 `content-security.js` 一致，`git diff --check` 通过。
+
+## 2026-09-20 体验版 msgSecCheck 真实调用链核验
+
+- 已在微信云函数 `ledger` 日志中按 `log` 字段检索到多条 `[ledger-msg-sec-response]`；其中 RequestId `2f217719-47e8-4042-84f9-a471d41ea763` 在保存客户返回前先记录安全审核响应，证明体验版这次 `saveClient` 实际进入了 `msgSecCheck`。
+- 微信云端的 `wx-server-sdk` 实际返回键为 `detail、result、traceId、errMsg、errCode`，该次真实结果为 `suggest=pass、label=100`；不是本地绕过，而是微信官方对该次文本判定为通过。不增加自建关键词黑名单。
+- 新增客户页 `name/contact/note` 绑定、前端 payload、云仓储调用、云函数事务、`collectChangedTextFields` 和 `assertTextContentSafe` 链路均已核对；`note` 会进入待审文本，无字段串位或新客户被误判为“旧文本未变化”。
+- 之前难以看到 `[ledger-msg-sec-response]` 是云日志默认列表主要展示 `Report/Response` 系统行，多行 `console` 记录需用 `log 日志内容 contains` 检索；诊断代码实际已在云端执行。
+- 云日志中 `Response ... RetMsg` 的整份 snapshot 是微信云函数平台自动记录函数返回值，不是项目 `console.log`；本轮不为隐藏 RetMsg 破坏 bootstrap。后续可单独评估按需加载/分页、日志保留时长和控制台权限。
+- 本地仅补强脱敏诊断：`saveClient` 安全审核入口记录实际非空字段数和 `client.name/client.contact/client.note` 类型；响应日志同时记录 `errCode/errcode`、`suggest/label` 和兼容的 `traceId`，仍不记录用户正文、phone、openid、token、payload 或 stack。
+- 本轮未改变审核规则：仍只有状态码为 0 且 `suggest=pass` 放行，`risky/review` 拒绝，异常 fail closed。本地全量 `npm test` 为 `183/183` 通过，`npm run check` 通过 22 个页面、64 个 JavaScript、22 个 WXML 和 23 个 WXSS 微信原生编译，`git diff --check` 通过。
+- 要让新增的入口和驼峰字段诊断在云日志生效，需重新对 `cloudfunctions/ledger` 执行“上传并部署：云端安装依赖”；本轮没有改前端，不需要重新上传体验版。
+
+## 2026-09-20 首次进入隐私同意 gate
+
+- 已在所有正式页面的业务加载之前加入统一隐私 gate：未同意当前版本时只显示隐私页，不执行 `ledger bootstrap`、`inspectInvite` 或其它业务云函数。快速记账、邀请加入和未授权页三个特殊入口也使用同一守卫。
+- 隐私页 checkbox 默认未勾选；未勾选时“同意并继续”不可用，点“不同意”只停留在未同意状态。官方指引通过 `wx.openPrivacyContract` 打开；平台授权状态通过 `wx.getPrivacySetting` 读取，必要时使用 `<button open-type="agreePrivacyAuthorization">` 完成官方同意。
+- 本地只保存 `ledger_privacy_consent={version:'2026-09-v1', agreedAt:'ISO时间'}`，不保存 openid、tenantId、memberId、inviteToken、客户、电话、地址、金额或账单。修改 `PRIVACY_CONSENT_VERSION` 即可强制重新同意。
+- 邀请链接被 gate 拦截时，原路由及 `inviteToken` 仅放在 JavaScript 模块内存；同意后恢复原邀请页，token 不进入隐私 storage 或日志。隐私同意不等于企业授权，后续仍继续执行 active membership、disabled、invite 和 unauthorized 规则。
+- “我的”页增加长期可见的“隐私保护指引”入口；`docs/隐私数据与微信接口盘点.md` 已同步本地保存事实和微信隐私 API/组件。
+- 本轮不修改 `ledger` 云函数、数据库结构或账务/权限规则，因此隐私 gate 本身不需重新部署云函数；需重新上传小程序体验版。
+- 新增 16 项隐私 gate 专项回归，并修正快速记账页测试夹具以模拟已同意状态。全量 `npm test` 为 `199/199` 通过；`npm run check` 通过 23 个页面、67 个 JavaScript、23 个 WXML 和 24 个 WXSS 的微信原生编译；`git diff --check` 通过。
+
+## 2026-09-21 审核演示企业一次性管理员初始化（已完成）
+
+- 已有审核演示 tenant 固定为 `tenant_review_1789953866562_a8f1b7a504b3`，企业名必须精确为“德赛记账审核演示”；禁止再创建 enterprise，禁止影响“德赛塑料”。
+- 本地已准备限时的 `initializeReviewDemoAdmin` 临时 action：只从 `cloud.getWXContext().OPENID` 取当前微信，拒绝前端 `openid/tenantId/memberId/role/status`；固定目标 tenant，且必须通过零成员、零业务数据、当前微信未绑定其他企业和有效服务端邀请检查。
+- 临时按钮只在 `trial` 体验版的未授权页显示；成功时创建或升级当前真实 membership 为 `admin/active`，写一条初始化审计，并作废旧初始化邀请。日志不输出完整 openid 或凭证。
+- 本地回归已达 `209/209`，`npm run check` 通过 23 个页面、69 个 JavaScript、23 个 WXML 和 24 个 WXSS，`git diff --check` 通过。
+- 2026-09-21 已通过微信开发者工具对 `cloudfunctions/ledger` 执行“上传并部署：云端安装依赖”。随后用已开启的 `55190` 服务端口下载云端函数到临时目录，确认 `index.js`、`services/access-control.js`、`services/review-admin-initializer.js`、`services/content-security.js`、`config.json` 和 `package.json` 与本地 SHA-256 全部一致，临时 action 和 `security.msgSecCheck` 权限均已真实部署。
+- 小程序代码 `1.0.1` 已上传成功，备注为“审核演示管理员一次性初始化”；开发者工具明确提示因上次提交已是体验版，本次上传会覆盖体验版。当前等待微信 B 在体验版未授权页主动点击“初始化审核管理员”，尚未创建或修改任何 membership。
+- 微信 B 首次点击临时按钮无反应的根因是确认框使用了 5 字符 `confirmText: '确认初始化'`，超过微信 `wx.showModal` 最多 4 字符限制，且原代码没有 `fail` 处理；因此确认框在本地参数校验阶段失败，云函数没有被调用，也没有数据库写入。现改为 4 字符“确认执行”，增加失败 toast 和回归断言；`1.0.2` 已通过 CLI 上传并覆盖体验版。
+- 微信 B 已主动执行初始化，云数据库已复核到其在既有“德赛记账审核演示” tenant 下的唯一 `admin/active` membership；未覆盖其它 membership，没有复制或改写真实客户、账目和成员数据。
+- 初始化成功后，本地已删除临时 action 的导入与分支、`PUBLIC_ACTIONS` 白名单项、前端调用、体验版按钮、临时凭证、初始化服务文件和专项测试；全项目搜索仅在本进度记录中保留历史文字。
+- 微信开发者工具 CLI 全量部署持续报 `EISDIR`，因此已精确增量部署云端 `index.js`；再次下载真实云端包验证其 SHA-256 与本地一致，云端入口已无初始化导入和路由，即使调用旧 action 也只会按未支持 action 拒绝。云端压缩包仍留有不再被引用的旧模块文件，但已从可执行路径停用，不构成长期初始化入口。
+- 干净的小程序代码 `1.0.3` 已上传，备注为“移除一次性审核管理员初始化入口”；体验版不再显示临时初始化按钮。微信 B 后续由服务端按真实 OPENID 命中已持久化的 membership，会自动进入审核演示企业，无需再次初始化。
+- 清理后最终验证：`npm test` 为 `199/199` 通过，`npm run check` 通过 23 个页面、67 个 JavaScript、23 个 WXML 和 24 个 WXSS 微信原生编译，`git diff --check` 通过。
+
+## 2026-09-21 上线前安全清理、UI 一致性与账单导出方案
+
+- 已再次对完整项目扫描 `initializeReviewDemoAdmin`、审核/临时管理员初始化、trial 初始化按钮、审核 tenant 硬编码、临时凭证、初始化服务/测试/前端调用和 action 白名单；当前可执行代码没有初始化入口或相关文件，`PUBLIC_ACTIONS` 仍只有 `inspectInvite、acceptInvite`。命中内容仅为本文件中的历史记录。
+- `initializeTenant / initializeDemoTenant` 只属于本地领域测试和非云演示存储；正式云仓储的 `initializeTenant` 会拒绝调用，正式云函数未知 action 由 `assertKnownAction` 拒绝，不能创建正式 enterprise 或 membership。
+- 未删除或修改“德赛记账审核演示”企业及微信 B 已持久化的 `admin / active membership`，也未触碰“德赛塑料”的企业、成员、客户、账目、价格和历史数据。微信 B 后续仍按真实 OPENID 命中正式 membership，不依赖一次性初始化入口。
+- 已建立统一 WXSS 视觉变量并完成首页、客户、客户账本、快速记账、发货详情、收款、对账单、历史、产品、客户价格、成员、我的、未授权、隐私同意和加入企业等页面的纯 UI 优化；未修改事件绑定、路由参数、数据库字段、云函数协议或账务/权限判断。
+- UI 风格采用专业、克制的企业记账方向：深蓝主色、冷灰背景、统一间距/字号/表单高度/圆角/状态色，小屏换行与底部安全区已做静态保护。危险操作继续保留明确层级。
+- 微信开发者工具当前提示需要重新登录，游客模式仍报 `INVALID_LOGIN, access_token expired`；因此本轮只确认自动测试、微信原生编译和静态小屏保护，不能把 iPhone 真机或已登录模拟器检查记为通过。重新登录后仍需用微信 B 做常见 iPhone 尺寸、空/少/多数据和按钮遮挡验收。
+- 第三阶段仅完成 `docs/分页账单图片与Excel导出方案.md`，没有实现或部署图片、Excel、PDF、云函数 action、文件上传或数据库变更。方案建议 1242×1756 固定分页图、动态高度分页、前端 Canvas 出图、云端生成 Excel，并用受 membership 保护的按账期分页读取避开当前企业快照每集合 1000 条的容量边界。
+- 已按微信官方当前文档核对：`wx.previewImage` 可预览多图，`wx.showShareImageMenu` 每次只接收一个图片路径，因此多图采用“预览全部 / 保存全部 / 分享当前页”，不做自动连续分享；Excel 可用 `wx.openDocument` 和 `wx.shareFileMessage`。
+- 本轮最终本地回归：`npm test` 199/199 通过；`npm run check` 通过 23 个页面、67 个 JavaScript、23 个 WXML 和 24 个 WXSS 微信原生编译；`git diff --check` 通过。没有执行云函数部署、体验版上传或正式数据变更。
+
+## 2026-09-21 分页账单图片与 Excel 正式导出
+
+- 第一版最后一项功能已按既有方案增量实现，只增加分页账单图片和 Excel；未开发 PDF、自动发好友、邮件、云打印、库存、利润、CRM 或其它业务功能，也未改动产品、价格、单位、运费、收款、账期、结清、删除、成员或 tenant 规则。
+- 新增 `getStatementExportMeta、getStatementExportPage、createStatementExcel、cleanupStatementExportFile` 四个 action，全部属于 `ACTIVE_MEMBER_ACTIONS`，`PUBLIC_ACTIONS` 仍只有邀请检查/加入。tenant 只来自真实 `OPENID → membership → tenantId`；前端 `tenantId、role、memberId` 不参与授权。
+- 导出服务只按目标 `clientId + periodId` 分批读取 `billing_periods、shipments、payments`，每批最多 100 条，不依赖 bootstrap 每集合 1000 条快照；已用 1005 笔发货自动测试验证。服务不读取当前产品或客户价格，不写数据库，不更新审计，不回填历史。
+- 分页图片固定 `1242 × 1756 px`，使用最终 Canvas 的实际文字测量结果分页。商品/收款行不可切割，整笔发货优先同页，超长单笔按完整商品行拆页并标“续”，小计/运费/本次合计只在末段出现；每页重复抬头、账期日期、表头和页码，最后一页含五项汇总。图片超过 800 明细行或 80 页时停止并建议 Excel。
+- 新增账单图片预览页，支持预览全部、上一页/下一页、保存全部、分享当前页。相册权限只在用户主动保存时申请，拒绝后可进入设置重新开启；保存失败不影响账务。微信不做自动连续发送多图。
+- Excel 由云端 `exceljs@4.4.0` 生成，包含“账单汇总、发货明细、收款明细”三个 Sheet；金额为数值单元格，日期可排序，发货级运费/总额只写在该笔第一行。云路径使用 tenant/member 哈希和随机文件名，不包含企业或客户名称。
+- Excel 下载成功或失败后均调用清理 action，并立即重试一次；正常云端文件生命周期为数秒。上传成功后云函数在返回前异常退出仍可能留下少量私有孤儿文件，部署后需在云存储控制台检查 `statement-exports/` 前缀，禁止设为公开读。
+- 未新增数据库集合、字段、索引或迁移；新增依赖和 action 尚未部署到正式云环境。上线前必须重新“上传并部署：云端安装依赖”，再上传体验版进行 iPhone 真机验收；本轮没有提交微信审核。
+- 因新增用户主动保存账单图片，相册写入权限已在 `app.json` 如实声明，隐私同意版本更新为 `2026-09-v2`，旧同意会重新进入隐私 gate。没有相册读取、摄像头、麦克风或用户文件读取权限。
+- 本轮自动回归覆盖当前/历史账期、运费、多发货、多商品、多收款、部分/全额未结清、结清、长名称、发货/收款分页、空数据、1000+记录、admin/member、disabled/陌生微信、跨 tenant、伪造身份字段、历史价格快照、Excel 三 Sheet、临时文件失败和重复点击。最终 `npm test` 为 `230/230` 通过；`npm run check` 通过 24 个页面、86 个 JavaScript、24 个 WXML 和 25 个 WXSS 微信原生编译；`git diff --check` 通过。
+
+## 2026-09-21 Excel 导出视觉样式修正
+
+- 本轮只调整 `cloudfunctions/ledger/services/statement-excel.js` 的 Excel 展示样式及对应自动测试；未修改三个 Sheet 的字段、数据读取、账务计算、历史快照、权限、action、临时文件或 ExcelJS 版本。
+- 深蓝表头统一为 `#173F67`，字体颜色改用 ExcelJS 可可靠序列化的 ARGB 颜色对象，最终文件回读确认为纯白 `#FFFFFF`、粗体、水平/垂直居中，表头行高 26；正文为白底、`#1F2937` 深灰文字和 `#D1D5DB` 浅灰细边框。
+- 发货/收款明细已按字段语义统一左、中、右对齐；金额继续使用 numeric cell 和原 `¥#,##0.00` 格式，数量精度未改变。发货编号列从 25 调整为 30 并开启自动换行，产品名称列为 38、规格列为 25。
+- 发货明细和收款明细冻结首行改为在创建 Sheet 时声明，确保 ExcelJS 流式写入后的最终文件真实保留冻结窗格；账单汇总保持浅蓝标签、白色数值区，应收/已收/剩余应收加粗，剩余应收使用克制的暗红色强调。
+- `tests/statement-excel.test.js` 增加最终 `.xlsx` 回读断言，覆盖所有明细表头的白字/深蓝底、表头高度、冻结首行、列宽、自动换行、字段对齐、正文颜色与边框，以及汇总/发货/收款金额仍为 number。专项测试 3/3 通过；全量 `npm test` 为 230/230 通过；`npm run check` 通过 24 个页面、86 个 JavaScript、24 个 WXML 和 25 个 WXSS 微信原生编译。
+- 样式修正位于 `ledger` 云函数内，正式环境生效前需要重新部署 `cloudfunctions/ledger`；本轮没有执行部署、体验版上传或审核提交。
+
+## 2026-09-21 iPhone 响应式布局收尾
+
+- 本轮只修改 WXML class/必要布局、WXSS 和项目静态检查脚本，没有修改小程序业务 JavaScript、云函数、数据库、权限、账务规则或导出数据。唯一变更的 JavaScript 文件是非运行时业务代码 `scripts/check-project.js`。
+- iPhone 16 Pro 截图中的对账单按钮越界根因是双列 `1fr 1fr` 网格遇到全局按钮 `white-space: nowrap` 时，按钮和轨道缺少 `min-width: 0`，再叠加微信原生 button 默认 margin，长文案把网格和外层 Excel 卡片一起撑宽。
+- 全项目扫描定位 17 个潜在窄屏风险区域：10 个横向按钮组，以及 7 个长文本、金额或 flex/grid 子项缺少收缩/换行边界的区域；没有发现 `width: 50% + gap`、负 margin 或普通操作按钮用 absolute 定位出屏幕的模式。
+- 全局建立 `.action-row / .action-row--responsive`：父容器为全宽 flex，子按钮使用 `flex: 1 1 0`、`width: auto`、`min-width: 0`、`margin: 0` 和统一 `box-sizing`；对账单两组按钮及客户账本、收款、负责人转移、隐私同意、快速记账、账单图片预览等同类操作区统一复用。
+- 断点按卡片实际内容宽度定为 `340px`：393/390/375/360px 保持双列，320px 改为上下排列。模拟渲染确认 393、375、360、320px 下按钮均未越过卡片边界；真实 iPhone 仍需在新体验版上复核。
+- 长企业/客户/产品/成员/文件名使用可收缩 flex 子项、换行或省略号；金额区域保留不换行并禁止被左侧长文字推出屏幕。页面级底部安全区继续只由公共 `.page` 和 `.fixed-action` 使用 `env(safe-area-inset-bottom)`，没有重复叠加。
+- `scripts/check-project.js` 新增响应式静态回归：校验统一 action row 的收缩规则和窄屏纵向降级，阻止 action 网格重新出现未受保护的 `1fr` 轨道，并要求关键按钮组继续复用公共 class。
+- 最终本地回归：`npm test` 230/230 通过；`npm run check` 通过 24 个页面、86 个 JavaScript、24 个 WXML 和 25 个 WXSS 的微信原生编译；`git diff --check` 通过。未部署云函数、未上传体验版、未提交微信审核。
+
+## 2026-09-21 上线前性能收尾（本地完成，待真机验收）
+
+- 先保存本轮开始时的全部源码（含已有未提交工作）、Git 状态和 SHA-256，并完成 230/230 原测试与性能基线；原始副本在 `/private/tmp/ledger-performance-20260921-baseline/`。最终报告、原始数字、WXML 扫描、保护文件哈希和仅本轮补丁在 `docs/上线前性能优化完成报告.md`、`docs/performance/`。
+- 实测主要瓶颈是首页/客户页循环读取时反复深拷贝完整企业快照。新增仅限一次同步读取/模型计算的脱离原缓存的工作副本，成功、异常、跨 await 均结束；没有持久化业务缓存、TTL 或角色授权缓存，云端写入和全部领域公式未改。
+- 200 客户/1000 发货的合成压力样本中，首页/客户页整库复制 804/801 次降到各 1 次；固定方法三轮本机模型中位数约 5333→121 ms、5293→97 ms。不能解释为 iPhone 页面耗时。
+- `ledger` 普通 action 和临时文件清理不再 require ExcelJS；只有通过原权限与范围校验后真正生成 Excel 时加载工作簿。已用 require instrumentation 与真实 xlsx 生成测试保护，三 Sheet、样式、导出数据和临时清理流程不变。
+- bootstrap 在真实 OPENID/membership 与企业读取后并行八个独立集合；常规读取仍 10 次查询、相同条件/字段/1000条上限，事务内仍保持原先串行与二次身份校验。`prepareRepository` 原本已有并发去重，保留且补成功/失败测试；顺序页面进入/返回继续重新授权，不盲目删除刷新请求。
+- 快速记账的完整客户/产品选项、客户/历史/产品/客户价的筛选源留在页面逻辑层，仅把可见字段送进 setData；压力样本快速记账初始 payload 430732→3874 B。所有搜索仍查完整集合。
+- 客户/历史首批30条并在滚动时追加，保留完整总数、排序、筛选与返回时展开范围。客户账本/当前及历史对账单长明细分批发送，完整汇总一次给全；批次可在新模型/卸载时取消，导出不使用首批数据。长对账单最大单次335890→16264 B，代价是更多小批次；最终完整DOM和真机内存仍需验收。
+- 同一已成功加载页面返回时保留内容并使用导航栏加载提示；首次加载、保存、Excel及图片原安全/防重复操作流程保留。没有改变 UI 风格、业务文案、WXSS、隐私版本、依赖或数据库结构，也没有分包。
+- 原始源码对比：21个完整页面/解析/选择/价格表单场景的渲染字段一致；原业务/权限/隐私/脱敏/导出核心文件逐字节相同。只调整已有快速记账测试的3处内部选项存放位置引用，没有降低原断言。
+- 最终 `npm test` 245/245通过（新增15项结构性回归，无毫秒阈值）；`npm run check` 通过24页面、92个JavaScript语法检查、24 WXML与25 WXSS微信原生编译；`git diff --check` 和关键文件 `node --check` 通过。
+- 本轮严格停在本地：未部署、未上传体验版、未提交审核、未修改正式数据库。下一版需要重新部署 ledger、上传体验版；不需要数据库迁移、新索引、隐私指引修改或新增依赖。iPhone 16 Pro 验收重点与未测指标见完成报告。
+
+## 2026-09-21 发货账目修正权限与只读状态修复（本地完成，待真机复测）
+
+- 修复详情页将“无修改权限”通过修改按钮的 `wx:else` 误显示成“已结清”的问题。现分开 `isClosed` 与 `canEdit`；开放期非负责人可正常查看且不显示历史提示，历史期保留原只读文案。
+- 对比性能优化前源码备份，详情 JS/WXML 在本轮开始前均逐字节相同，错误状态不是该轮性能修改引入。本期发货导航仅依赖精简行保留的 ID，详情重新读取完整 shipment；新增 37 笔发货分批渲染后跳转测试保护这一链路。
+- `updateShipment` 只对当前开放账期新增“客户当前负责人 member”权限。最终事务重新读取真实 OPENID 对应 active membership、shipment、实际 client 和已存 billing period，检查 tenant 与关联一致，再判断 admin 或 `membership.id === client.ownerMemberId`。前端身份、客户 ID、只读标记不作为授权依据。
+- 客户转移后旧负责人立即失权、新负责人获权；历史发货、录入人和负责人快照不回写。编辑页打开后发生转移、结清或成员失效时，服务端保存拒绝；本地模拟事务冲突重试也会重新校验。
+- 缺失、错配或状态异常的账期拒绝修正，不因旧兼容逻辑合成 open 记录而放行。旧月份/兼容 ID 仍可关联真实已存账期读取；不新增字段、不迁移、不静默建期。
+- 原修正的人工确认、必填原因、商品/运费/账期重算、已收款约束、before/after 完整审计、真实成员操作人及 msgSecCheck 保留。member 修正只影响本笔成交，不顺带保存客户默认价；其它价格、产品、删除、成员、企业、邀请、收款权限不变。
+- `closeBillingPeriod` 仍只允许 admin 或 `billingPeriod.ownerMemberId` 对应成员；客户负责人不会因此获得结清权。18 个相关原业务/helper 函数与本轮基线保持原样。
+- 修改前备份在 `/private/tmp/ledger-shipment-correction-20260921-baseline/`，保留此前所有未提交工作。新增 77 项专项回归，全量 `npm test` 322/322 通过；`npm run check` 通过24页面、96 JS、24 WXML、25 WXSS微信原生编译，`git diff --check` 通过；共享领域仓储副本一致。
+- 仅完成本地代码及模拟测试，未部署 ledger、未上传体验版、未提交微信审核、未修改正式数据库。新规则生效需要后续重新部署 ledger 和上传体验版；本轮按用户要求停下，等真机复测。不存在数据库迁移、集合/字段/索引或历史快照格式变更。
+
+
+## 2026-09-21 客户价格负责人权限调整（本地完成，未部署）
+
+- 指定客户价格表允许真实 active admin、当前 client owner、唯一真实开放 billing period owner 查看和新增/修改。数据库成员主键为 membership.id，对外 identity.memberId 由该值派生；历史 settled/closed 账期、合成兼容期、其它客户/企业账期不授予价格权限。缺失或多开放期异常时，不使用账期负责人分支；admin 和客户负责人仍可操作。
+- 原管理员写门禁位于云函数，原仓储并无客户范围校验，原快照会下发企业全部 customerPrices。现补齐价格仓储读写授权、三个 active member 读取 action、快照价格及独立价格审计过滤。没有新增价格删除/停用功能，也没有扩大产品、企业、成员、邀请、转移、客户删除、发货修正或结清权限。
+- saveCustomerPrice 事务按真实 OPENID/membership/tenant 重新读取价格实际关联的 client 与开放期；明确价格 ID 编辑不相信 payload clientId。定向查询不依赖 bootstrap 前1000条是否包含目标价格；负责人转移、结清、成员停用/删除及事务冲突重试均重新鉴权。
+- 客户账本独立 canManagePrices 控制入口；价格页每次进入执行服务端 list，旧数据先清空，拒绝后安全返回，不相信路由或缓存许可。编辑提交实际价格 ID；重复保存及迟到响应受保护。
+- 快速记账 saveAsDefault 加同一客户权限，避免间接写价格绕过；无权客户的默认价不下发，原人工填写单笔成交价、计价/换算/缺价规则保留。原发货修正内保存默认价仍仅 admin，不扩大该流程。
+- 独立客户价格新增/修改原有审计保留，更新完整 before/after，operator 和时间使用真实成员。快速记账保存默认价原无独立价格 before/after 审计，仍沿用发货审计，本轮未新建审计机制。
+- 改价只作用之后新建发货，不回写任何历史成交或已结清金额；价格保存也不会顺带补齐旧发货字段。最终 Excel 回读验证成交价不变，图片/Excel 导出实现未改。
+- 本轮新增66项测试，全量 npm test 388/388通过；npm run check 通过24页、99 JS、24 WXML、25 WXSS微信原生编译；git diff --check通过。19个保护文件、18个原业务/helper函数与本轮基线一致。基线及SHA清单在 /private/tmp/ledger-customer-price-permissions-20260921-baseline/。
+- 未部署ledger、未上传体验版、未提交微信审核、未访问或修改正式业务数据。后续生效需要重新部署ledger并上传体验版做真机复测；不需要数据库迁移，无新增集合、字段或索引配置。完整范围、原权限位置、审计现状与测试对应关系见本轮报告。

@@ -2,30 +2,34 @@ const { loadPage, handleMutation } = require('../../services/page-context')
 const { formatProductLabel } = require('../../data/product-specs')
 
 Page({
-  data: { tab: 'standard', keyword: '', allProducts: [], products: [] },
+  data: { tab: 'standard', keyword: '', products: [] },
   onShow() { this.load() },
   load() {
     loadPage(this, (repository, tenantId) => {
-      const allProducts = repository.listProducts(tenantId, { includeInactive: true }).map(item => ({
-        id: item.id, label: formatProductLabel(item), isStandard: item.isStandard !== false,
-        active: item.active !== false, note: item.note || '', search: [formatProductLabel(item)].concat(item.aliases || []).join(' ').toLowerCase()
-      }))
-      this.setData({ allProducts }, () => this.filter())
+      this.allProducts = repository.listProducts(tenantId, { includeInactive: true }).map(item => {
+        const label = formatProductLabel(item)
+        return {
+          id: item.id, label, isStandard: item.isStandard !== false,
+          active: item.active !== false, search: [label].concat(item.aliases || []).join(' ').toLowerCase()
+        }
+      })
+      this.filter()
     })
   },
-  changeTab(event) { this.setData({ tab: event.currentTarget.dataset.tab }, () => this.filter()) },
-  onSearch(event) { this.setData({ keyword: event.detail.value }, () => this.filter()) },
-  filter() {
-    const keyword = String(this.data.keyword || '').trim().toLowerCase()
-    this.setData({ products: this.data.allProducts.filter(item =>
-      (this.data.tab === 'standard' ? item.isStandard : !item.isStandard) && (!keyword || item.search.includes(keyword))
-    ).slice(0, 150) })
+  changeTab(event) { this.filter({ tab: event.currentTarget.dataset.tab }) },
+  onSearch(event) { this.filter({ keyword: event.detail.value }) },
+  filter(patch) {
+    const state = Object.assign({}, this.data, patch)
+    const keyword = String(state.keyword || '').trim().toLowerCase()
+    this.setData(Object.assign({ products: (this.allProducts || []).filter(item =>
+      (state.tab === 'standard' ? item.isStandard : !item.isStandard) && (!keyword || item.search.includes(keyword))
+    ).slice(0, 150).map(({ id, label, isStandard, active }) => ({ id, label, isStandard, active })) }, patch))
   },
   add() { wx.navigateTo({ url: '/pages/product-form/product-form' }) },
   edit(event) { if (this.data.tab === 'custom') wx.navigateTo({ url: `/pages/product-form/product-form?id=${event.currentTarget.dataset.id}` }) },
   toggle(event) {
     const id = event.currentTarget.dataset.id
-    const product = this.data.allProducts.find(item => item.id === id)
+    const product = this.allProducts.find(item => item.id === id)
     if (!product) return
     wx.showModal({
       title: product.active ? '停用产品' : '启用产品',

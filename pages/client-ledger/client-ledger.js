@@ -1,6 +1,7 @@
 const { loadPage, handleMutation, handleAccessError } = require('../../services/page-context')
 const { canCloseBillingPeriod } = require('../../services/ledger-repository')
 const { formatCurrency } = require('../../utils/money')
+const { setProgressiveModel, cancelProgressiveModel } = require('../../services/progressive-list')
 
 function localDateText(date) {
   const value = date || new Date()
@@ -12,13 +13,14 @@ Page({
     clientId: '', client: null, periodId: '', periodTitle: '暂无进行中账期', periodRange: '',
     itemsSubtotal: '¥0.00', freightTotal: '¥0.00', shipmentTotal: '¥0.00', received: '¥0.00', outstanding: '¥0.00',
     shipmentCount: 0, shipments: [], payments: [], canReceivePayment: false, canSettle: false,
-    showSettlementConfirm: false, closing: false, isAdmin: false,
+    showSettlementConfirm: false, closing: false, isAdmin: false, canManagePrices: false,
     clientOwnerText: '未设置', periodOwnerText: '未设置',
     showDeleteConfirm: false, deletePreview: null, deleteConfirmName: '',
     deleteNameMatches: false, deleting: false
   },
   onLoad(options) { this.clientId = options.id || '' },
   onShow() {
+    this.setData({ canManagePrices: false })
     loadPage(this, (repository, tenantId) => {
       const ledger = repository.getClientLedger(tenantId, this.clientId)
       if (!ledger) {
@@ -31,7 +33,7 @@ Page({
       const period = ledger.period
       const identity = repository.isCloudRepository ? repository.getIdentity() : { role: 'admin' }
       const isAdmin = identity.role === 'admin'
-      this.setData({
+      setProgressiveModel(this, {
         clientId: this.clientId, client: ledger.client, periodId: period ? period.id : '',
         periodTitle: period ? `第${period.sequenceNo}期 · 进行中` : '暂无进行中账期',
         periodRange: period ? `${period.startDate} ～ 进行中` : '',
@@ -40,7 +42,7 @@ Page({
         outstanding: formatCurrency(ledger.outstandingCents), shipmentCount: ledger.shipmentCount,
         canReceivePayment: Boolean(period && ledger.outstandingCents > 0),
         canSettle: Boolean(canCloseBillingPeriod(identity, period) && ledger.shipmentCount > 0 && ledger.outstandingCents === 0),
-        isAdmin,
+        isAdmin, canManagePrices: repository.getCustomerPriceAccess(tenantId, this.clientId),
         clientOwnerText: ledger.client.ownerDisplayName || ledger.client.ownerNameSnapshot || '未设置',
         periodOwnerText: period && (period.ownerDisplayName || period.ownerNameSnapshot) || '未设置',
         shipments: ledger.shipments.map(item => ({
@@ -53,10 +55,11 @@ Page({
           id: item.id, date: item.paymentDate, method: item.method, amount: formatCurrency(item.amountCents), note: item.note,
           createdByText: item.createdByNameSnapshot || '未记录'
         }))
-      })
+      }, ['shipments', 'payments'])
       wx.setNavigationBarTitle({ title: ledger.client.name })
     })
   },
+  onUnload() { cancelProgressiveModel(this) },
   quickEntry() { wx.navigateTo({ url: `/pages/quick-entry/quick-entry?clientId=${this.clientId}` }) },
   statement() { wx.navigateTo({ url: `/pages/statement/statement?clientId=${this.clientId}` }) },
   payment() { wx.navigateTo({ url: `/pages/payment-form/payment-form?clientId=${this.clientId}` }) },
@@ -96,7 +99,7 @@ Page({
       })
     })
   },
-  prices() { wx.navigateTo({ url: `/pages/customer-prices/customer-prices?clientId=${this.clientId}` }) },
+  prices() { if (this.data.canManagePrices) wx.navigateTo({ url: `/pages/customer-prices/customer-prices?clientId=${this.clientId}` }) },
   editClient() { wx.navigateTo({ url: `/pages/client-form/client-form?id=${this.clientId}` }) },
   manageOwners() { wx.navigateTo({ url: `/pages/owner-transfer/owner-transfer?clientId=${this.clientId}` }) },
   openDelete() {
