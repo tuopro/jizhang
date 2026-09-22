@@ -1,0 +1,112 @@
+{
+  "date": "2026-09-22",
+  "status": "local-only; not deployed, uploaded, submitted, or committed",
+  "baselineDirectory": "/private/tmp/ledger-invite-qrcode-20260922-baseline",
+  "baselineTrackedFiles": 225,
+  "unchangedBaselineFiles": 213,
+  "modifiedFiles": [
+    "PREFERENCES.md",
+    "cloudfunctions/ledger/config.json",
+    "cloudfunctions/ledger/index.js",
+    "cloudfunctions/ledger/services/access-control.js",
+    "pages/join-enterprise/join-enterprise.js",
+    "pages/join-enterprise/join-enterprise.wxml",
+    "pages/members/members.js",
+    "pages/members/members.wxml",
+    "pages/members/members.wxss",
+    "services/cloud-repository.js",
+    "services/photo-album.js",
+    "tests/helpers/cloud-ledger-harness.js"
+  ],
+  "newFiles": [
+    "cloudfunctions/ledger/services/invite-qrcode.js",
+    "services/invite-qrcode.js",
+    "tests/invite-qrcode-cloud.test.js",
+    "tests/invite-qrcode-page.test.js",
+    "docs/企业成员邀请小程序码功能报告.md",
+    "docs/企业成员邀请小程序码验证摘要.json"
+  ],
+  "unchangedOriginalCloudFunctions": [
+    "logContentSecurityEntry",
+    "callWeChatTextSecurity",
+    "clean",
+    "stableId",
+    "randomId",
+    "identityFor",
+    "getMembership",
+    "listTenant",
+    "loadSnapshot",
+    "buildRepository",
+    "comparable",
+    "persistChanges",
+    "bootstrap",
+    "loadCustomerPriceScope",
+    "loadCustomProductCreateScope",
+    "mutate",
+    "readAction",
+    "statementExportReadAction",
+    "getInviteByToken",
+    "listTenantInvites",
+    "getActiveInviteForTenant",
+    "inviteResult",
+    "getActiveMemberInvite",
+    "createMemberInvite",
+    "revokeMemberInvite"
+  ],
+  "changedOriginalCloudFunctions": [
+    "inspectInvite",
+    "acceptInvite"
+  ],
+  "protectedFilesSha256": {
+    "cloudfunctions/ledger/services/member-security.js": "e72afd8b4039e6bde3a8127d79a867317a3a50947bc71019164ca49a4fd4e9bd",
+    "services/ledger-repository.js": "b4418c875bf0eff1c9a95c60d2eda254a3d5c7d081d3108a536051f48287118a",
+    "cloudfunctions/ledger/services/ledger-repository.js": "b4418c875bf0eff1c9a95c60d2eda254a3d5c7d081d3108a536051f48287118a",
+    "services/privacy-consent.js": "f0794e15907754a7793581e7cad8936c4bd702cb6a41cd0cd7405456ecb91ebd",
+    "services/content-security.js": "0f2d324d952e21efe216c21ef1e54690a70607aaf9a35a14c81a3e33ec56e72e",
+    "cloudfunctions/ledger/services/content-security.js": "0f2d324d952e21efe216c21ef1e54690a70607aaf9a35a14c81a3e33ec56e72e",
+    "services/statement-image-renderer.js": "b9b5675751a9c8b0ec5a078a0ada7334e6579cfcca110a943ac0a4bfdc9406c2",
+    "services/statement-export.js": "70445e27b3974a2315b1a7cc8e371a6892b7f06e1ce44f331afa9f28a1f63ba8",
+    "cloudfunctions/ledger/services/statement-export-file.js": "8c61403f7e2a5e25ef29918651ec012aa660f16488d4f5c2eb51485815454170",
+    "cloudfunctions/ledger/services/client-snapshot.js": "084f159225931c48a7aab4f7d71f380cfe5073ded1fe051a8a1bc5b1d872c277",
+    "cloudfunctions/statement-export-gc/index.js": "6f9bb3f13cee1a208c6f48819b3c14178513d2ffdd5880a0a9f0d36b403ac45a",
+    "cloudfunctions/statement-export-gc/config.json": "8ec4257e1bffe0fa913067ddb5fbc9aeb28c28901299afad541e4cf0c1a36d58",
+    "cloudfunctions/ledger/package.json": "634ec3d48b3c556176fa8947a35333a2edbc5a7fa4eca01747c34c390c2558b0",
+    "package.json": "224309314e4b4cf8ddcfe901f11b2b84c9141b439f8f30753facb590d3ceedd5",
+    "app.js": "c2b9a3e9c1503e5c01370c3d5d0efaf7863a722bd42d15bdd4cb345d8845eb6d",
+    "app.json": "b66acb0185e06009aa088e041bea39fb4f4ca5ba154c613237e367fa9fd997bc",
+    "docs/数据库权限规则.json": "2723eb87f02d294bc7458379205e3ad8f21abf3893f335a4591cff4e4b42a576"
+  },
+  "validation": {
+    "npm test": {
+      "passed": 651,
+      "failed": 0,
+      "newTests": 93,
+      "cloudTests": 61,
+      "pageTests": 32
+    },
+    "npm run check": {
+      "pages": 24,
+      "js": 116,
+      "wxml": 24,
+      "wxss": 25
+    },
+    "git diff --check": "passed",
+    "executableReviewAdminEntries": "none"
+  },
+  "implementation": {
+    "token": "24 random bytes, 48 hex characters",
+    "scene": "24 independent random bytes, 32 base64url characters",
+    "field": "member_invites.qrSceneCode, lazy",
+    "newCollections": false,
+    "migration": false,
+    "transport": "base64",
+    "newPublicActions": false,
+    "newDependencies": false,
+    "cloudStorageWrites": false
+  },
+  "limits": [
+    "Local transactional simulation and official API stub, not live cloud concurrency or real QR acceptance.",
+    "WeChat trial/develop access restrictions still apply.",
+    "No device or review-platform acceptance performed."
+  ]
+}

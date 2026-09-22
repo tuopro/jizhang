@@ -6,7 +6,7 @@ const ACTIVE_MEMBER_ACTIONS = new Set([
   'listCustomerPrices', 'getCustomerPrice', 'getCustomerPriceForProduct',
   'getStatementExportMeta', 'getStatementExportPage',
   'createStatementExcel', 'cleanupStatementExportFile',
-  'getActiveMemberInvite', 'createMemberInvite', 'revokeMemberInvite',
+  'getActiveMemberInvite', 'createMemberInvite', 'revokeMemberInvite', 'createMemberInviteQRCode',
   'updateEnterprise', 'saveCustomerPrice', 'createCustomProduct', 'updateCustomProduct',
   'setCustomProductActive', 'setProductActive', 'updateShipment',
   'updateClientOwner', 'updateBillingPeriodOwner', 'updateMemberDisplayName',

@@ -21,3 +21,7 @@
   .member-actions { gap:14rpx; }
   .text-action { font-size:24rpx; }
 }
+
+.qr-card { min-width:0;text-align:center; }
+.qr-enterprise { font-size:34rpx;font-weight:700;line-height:1.5;overflow-wrap:anywhere;word-break:break-all; }
+.invite-qr-image { display:block;width:430rpx;max-width:100%;height:430rpx;margin:0 auto;background:#fff; }

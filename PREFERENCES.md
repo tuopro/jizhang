@@ -2,9 +2,13 @@
 
 ## 最新状态索引（2026-09-22）
 
+- 最新本地结果为“邀请二维码入口未显示排查与修复”，见 `docs/邀请二维码入口未显示排查与修复报告.md`。开发者工具原目录复现旧页面，清编译缓存后暴露 services/invite-qrcode.js 未进入包；新增该文件的精确packOptions.include，并刷新编译/文件列表缓存后，已在当前真实admin+active invite页面观察到二维码按钮。本轮未改成员页或云函数；656/656测试、24页原生编译通过。用户反馈此前已部署ledger并上传体验版；本次修复未再次部署/上传，手机旧体验包需后续重新上传前端才会更新。
+
+- 最新本地结果为“企业成员邀请小程序码功能”，见 `docs/企业成员邀请小程序码功能报告.md`。企业成员页支持二维码预览/保存；与微信卡片共用原邀请，7天、多成员复用、撤销、停用和member默认角色不变。原48位hex token超过scene限制，按需在原member_invites上加32位base64url qrSceneCode，保留192位随机强度，不迁移历史数据。651/651测试及24页原生编译通过；未部署、未上传体验版、未审核、未修改正式数据/存储权限、未提交Git。
+
 - 最新源码已于2026-09-22推送至现有公开 GitHub 仓库 `tuopro/jizhang` 的 `main`。源码提交为 `cb39e4c71103ceada7300b00562a29925424578c`，包括自定义规格创建权限、底槽识别、Excel 即时清理与48小时GC，共38个变更文件；同时推送了进度记录 `cffc36f98cd231b8f3bfbe4c4a63281c8f8da077`。此前公开推送审批拦截已在用户明确确认后解决；GitHub同步不代表微信上线。
 
-- 最新本地结果是“客户负责人/当前账期负责人自定义规格创建权限 + 底槽识别修复”，见文末记录及 `docs/客户负责人及当前账期负责人自定义规格创建与底槽识别修复报告.md`；558/558 测试、24 页原生编译通过。只开放负责客户业务中的自定义规格创建，不开放全局产品修改/停用；底槽与普通规格严格分开。此前 Excel 即时清理与 48 小时 GC 完整保留，GC正式运行时身份仍未进行线上验证。
+- 上一轮本地结果是“客户负责人/当前账期负责人自定义规格创建权限 + 底槽识别修复”，见文末记录及 `docs/客户负责人及当前账期负责人自定义规格创建与底槽识别修复报告.md`；558/558 测试、24 页原生编译通过。只开放负责客户业务中的自定义规格创建，不开放全局产品修改/停用；底槽与普通规格严格分开。此前 Excel 即时清理与 48 小时 GC 完整保留，GC正式运行时身份仍未进行线上验证。
 - 本轮没有部署 ledger、上传体验版、提交审核或修改正式数据。下一轮需由用户安排新版本并做 iPhone 16 Pro 真机验收；下文较早日期的部署/待办描述属于历史记录。
 
 ## 项目背景
@@ -377,3 +381,24 @@
 - 用户在获知公开仓库地址与推送范围后明确要求“帮我推送到jizhang仓库里”。按该授权执行 `git push origin main` 成功，GitHub返回 `45dd049..cffc36f main -> main`，包含源码提交 `cb39e4c` 和进度记录 `cffc36f`；没有强推或改写历史。
 - 推送前再次核对当前分支main、远端 `https://github.com/tuopro/jizhang.git` 和工作区干净状态；远端基线与此前一致。源码沿用上一轮已通过的558/558自动测试与24页面原生编译结果，本轮没有再改业务代码。
 - 本次只同步Git仓库，并将推送完成状态补记到本偏好文档；没有部署ledger或GC、上传体验版、提交微信审核、修改正式数据库或云存储权限。
+
+
+## 2026-09-22 企业成员邀请小程序码（本地完成，未部署）
+
+- 管理员在“我的→企业成员”中可生成当前邀请对应的小程序码、预览、保存；无有效邀请时走原createMemberInvite，有邀请则复用。卡片和码共用同一invite/status/expiresAt/revoke/accept规则，不产生第二套membership，不延长7天有效期，不改变多人复用。
+- 原token由24随机字节转48位hex，超出微信scene的32字符限制。仅为实际生成码的原member_invites懒加载qrSceneCode：独立24随机字节转32位base64url，192bit，事务查重/有限重试、同invite复用、重复映射拒绝；没有新集合、索引配置或历史迁移。
+- createMemberInviteQRCode不是PUBLIC_ACTION；入口与图片返回前后都核验真实OPENID/active admin/服务端tenant与invite，生成中撤销、到期或管理员失效会拒绝。官方getUnlimited的page为原join-enterprise无query路径，envVersion只白名单接受develop/trial/release；trial/develop的checkPath=false，release=true。
+- 卡片/二维码统一先inspect再展示加入页，避免已有身份把无效/另企业邀请直接导向缓存企业。新增status/alreadyMember预览信息，页面返回重新inspect；用户点击确认才accept。accept仍在事务内读取真实invite/membership、审核姓名，固定member/active，原JOIN_ENTERPRISE_BY_INVITE审计结构与operator不变。
+- 隐私gate服务未改，scene沿原route/query模块内存恢复，不写wx storage或日志。新增wxacode.getUnlimited权限并保留security.msgSecCheck，无外部二维码服务、长期密钥或新依赖。
+- 图片采用buffer/base64/本机工作文件，PNG/JPEG校验、384KiB上限，不上传云存储。相册helper只加可选提示文案，默认账单路径不变；用户点击保存才申请写入权限，拒绝/保存失败不影响invite。收起、重生成、作废、退出和迟到写入尽力清理本机文件。
+- 新增93项专项（61云端、32页面/图片），最终npm test 651/651通过；npm run check通过24页、116 JS、24 WXML、25 WXSS原生编译；git diff --check通过。225文件基线在/private/tmp/ledger-invite-qrcode-20260922-baseline/，25个原云端函数保持原样；账务/价格/产品/权限、Excel/图片渲染/cleanup/GC和隐私服务未改。相册公共helper的可选文案变更已覆盖原账单回归。
+- 未部署ledger、上传体验版、提交审核、修改正式数据库/存储权限、提交Git。后续需部署ledger及其权限、上传新体验版、实际扫码/相册/审核平台验收；trial码不能自行赋予微信体验资格，审核可达性须按平台实际账号验证。报告含完整生成审核材料步骤，不将本地模拟PNG当真实小程序码。
+
+
+## 2026-09-22 邀请二维码按钮缺失：开发者工具旧产物与前端依赖打包（本地修复）
+
+- 用户真机截图显示旧文案“分享邀请卡片”且没有二维码。现场开发者工具项目路径与本项目一致，磁盘WXML有二维码、isAdmin与data初始化正确；修复前直接执行微信原生WCC渲染即可得到二维码节点，但工具普通编译仍显示旧页。
+- 只清编译缓存后，工具明确报services/invite-qrcode.js is not defined。清项目文件列表缓存后仍曾出现缺模块错误；最终给project.config.json的packOptions.include增加精确前端文件services/invite-qrcode.js后重新编译，缺模块错误消失，当前真实管理员+有效邀请页面已显示“分享给微信好友”“作废邀请”“邀请二维码”。保留原ignoreDevUnusedFiles/ignoreUploadUnusedFiles，不改WXML显示逻辑或云函数。
+- scripts/check-project.js增加精确包含项门禁。页面测试使用新增tests/helpers/wxml-render.js调用微信原生WCC并执行实际渲染函数，强化admin+active invite必须出现按钮、member不出现；再覆盖未知身份初始化、缓存邀请/图片、无invite、加载状态和打包配置，共新增5项。npm test 656/656、npm run check 24页/117 JS/24 WXML/25 WXSS、git diff --check均通过。
+- 231文件任务基线及当前项目编译缓存副本保存在/private/tmp/ledger-qr-button-20260922-baseline/。本轮原文件只变更project.config.json、scripts/check-project.js、tests/invite-qrcode-page.test.js及本偏好文档；新增渲染helper和报告。成员页JS/WXML/WXSS、二维码helper及全部云函数与任务开始基线保持相同，保留上一轮全部未提交工作。
+- 用户反馈此前已部署ledger并上传体验版，本轮未独立核验后台上传记录；本次没有部署、上传、提交审核或Git、修改正式数据库，也未点击生成二维码/作废/修改成员。手机已上传体验版不会随本地修复自动更新，后续需重新上传前端包，本次无需再次部署ledger。工具原有超时/平台警告不属于本次修复，未声称调试器零错误。

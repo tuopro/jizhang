@@ -10,14 +10,15 @@ const { setup, copy, tenantId } = require('./shipment-correction-fixture')
 function cloudHarness(creator) {
   const c = setup(creator)
   let root = c.storage.read()
+  Object.values(root.tenants).forEach(t => { t.memberInvites = [] })
   let version = 0
   const fields = {
     clients: 'clients', products: 'customProducts', customer_prices: 'customerPrices',
     shipments: 'shipments', payments: 'payments', billing_periods: 'billingPeriods',
-    audit_logs: 'auditLogs', memberships: 'memberships'
+    audit_logs: 'auditLogs', memberships: 'memberships', member_invites: 'memberInvites'
   }
   const h = {
-    c, openid: c.members.owner.openid, queries: [], security: [], attempts: 0, commits: 0,
+    c, openid: c.members.owner.openid, queries: [], security: [], qrRequests: [], logs: [], attempts: 0, commits: 0,
     read: () => copy(root),
     change(callback) { callback(root.tenants[tenantId], root); version += 1 }
   }
@@ -71,7 +72,7 @@ function cloudHarness(creator) {
       const result = await callback(source(() => draft, `transaction-${h.attempts}`))
       if (h.beforeCommit) { const hook = h.beforeCommit; h.beforeCommit = null; hook() }
       if (version !== readVersion) continue // Model database optimistic conflict retry.
-      root = draft
+      if (JSON.stringify(draft) !== JSON.stringify(root)) { root = draft; version += 1 }
       h.commits += 1
       return result
     }
@@ -82,13 +83,17 @@ function cloudHarness(creator) {
     openapi: { security: { msgSecCheck: async request => {
       h.security.push(copy(request))
       return { errCode: 0, result: { suggest: h.rejectText ? 'risky' : 'pass', label: 100 } }
+    } }, wxacode: { getUnlimited: async request => {
+      h.qrRequests.push(copy(request))
+      if (h.onQRCode) return h.onQRCode(request)
+      return { buffer: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j9eUAAAAASUVORK5CYII=', 'base64') }
     } } }
   }
   const filename = path.resolve(__dirname, '../../cloudfunctions/ledger/index.js')
   const localRequire = createRequire(filename)
   const sandbox = {
     exports: {}, require: name => name === 'wx-server-sdk' ? cloud : localRequire(name),
-    console: { log() {}, error() {} }
+    console: { log(...args) { h.logs.push(args) }, error(...args) { h.logs.push(args) } }
   }
   vm.runInNewContext(fs.readFileSync(filename, 'utf8'), sandbox, { filename })
   h.main = sandbox.exports.main

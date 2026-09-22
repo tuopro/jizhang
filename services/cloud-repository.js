@@ -67,17 +67,20 @@ function createCloudRepository() {
     })
   }
 
+  const invitePayload = credential => typeof credential === 'string' ? { inviteToken: credential } : { qrSceneCode: credential && credential.qrSceneCode }
+
   const api = {
     bootstrap,
     withReadSnapshot,
     isCloudRepository: true,
     getIdentity: () => identity,
-    inspectInvite: inviteToken => call('inspectInvite', { inviteToken }),
+    inspectInvite: credential => call('inspectInvite', invitePayload(credential)),
     getActiveMemberInvite: () => call('getActiveMemberInvite'),
-    acceptInvite: (inviteToken, displayName) => call('acceptInvite', { inviteToken, displayName }).then(result => {
+    acceptInvite: (credential, displayName) => call('acceptInvite', Object.assign(invitePayload(credential), { displayName })).then(result => {
       identity = result
       return result
     }),
+    createMemberInviteQRCode: (inviteId, envVersion) => call('createMemberInviteQRCode', { inviteId, envVersion }),
     createMemberInvite: () => call('createMemberInvite'),
     revokeMemberInvite: inviteId => call('revokeMemberInvite', { inviteId })
   }

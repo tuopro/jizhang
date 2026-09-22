@@ -33,6 +33,13 @@ if (!includesPages) {
   failures.push('开启依赖过滤时必须显式把 pages 目录加入打包白名单')
 }
 
+const includesInviteQRCode = (projectConfig.packOptions.include || []).some(item =>
+  item.type === 'file' && item.value === 'services/invite-qrcode.js'
+)
+if (!includesInviteQRCode) {
+  failures.push('邀请二维码前端依赖必须显式加入打包白名单：services/invite-qrcode.js')
+}
+
 appJson.pages.forEach(pagePath => {
   for (const extension of ['js', 'json', 'wxml', 'wxss']) {
     const filePath = path.join(root, `${pagePath}.${extension}`)

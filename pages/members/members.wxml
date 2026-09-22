@@ -4,14 +4,25 @@
 
   <view wx:if="{{isAdmin}}" class="invite-actions">
     <view wx:if="{{inviteLoading}}" class="invite-tip">正在读取当前邀请…</view>
-    <button wx:elif="{{!invite}}" class="primary-button" bindtap="createInvite">生成同事邀请</button>
+    <button wx:elif="{{!invite}}" class="primary-button" bindtap="createInvite" disabled="{{qrLoading || qrSaving}}">生成同事邀请</button>
     <view wx:if="{{invite}}" class="invite-card">
       <view class="invite-title">员工邀请</view>
       <view class="invite-row"><text>有效期至</text><text>{{invite.expiresAtText}}</text></view>
       <view class="invite-row"><text>状态</text><text class="invite-active">有效</text></view>
       <view class="invite-tip">该邀请7天内有效，可供多位同事加入本企业。</view>
-      <button class="secondary-button" open-type="share">分享邀请卡片</button>
-      <button class="revoke-invite-button" bindtap="revokeInvite">作废邀请</button>
+      <button class="secondary-button" open-type="share">分享给微信好友</button>
+      <button class="revoke-invite-button" bindtap="revokeInvite" disabled="{{qrLoading || qrSaving}}">作废邀请</button>
+    </view>
+    <button class="secondary-button" bindtap="showQRCode" loading="{{qrLoading}}" disabled="{{inviteLoading || qrLoading || qrSaving}}">邀请二维码</button>
+    <view wx:if="{{qrImagePath}}" class="invite-card qr-card">
+      <view class="qr-enterprise">{{qrEnterpriseName}}</view>
+      <view class="invite-title">微信扫码加入企业</view>
+      <image class="invite-qr-image" src="{{qrImagePath}}" mode="aspectFit" bindtap="previewQRCode" show-menu-by-longpress="{{true}}" />
+      <view class="invite-tip">有效至：{{qrExpiresAtText}}</view>
+      <view class="invite-tip">微信扫码后可加入企业，扫码后需确认加入企业。</view>
+      <button class="secondary-button" bindtap="previewQRCode">预览小程序码</button>
+      <button class="primary-button" bindtap="saveQRCode" loading="{{qrSaving}}" disabled="{{qrSaving}}">保存二维码</button>
+      <button class="secondary-button" bindtap="clearQRCode" disabled="{{qrSaving}}">收起</button>
     </view>
   </view>
 

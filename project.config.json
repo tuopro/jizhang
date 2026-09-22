@@ -65,6 +65,10 @@
       {
         "value": "pages",
         "type": "folder"
+      },
+      {
+        "type": "file",
+        "value": "services/invite-qrcode.js"
       }
     ]
   },

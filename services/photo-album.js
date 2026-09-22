@@ -14,10 +14,10 @@ function userCancelled(message) {
   return error
 }
 
-async function openAlbumSettings(api) {
+async function openAlbumSettings(api, options) {
   const modal = await call(api, 'showModal', {
     title: '需要相册权限',
-    content: '保存账单图片需要写入系统相册。你可以在设置中开启，也可以继续使用预览和分享当前页。',
+    content: options && options.permissionMessage || '保存账单图片需要写入系统相册。你可以在设置中开启，也可以继续使用预览和分享当前页。',
     confirmText: '去设置',
     cancelText: '暂不'
   })
@@ -29,23 +29,23 @@ async function openAlbumSettings(api) {
   return true
 }
 
-async function ensureAlbumPermission(api) {
+async function ensureAlbumPermission(api, options) {
   const setting = await call(api, 'getSetting')
   const state = setting.authSetting && setting.authSetting['scope.writePhotosAlbum']
   if (state === true) return true
-  if (state === false) return openAlbumSettings(api)
+  if (state === false) return openAlbumSettings(api, options)
   try {
     await call(api, 'authorize', { scope: 'scope.writePhotosAlbum' })
     return true
   } catch (error) {
-    return openAlbumSettings(api)
+    return openAlbumSettings(api, options)
   }
 }
 
-async function saveImagesToAlbum(api, imagePaths, onProgress) {
+async function saveImagesToAlbum(api, imagePaths, onProgress, options) {
   const paths = Array.isArray(imagePaths) ? imagePaths.filter(Boolean) : []
   if (!paths.length) throw new Error('没有可保存的账单图片')
-  await ensureAlbumPermission(api)
+  await ensureAlbumPermission(api, options)
   for (let index = 0; index < paths.length; index += 1) {
     await call(api, 'saveImageToPhotosAlbum', { filePath: paths[index] })
     if (onProgress) onProgress(index + 1, paths.length)

@@ -27,6 +27,8 @@ const {
   getStatementExportPage
 } = require('./services/statement-export-cloud')
 
+const { validateEnvVersion, findSceneInvites, ensureSceneCode, generateCodeImage } = require('./services/invite-qrcode')
+
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
@@ -334,12 +336,31 @@ function inviteResult(invite, enterpriseName) {
   }
 }
 
-async function inspectInvite(token) {
-  const invite = await getInviteByToken(String(token || '').trim())
+async function getInviteFromPayload(payload, source) {
+  const input = payload || {}
+  if (Object.prototype.hasOwnProperty.call(input, 'qrSceneCode')) {
+    if (Object.prototype.hasOwnProperty.call(input, 'inviteToken')) {
+      throw createServiceError('INVITE_INVALID', '邀请参数无效')
+    }
+    const matches = await findSceneInvites(source || db, input.qrSceneCode)
+    return matches.length === 1 ? clean(matches[0]) : null
+  }
+  return getInviteByToken(String(input.inviteToken || '').trim(), source)
+}
+
+async function inspectInvite(openid, payload) {
+  const invite = await getInviteFromPayload(payload)
   validateInvite(invite)
   const response = await db.collection('enterprises').doc(invite.tenantId).get()
   const enterprise = clean(response.data)
-  return { ok: true, result: { enterpriseName: enterprise.name, expiresAt: invite.expiresAt } }
+  let alreadyMember = false
+  try {
+    validateInviteJoin(invite, await getMembership(openid))
+  } catch (error) {
+    if (error.code !== 'ALREADY_MEMBER') throw error
+    alreadyMember = true
+  }
+  return { ok: true, result: { enterpriseName: enterprise.name, expiresAt: invite.expiresAt, status: invite.status, alreadyMember } }
 }
 
 async function getActiveMemberInvite(membership) {
@@ -390,6 +411,43 @@ async function createMemberInvite(openid, membership) {
   }
 }
 
+async function createMemberInviteQRCode(openid, membership, payload) {
+  const envVersion = validateEnvVersion(payload.envVersion)
+  if (membership.role !== 'admin') throw createServiceError('INVITE_QR_FORBIDDEN', '只有管理员可以生成邀请小程序码')
+  // Reuse the original creation/7-day/audit path when there is no current invite.
+  if (payload.inviteId != null && typeof payload.inviteId !== 'string') {
+    throw createServiceError('INVITE_INVALID', '邀请参数无效')
+  }
+  let inviteId = payload.inviteId
+  if (!inviteId) inviteId = (await createMemberInvite(openid, membership)).result.id
+  let scene
+  let info
+  async function check(transaction, assignScene) {
+    const current = requireActiveMembership(await getMembership(openid, transaction))
+    if (current.role !== 'admin' || current.tenantId !== membership.tenantId) {
+      throw createServiceError('INVITE_QR_FORBIDDEN', '管理员身份已失效')
+    }
+    const response = await transaction.collection('member_invites').doc(inviteId).get().catch(() => null)
+    const invite = response && response.data ? clean(response.data) : null
+    if (!invite || invite.tenantId !== current.tenantId) throw createServiceError('INVITE_INVALID', '邀请不存在或无权操作')
+    validateInvite(invite)
+    if (assignScene) scene = await ensureSceneCode(transaction, invite)
+    else {
+      const matches = await findSceneInvites(transaction, scene)
+      if (invite.qrSceneCode !== scene || matches.length !== 1 || matches[0].id !== invite.id) {
+        throw createServiceError('INVITE_INVALID', '邀请已失效，请重新生成')
+      }
+    }
+    const enterprise = await transaction.collection('enterprises').doc(current.tenantId).get()
+    info = inviteResult(invite, clean(enterprise.data).name)
+  }
+  await db.runTransaction(transaction => check(transaction, true))
+  const image = await generateCodeImage(cloud, scene, envVersion)
+  // Recheck revocation, expiry and live admin identity after the external API wait.
+  await db.runTransaction(transaction => check(transaction, false))
+  return { ok: true, result: { invite: info, image } }
+}
+
 async function revokeMemberInvite(openid, membership, payload) {
   if (membership.role !== 'admin') throw new Error('只有管理员可以作废成员邀请')
   const inviteId = String(payload && payload.inviteId || '').trim()
@@ -429,11 +487,10 @@ async function revokeMemberInvite(openid, membership, payload) {
 }
 
 async function acceptInvite(openid, payload) {
-  const token = String(payload && payload.inviteToken || '').trim()
   const displayName = validateDisplayName(payload && payload.displayName)
   let joinedMembership
   await db.runTransaction(async transaction => {
-    const invite = await getInviteByToken(token, transaction)
+    const invite = await getInviteFromPayload(payload, transaction)
     const existing = await getMembership(openid, transaction)
     validateInviteJoin(invite, existing)
     await assertTextContentSafe({
@@ -441,6 +498,7 @@ async function acceptInvite(openid, payload) {
       openid,
       checkApi: callWeChatTextSecurity
     })
+    validateInvite(invite)
     const timestamp = new Date().toISOString()
     const membership = createInvitedMembership(invite, {
       memberId: stableId('member', openid), openid, displayName, timestamp
@@ -473,13 +531,14 @@ exports.main = async event => {
     const context = cloud.getWXContext()
     if (!context.OPENID) throw createServiceError('WECHAT_IDENTITY_UNAVAILABLE', '无法取得微信用户身份')
     assertKnownAction(action)
-    if (action === 'inspectInvite') return await inspectInvite(event && event.payload && event.payload.inviteToken)
+    if (action === 'inspectInvite') return await inspectInvite(context.OPENID, event.payload || {})
     if (action === 'acceptInvite') return await acceptInvite(context.OPENID, event.payload || {})
 
     const membership = requireActiveMembership(await getMembership(context.OPENID))
     if (action === 'bootstrap') return await bootstrap(membership)
     if (action === 'getActiveMemberInvite') return await getActiveMemberInvite(membership)
     if (action === 'createMemberInvite') return await createMemberInvite(context.OPENID, membership)
+    if (action === 'createMemberInviteQRCode') return await createMemberInviteQRCode(context.OPENID, membership, event.payload || {})
     if (action === 'revokeMemberInvite') return await revokeMemberInvite(context.OPENID, membership, event.payload || {})
     if (STATEMENT_EXPORT_READ_ACTIONS.has(action)) return await statementExportReadAction(membership, action, event.payload || {})
     if (action === 'createStatementExcel') {
@@ -494,6 +553,14 @@ exports.main = async event => {
     if (MUTATIONS.has(action)) return await mutate(context.OPENID, membership, action, event.payload || {})
     throw createServiceError('ACTION_NOT_ALLOWED', '不支持的服务操作')
   } catch (error) {
+    if (action === 'createMemberInviteQRCode') {
+      const allowedCodes = new Set(['INVITE_QR_ENV_INVALID', 'INVITE_QR_FORBIDDEN', 'INVITE_QR_UNAVAILABLE',
+        'INVITE_QR_TOO_LARGE', 'INVITE_INVALID', 'INVITE_REVOKED', 'INVITE_EXPIRED',
+        'MEMBERSHIP_REQUIRED', 'MEMBERSHIP_DISABLED', 'MEMBERSHIP_INVALID', 'WECHAT_IDENTITY_UNAVAILABLE'])
+      const known = allowedCodes.has(error && error.code)
+      const code = known ? error.code : 'INVITE_QR_UNAVAILABLE'
+      error = createServiceError(code, known ? error.message : '小程序码暂时无法生成，请稍后重试')
+    }
     const code = getServiceErrorCode(error)
     const errCode = error && error.wechatErrCode || ''
     const errMsg = error && error.wechatErrMsg || ''
